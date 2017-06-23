@@ -6,6 +6,7 @@ import readWikipedia
 import lstm
 import seq2seq_translate
 import DCGAN.main as gan
+from stanford_corenlp_python import StanfordNLP # https://github.com/dasmith/stanford-corenlp-python
 from shutil import copyfile
 from shutil import move
 
@@ -73,7 +74,7 @@ class SplitSentences(Module):
 		parser = re.compile(r'([\?\.\!:])')
 		with open(self.output, 'w') as outfile:
 			for line in open(self.input, 'rU'):
-				lines = [s.strip() for s in parser.sub(r'\1\n', result).splitlines()]
+				lines = [s.strip() for s in parser.sub(r'\1\n', line).splitlines()]
 				for sent in lines:
 					if len(sent) > 0:
 						print >> outfile, sent
@@ -534,3 +535,49 @@ class DCGAN(Module):
 		with open(self.output_images, 'w') as f:
 			print >> f, output_dir
 
+####################################################
+
+class ParseWords(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		stanfordParser = StanfordNLP()
+		print stanfordParser
+
+		lines = []
+		new_lines = []
+		final_lines = []
+		for line in open(self.input, 'rU'):
+			lines.append(line)
+
+		parser = re.compile(r'([\?\.\!:])')
+		for line in lines:
+			split_lines = [s.strip() for s in parser.sub(r'\1\n', line).splitlines()]
+			for sent in split_lines:
+				if len(sent) > 0:
+					new_lines.append(sent)
+
+		for line in new_lines:
+			line = re.sub(r'\xe2\x80\x94', '-', line)
+			print line
+			try:
+				result = stanfordParser.parse(line)
+				sentences = result['sentences']
+				for sent_struct in sentences:
+					words = sent_struct['words']
+					parsed = map(lambda x: x[0], words)
+					text = ''
+					for word in parsed:
+						text = text + word + ' '
+					print text
+					final_lines.append(text.strip())
+			except:
+				print "error"
+				
+		with open(self.output, 'w') as outfile:
+			for line in lines:
+				print >> outfile, line
+			
