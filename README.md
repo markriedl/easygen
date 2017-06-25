@@ -34,3 +34,20 @@ That is more or less the process that a neural network goes through to approxima
 Neural network training is a process of constructing a lot of examples of inputs and outputs and running them through the network graph. When the the network gives the wrong answer, some of the weights are fiddled with so that the answer is closer to the desired output. Then you run the examples through the network again (each time you do this is called an *epoch*) to make sure the weight fiddling didn't screw anything up. Do this enough times and the weights will converge on some numbers that make the network produce the right answer (or close to the right answer) more often than not.
 
 Now that the network has been trained--that is, we have a really good guess about the function that might have generated the data--we can apply run the neural network on inputs we have never seen before and have some confidence that it does the right thing.
+
+There are a lot of ways to set up the neural network based on what you want to do.
+
+If your x's are values from radar sensors on a car and your y's are steering instructions that humans perform at the same time that the radar sensor information comes in, then one can train a neural network that approximates the "human driver" function.
+
+![alt text](https://cdn-images-1.medium.com/max/2000/1*deKGPUvHCy9nbIw-J7QOoQ.png "A neural network for driving cars.")
+
+(Example from [here](https://medium.com/@mark_riedl/introduction-to-neural-nets-without-the-brain-metaphor-874e7950bca0))
+
+If your x's are words from sentences in one language and your y's are words from corresponding sentences in another language, then you can do language translation.
+
+![](https://devblogs.nvidia.com/wp-content/uploads/2015/06/Figure2_NMT_system.png)
+
+If your x's are a string of characters and your y's are the same string of characters but offset by one, then you can perform prediction. That is, given a string of `n` characters, predict the `n+1`th character. That sounds like a really strange thing to do. But if you start with some random characters and your neural network was trained on data that comprised superhero names, then the network try to predict the superhero name that would start with those random characters.
+
+![alt text](![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/char-rnn.png "A recurrent neural network")
+)
