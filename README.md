@@ -23,7 +23,7 @@ What is a neural network? A neural network is a machine learning algorithm very 
 
 What you need to know is that a neural network is an automated function approximation technique. If you remember back to grade school, your teacher might have asked you to solve a problem like this:
 
-!(https://raw.githubusercontent.com/markriedl/easygen/master/web/function.png =100x)
+!(https://raw.githubusercontent.com/markriedl/easygen/master/web/function.png)
 
 That is, given the inputs and outputs, guess the function that turns the inputs into outputs. Probably you could figure out the exact function (`y = 2x + 1`). How did you do it? You might have guessed a function based on the first example, like `y = x + 2` and then checked to see if it worked on the next example. This guess won't work: `x=2` gives `y=4`, which is off by 1. So you probably updated your guess to `y = 2x + 1`. Now that example is right. What about the next example? Yup. What about the previous example? Yup.
 
