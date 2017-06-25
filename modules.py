@@ -1,12 +1,12 @@
 import re
 import os
+import random
 from glob import glob
 from module import *
 import readWikipedia
 import lstm
 import seq2seq_translate
 import DCGAN.main as gan
-from stanford_corenlp_python import StanfordNLP # https://github.com/dasmith/stanford-corenlp-python
 from shutil import copyfile
 from shutil import move
 
@@ -210,7 +210,10 @@ class SplitLines(Module):
 		for line in open(self.input, 'rU'):
 			splitLine = line.split(self.character, 1)
 			data1.append(splitLine[0])
-			data2.append(splitLine[1])
+			if len(splitLine) > 1:
+				data2.append(splitLine[1])
+			else:
+				data2.append('')
 		with open(self.output1, 'w') as outfile1:
 			for line in data1:
 				print >> outfile1, line.strip()
@@ -540,6 +543,7 @@ class DCGAN(Module):
 class ParseWords(Module):
 
 	def __init__(self, input, output):
+		from stanford_corenlp_python import StanfordNLP # https://github.com/dasmith/stanford-corenlp-python
 		self.input = input
 		self.output = output
 
@@ -580,4 +584,70 @@ class ParseWords(Module):
 		with open(self.output, 'w') as outfile:
 			for line in lines:
 				print >> outfile, line
+
+####################################
+
+class PickFromWikipedia(Module):
+
+	def __init__(self, wiki_directory, input, section_name, output, break_sentences):
+		self.wiki_directory = wiki_directory # path to wikipedia dump files
+		self.input = input # name of file. Each line should be a title of a wikipedia article
+		self.output = output # name of file. Paragraphs pulled from wikipedia. <EOS> after each article.
+		self.section_name = section_name # Do you just want a sub-section? Or '' for all.
+		self.break_sentences = break_sentences # bool - one sentence per line?
+
+	def run(self):
+		pattern = ''
+		first = True
+		for line in open(self.input, 'rU'):
+			line = line.strip()
+			if first:
+				if len(line) > 0:
+					pattern = line
+				first = False
+			else:
+				if len(line) > 0:
+					pattern = pattern + '|' + line
+		if len(self.section_name.strip()) > 0:
+			pattern = pattern + ':' + self.section_name.strip()
+		print pattern
+		readWikipedia.ReadWikipedia(self.wiki_directory, pattern, self.output, 'temp/pickfromwikipediatitles', self.break_sentences)
+
+#######################################
+
+class RandomizeLines(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		lines = []
+		for line in open(self.input, 'rU'):
+			lines.append(line)
+		random.shuffle(lines)
+		with open(self.output, 'w') as outfile:
+			for line in lines:
+				print >> outfile, line.strip()
+
+
+#########################################
+
+class RemoveXMLTags(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		lines = []
+		for line in open(self.input, 'rU'):
+			line = re.sub('<[^<]+?>', '', line)
+			if len(line) > 0:
+				lines.append(line.strip())
+		with open(self.output, 'w') as outfile:
+			for line in lines:
+				print >> outfile, line					
+
+
 			

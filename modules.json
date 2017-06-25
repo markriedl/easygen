@@ -20,5 +20,8 @@ data = '[ \
 	{"name" : "UserInput", "params" : "prompt(string,tip=Pring this prompt);output(out,text)", "tip" : "Prompt user for a string"}, \
 	{"name" : "DCGAN", "params" : "input_images(images,in);output_images(images,out);epochs(int=10);input_height(int=108);output_height(int=108);filetype(string=jpg);crop(bool=true);num_images(int,tip=Number of output images to generate)", "tip" : "Train a generateive adversarial network to make images"}, \
 	{"name" : "ReadImages", "params" : "data_directory(directory);output_images(out,images)", "tip" : "Read in a directory of image files"}, \
-	{"name" : "WriteImages", "params" : "input_images(in,images);output_directory(directory)", "tip" : "Save a group of images to a directory"}\
+	{"name" : "WriteImages", "params" : "input_images(in,images);output_directory(directory)", "tip" : "Save a group of images to a directory"}, \
+	{"name" : "PickFromWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);input(in,text);section_name(string,tip=What section to pull text from if any);output(out,text);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Pull text from wikipedia for the articles specified (file with one title per line)"}, \
+	{"name" : "RandomizeLines", "params" : "input(in,text);output(out,text)", "tip" : "Randomize lines in a text file"}, \
+	{"name" : "RemoveXMLTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"} \
 ]';

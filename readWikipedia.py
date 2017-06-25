@@ -41,7 +41,7 @@ def matchPattern(pattern, str):
 			match = re.search(p, str)
 			if match is not None:
 				return match.group(0)
-	return False
+	return ''
 
 
 def fixList(soup, depth = 0):
@@ -94,6 +94,7 @@ def ReadWikipedia(wiki_directory, pattern, out_file, titles_file, break_sentence
 					# j is a json record
 					curTitle = matchPattern(titlePattern, j['title'])
 					if len(curTitle) > 0:
+						print curTitle, "in", j['title']
 						# This json record is a match to titlePattern
 						#print >> outfile, j['title'].encode('utf-8') #FOR DEBUGGING
 						# Text element contains HTML
@@ -104,6 +105,8 @@ def ReadWikipedia(wiki_directory, pattern, out_file, titles_file, break_sentence
 						headerIndex = 0
 						# Walk through each element in the html soup object
 						for n in range(len(soup.contents)):
+							if inresult:
+								print "in result"
 							current = soup.contents[n] # The current html element
 							if len(headerList) == 0:
 								# If only title information is given, we just get everything
@@ -153,6 +156,7 @@ def ReadWikipedia(wiki_directory, pattern, out_file, titles_file, break_sentence
 										previousHeaders = []
 							elif inresult and current is not None and current.name is not None and current.name[0] == 'h' and int(current.name[1]) < (headerIndex + 2):
 								# Probably left the block. All done with this json!
+								print "leaving"
 								break
 							elif not inresult and current is not None and current.name is not None and current.name[0] == 'h' and int(current.name[1]) > 1 and int(current.name[1]) < (headerIndex + 2):
 								# not in the result, but we went up one level
