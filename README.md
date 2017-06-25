@@ -12,3 +12,7 @@ For example: to use a neural network to generate a history for a fictional count
 5. Run the resultant model and store the outputs to a file.
 
 EasyGen allows one to quickly set up the data cleaning and neural network training pipeline using a graphical user interface and a number of self-contained "modules" that implement stardard data preparation routines. EasyGen differs from other neural network user interfaces in that it doesn't focus on the graphical instantiation of the neural network itself. Instead, it provides an easy to use way to instantiate some of the most common neural network algorithms used for generation. EasyGen focuses on the data preparation.
+
+Here is how EasyGen can be used to run the superhero name generation example above:
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/lstm.png "Screenshot of EasyGen setup to run an LSTM")
+Each box is a chunk of standard code that can be selected from a library of options. Arrows indicate the data flow from module to module.
