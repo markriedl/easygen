@@ -90,4 +90,9 @@ If you will be pulling data from Wikipedia, you must do the following:
 
 # Examples
 
+1. Superhero name generator
+   
+   [![Superhero generator video](http://img.youtube.com/vi/o_7hnZXR51Q/0.jpg)](http://www.youtube.com/watch?v=o_7hnZXR51Q)
+
+
 # Documentation
