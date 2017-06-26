@@ -3,23 +3,14 @@ import os
 import random
 from glob import glob
 from module import *
-import readWikipedia
-import lstm
-import seq2seq_translate
-import DCGAN.main as gan
+#import readWikipedia
+#import lstm
+#import seq2seq_translate
+#import DCGAN.main as gan
 from shutil import copyfile
 from shutil import move
 
 ########################
-'''
-1. Get seq2seq working
-2. Test data pipe
-3. Translation
-4. prediction
-
-Need a stanford parser tokenizer module.
-Pig latin as translation?
-'''
 
 #######################
 
@@ -191,6 +182,7 @@ class ReadWikipedia(Module):
 		self.break_sentences = break_sentences
 
 	def run(self):
+		import readWikipedia
 		readWikipedia.ReadWikipedia(self.wiki_directory, self.pattern, self.out_file, self.titles_file, self.break_sentences)
 
 
@@ -274,6 +266,7 @@ class CharacterLSTM_Train(Module):
 		self.hidden_nodes = hidden_nodes
 
 	def run(self):
+		import lstm
 		lstm.CharacterLSTM_Train(self.data, self.model, self.dictionary, self.history, self.layers, self.epochs, self.hidden_nodes)
 
 #########################
@@ -292,6 +285,7 @@ class CharacterLSTM_Run(Module):
 		self.output = output
 
 	def run(self):
+		import lstm		
 		file = open(self.seed, 'r') 
 		seed = file.read() 
 		result = lstm.CharacterLSTM_Run(seed, self.dictionary, self.model, self.output, self.steps, self.layers, self.hidden_nodes, self.history, self.temperature)
@@ -315,6 +309,7 @@ class Seq2Seq_Train(Module):
 		self.dictionary = dictionary
 
 	def run(self):
+		import seq2seq_translate
 		# read data
 		data = []
 		for line in open(self.all_data, 'rU'):
@@ -397,7 +392,7 @@ class Seq2Seq_Run(Module):
 
 
 	def run(self):
-
+		import seq2seq_translate
 		the_data = []
 		for line in open(self.data, 'rU'):
 			the_data.append(line.strip())
@@ -429,6 +424,7 @@ class RandomSequence(Module):
 		self.length = length
 
 	def run(self):
+		import lstm
 		sequence = lstm.random_sequence_from_textfile(self.input, self.length)
 		with open(self.output, 'w') as f:
 			print >> f, sequence
@@ -514,6 +510,7 @@ class DCGAN(Module):
 		self.num_images = num_images
 
 	def run(self):
+		import DCGAN.main as gan
 		filetype = ''
 		if len(self.filetype) == 0:
 			filetype = '*.jpg'
@@ -597,6 +594,7 @@ class PickFromWikipedia(Module):
 		self.break_sentences = break_sentences # bool - one sentence per line?
 
 	def run(self):
+		import readWikipedia
 		pattern = ''
 		first = True
 		for line in open(self.input, 'rU'):

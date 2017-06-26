@@ -47,6 +47,25 @@ If your x's are words from sentences in one language and your y's are words from
 
 ![](https://devblogs.nvidia.com/wp-content/uploads/2015/06/Figure2_NMT_system.png)
 
-If your x's are a string of characters and your y's are the same string of characters but offset by one, then you can perform prediction. That is, given a string of `n` characters, predict the `n+1`th character. That sounds like a really strange thing to do. But if you start with some random characters and your neural network was trained on data that comprised superhero names, then the network try to predict the superhero name that would start with those random characters.
+If your x's are a string of characters and your y's are the same string of characters but offset by one, then you can perform prediction. That is, given a string of `n` characters, predict the `n+1`th character. 
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/char-rnn.png "A recurrent neural network")
+
+That last one sounds like a really strange thing to do. But if you start with some random characters and your neural network was trained on data that comprised superhero names, then the network try to predict the superhero name that would start with those random characters.
+
+## Installation
+
+1. Install Python 2.7
+2. Clone or download this repository.
+3. Install Tensorflow 0.12
+...`pip install -I tensorflow==0.12.1`
+... If you are using a GPU, follow these ![Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+4. Install TFLearn 0.2.1
+... `pip install -I tflearn==0.2.1`
+5. Install Beautiful Soup 4
+... `pip install beautifulsoup4`
+6. 
+
+## Examples
+
+## Documentation

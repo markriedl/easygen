@@ -38,7 +38,7 @@ def matchPattern(pattern, str):
 	else:
 		pattern = pattern.split('|')
 		for p in pattern:
-			match = re.search(p, str)
+			match = re.search(p+r'\b', str)
 			if match is not None:
 				return match.group(0)
 	return ''
