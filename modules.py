@@ -174,16 +174,17 @@ class MakeTransTrainTestData(Module):
 
 class ReadWikipedia(Module):
 
-	def __init__(self, wiki_directory, pattern, out_file, titles_file, break_sentences = False):
+	def __init__(self, wiki_directory, pattern, categories, out_file, titles_file, break_sentences = False):
 		self.wiki_directory = wiki_directory
 		self.pattern = pattern
 		self.out_file = out_file
 		self.titles_file = titles_file
 		self.break_sentences = break_sentences
+		self.categories = categories
 
 	def run(self):
 		import readWikipedia
-		readWikipedia.ReadWikipedia(self.wiki_directory, self.pattern, self.out_file, self.titles_file, self.break_sentences)
+		readWikipedia.ReadWikipedia(self.wiki_directory, self.pattern, self.categories, self.out_file, self.titles_file, self.break_sentences)
 
 
 #########################
@@ -418,16 +419,25 @@ class Seq2Seq_Run(Module):
 
 class RandomSequence(Module):
 
-	def __init__(self, input, output, length):
+	def __init__(self, input, output, length, line_start):
 		self.input = input
 		self.output = output
 		self.length = length
+		self.line_start = line_start
 
 	def run(self):
-		import lstm
-		sequence = lstm.random_sequence_from_textfile(self.input, self.length)
+		sequence = ''
+		if self.line_start:
+			lines = []
+			for line in open(self.input, 'rU'):
+				lines.append(line)
+			pick = random.choice(lines)
+			sequence = pick[:min(self.length, len(pick))]
+		else:
+			import lstm
+			sequence = lstm.random_sequence_from_textfile(self.input, self.length)
 		with open(self.output, 'w') as f:
-			print >> f, sequence
+			print >> f, sequence.strip()
 
 ############################################
 
@@ -586,12 +596,13 @@ class ParseWords(Module):
 
 class PickFromWikipedia(Module):
 
-	def __init__(self, wiki_directory, input, section_name, output, break_sentences):
+	def __init__(self, wiki_directory, input, categories, section_name, output, break_sentences):
 		self.wiki_directory = wiki_directory # path to wikipedia dump files
 		self.input = input # name of file. Each line should be a title of a wikipedia article
 		self.output = output # name of file. Paragraphs pulled from wikipedia. <EOS> after each article.
 		self.section_name = section_name # Do you just want a sub-section? Or '' for all.
 		self.break_sentences = break_sentences # bool - one sentence per line?
+		self.categories = categories # Restrict to certain categories
 
 	def run(self):
 		import readWikipedia
@@ -609,7 +620,7 @@ class PickFromWikipedia(Module):
 		if len(self.section_name.strip()) > 0:
 			pattern = pattern + ':' + self.section_name.strip()
 		print pattern
-		readWikipedia.ReadWikipedia(self.wiki_directory, pattern, self.output, 'temp/pickfromwikipediatitles', self.break_sentences)
+		readWikipedia.ReadWikipedia(self.wiki_directory, pattern, self.categories, self.output, 'temp/pickfromwikipediatitles', self.break_sentences)
 
 #######################################
 
@@ -631,7 +642,7 @@ class RandomizeLines(Module):
 
 #########################################
 
-class RemoveXMLTags(Module):
+class RemoveTags(Module):
 
 	def __init__(self, input, output):
 		self.input = input

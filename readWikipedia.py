@@ -63,7 +63,7 @@ def fixList(soup, depth = 0):
 
 ########################
 
-def ReadWikipedia(wiki_directory, pattern, out_file, titles_file, break_sentences = False):
+def ReadWikipedia(wiki_directory, pattern, categoryPattern, out_file, titles_file, break_sentences = False):
 	pattern = pattern.split(':')
 	titlePattern = pattern.pop(0)
 	headerList = pattern
@@ -92,9 +92,11 @@ def ReadWikipedia(wiki_directory, pattern, out_file, titles_file, break_sentence
 				# Look for pattern matches in heading tags inside the text of the json
 				for j in data:
 					# j is a json record
-					curTitle = matchPattern(titlePattern, j['title'])
-					if len(curTitle) > 0:
-						print curTitle, "in", j['title']
+					titleMatch = matchPattern(titlePattern, j['title'])
+					categoryMatch = matchPattern(categoryPattern, j['categories'])
+					if len(titleMatch) > 0 and len(categoryMatch) > 0:
+						print "title:", titleMatch, "in", j['title']
+						print "category:", categoryMatch, "in", j['categories']
 						# This json record is a match to titlePattern
 						#print >> outfile, j['title'].encode('utf-8') #FOR DEBUGGING
 						# Text element contains HTML

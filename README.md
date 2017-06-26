@@ -17,7 +17,7 @@ Here is how EasyGen can be used to run the superhero name generation example abo
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/lstm.png "Screenshot of EasyGen setup to run an LSTM")
 Each box is a chunk of standard code that can be selected from a library of options. Arrows indicate the data flow from module to module.
  
-## Preliminaries
+# Preliminaries
 
 What is a neural network? A neural network is a machine learning algorithm very loosely inspired by the brain. I'm not a fan of the brain metaphor (see [introduction to neural networks without the brain metaphor](https://medium.com/@mark_riedl/introduction-to-neural-nets-without-the-brain-metaphor-874e7950bca0)).
 
@@ -53,15 +53,18 @@ If your x's are a string of characters and your y's are the same string of chara
 
 That last one sounds like a really strange thing to do. But if you start with some random characters and your neural network was trained on data that comprised superhero names, then the network try to predict the superhero name that would start with those random characters.
 
-## Installation
+# Installation
 
 1. Install Python 2.7
 
 2. Clone or download this repository.
 
+   `git clone https://github.com/markriedl/easygen.git`
+
 3. Install Tensorflow 0.12
 
    `pip install -I tensorflow==0.12.1`
+
    If you are using a GPU, follow these [Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 
 4. Install TFLearn 0.2.1
@@ -78,11 +81,13 @@ If you will be pulling data from Wikipedia, you must do the following:
 
 7. Unzip the bz2 file to extract the .xml file.
 
-8. python wikiextractor/wikiextractor.py -o wiki --json --html --lists -s enwiki-...xml
+8. Run a script to extract the information in the Wikipedia dump:
+   
+   `python wikiextractor/wikiextractor.py -o wiki --json --html --lists -s enwiki-...xml`
 
-   Fill in the exact path and name to the XML file. This will create a directory called "wiki".
+   Be sure to fill in the exact path and name to the XML file. This will create a directory called "wiki".
 
 
-## Examples
+# Examples
 
-## Documentation
+# Documentation

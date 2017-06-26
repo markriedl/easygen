@@ -1,5 +1,5 @@
 data = '[ \
-	{"name" : "ReadWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);pattern(string=*,tip=What to look for in Wikipedia articles);out_file(text,out);titles_file(text,out);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Extracts text from Wikipedia dump"}, \
+	{"name" : "ReadWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);pattern(string=*,tip=What to look for in Wikipedia articles);categories(string=*,tip=What categories if any?);out_file(text,out);titles_file(text,out);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Extracts text from Wikipedia dump"}, \
 	{"name" : "SplitSentences", "params" : "input(text,in);output(text,out)", "tip" : "Break up a text file so that each sentence is on a separate line"}, \
 	{"name" : "Seq2Seq_Train", "params" : "all_data(text,in,tip=x and y data.);x(text,in);y(text,in);model(model,out);dictionary(out,dictionary);layers(int=2,tip=Number of layers in neural net);hidden_nodes(int=1024,tip=Number of nodes in each layer of the network);epochs(int=10)", "tip" : "Train a Seqence2Sequence network for translation or prediction"}, \
 	{"name" : "Seq2Seq_Run", "params" : "data(in,text);model(model,in);dictionary(in,dictionary);layers(int=2);hidden_nodes(int=1024);stop(string);output(out,text)", "tip" : "Run a Sequence2sequence neural network for translation or prediction"}, \
@@ -15,13 +15,13 @@ data = '[ \
 	{"name" : "SplitLines", "params" : "input(in,text);output1(out,text);output2(out,text);character(string,tip=Split line when this character shows up)", "tip" : "Break any line into two lines when a particular character is seen"}, \
 	{"name" : "MakePredictionData", "params" : "data(in,text);x(out,text);y(out,text)", "tip" : "Prepare data for prediction--each line will try to predict the next line"}, \
 	{"name" : "ConcatenateTextFiles", "params" : "input_a(in,text);input_b(in,text);output(out,text)", "tip" : "Merge two text files"}, \
-	{"name" : "RandomSequence", "params" : "input(in,text);length(int,tip=Length of random sequence);output(out,text)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN"}, \
+	{"name" : "RandomSequence", "params" : "input(in,text);length(int,tip=Length of random sequence);output(out,text);line_start(bool=False,tip=Start the random sequence at the start of a line in the text file?)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN"}, \
 	{"name" : "MakeString", "params" : "string(string,tip=Enter a string);output(out,text)", "tip" : "Write a single string to a text file"}, \
 	{"name" : "UserInput", "params" : "prompt(string,tip=Pring this prompt);output(out,text)", "tip" : "Prompt user for a string"}, \
 	{"name" : "DCGAN", "params" : "input_images(images,in);output_images(images,out);epochs(int=10);input_height(int=108);output_height(int=108);filetype(string=jpg);crop(bool=true);num_images(int,tip=Number of output images to generate)", "tip" : "Train a generateive adversarial network to make images"}, \
 	{"name" : "ReadImages", "params" : "data_directory(directory);output_images(out,images)", "tip" : "Read in a directory of image files"}, \
 	{"name" : "WriteImages", "params" : "input_images(in,images);output_directory(directory)", "tip" : "Save a group of images to a directory"}, \
-	{"name" : "PickFromWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);input(in,text);section_name(string,tip=What section to pull text from if any);output(out,text);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Pull text from wikipedia for the articles specified (file with one title per line)"}, \
+	{"name" : "PickFromWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);input(in,text);catgories(string=*,tip=What categories if any?);section_name(string,tip=What section to pull text from if any);output(out,text);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Pull text from wikipedia for the articles specified (file with one title per line)"}, \
 	{"name" : "RandomizeLines", "params" : "input(in,text);output(out,text)", "tip" : "Randomize lines in a text file"}, \
-	{"name" : "RemoveXMLTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"} \
+	{"name" : "RemoveTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"} \
 ]';
