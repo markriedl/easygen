@@ -61,16 +61,16 @@ That last one sounds like a really strange thing to do. But if you start with so
 
 3. Install Tensorflow 0.12
 
-...`pip install -I tensorflow==0.12.1`
-... If you are using a GPU, follow these [Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+   `pip install -I tensorflow==0.12.1`
+   If you are using a GPU, follow these [Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 
 4. Install TFLearn 0.2.1
 
-... `pip install -I tflearn==0.2.1`
+   `pip install -I tflearn==0.2.1`
 
 5. Install Beautiful Soup 4
 
-... `pip install beautifulsoup4`
+   `pip install beautifulsoup4`
 
 If you will be pulling data from Wikipedia, you must do the following:
 
@@ -80,7 +80,7 @@ If you will be pulling data from Wikipedia, you must do the following:
 
 8. python wikiextractor/wikiextractor.py -o wiki --json --html --lists -s enwiki-...xml
 
-... Fill in the exact path and name to the XML file. This will create a directory called "wiki".
+   Fill in the exact path and name to the XML file. This will create a directory called "wiki".
 
 
 ## Examples
