@@ -56,15 +56,32 @@ That last one sounds like a really strange thing to do. But if you start with so
 ## Installation
 
 1. Install Python 2.7
+
 2. Clone or download this repository.
+
 3. Install Tensorflow 0.12
+
 ...`pip install -I tensorflow==0.12.1`
-... If you are using a GPU, follow these ![Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+... If you are using a GPU, follow these [Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
+
 4. Install TFLearn 0.2.1
+
 ... `pip install -I tflearn==0.2.1`
+
 5. Install Beautiful Soup 4
+
 ... `pip install beautifulsoup4`
-6. 
+
+If you will be pulling data from Wikipedia, you must do the following:
+
+6. Download an English language [Wikipedia dump](https://dumps.wikimedia.org/enwiki/). From this link you will find a file named something like "enwiki-20170401-pages-articles-multistream.xml.bz2". Make sure you download the .bz2 file that is not the index file.
+
+7. Unzip the bz2 file to extract the .xml file.
+
+8. python wikiextractor/wikiextractor.py -o wiki --json --html --lists -s enwiki-...xml
+
+... Fill in the exact path and name to the XML file. This will create a directory called "wiki".
+
 
 ## Examples
 
