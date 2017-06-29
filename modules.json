@@ -14,7 +14,7 @@ data = '[ \
 	{"name" : "WriteTextFile", "params" : "input(in,text);file(directory,tip=Filename)", "tip" : "Write to a text file"}, \
 	{"name" : "SplitLines", "params" : "input(in,text);output1(out,text);output2(out,text);character(string,tip=Split line when this character shows up)", "tip" : "Break any line into two lines when a particular character is seen"}, \
 	{"name" : "MakePredictionData", "params" : "data(in,text);x(out,text);y(out,text)", "tip" : "Prepare data for prediction--each line will try to predict the next line"}, \
-	{"name" : "ConcatenateTextFiles", "params" : "input_a(in,text);input_b(in,text);output(out,text)", "tip" : "Merge two text files"}, \
+	{"name" : "ConcatenateTextFiles", "params" : "input_1(in,text);input_2(in,text);output(out,text)", "tip" : "Merge two text files"}, \
 	{"name" : "RandomSequence", "params" : "input(in,text);length(int,tip=Length of random sequence);output(out,text);line_start(bool=False,tip=Start the random sequence at the start of a line in the text file?)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN"}, \
 	{"name" : "MakeString", "params" : "string(string,tip=Enter a string);output(out,text)", "tip" : "Write a single string to a text file"}, \
 	{"name" : "UserInput", "params" : "prompt(string,tip=Pring this prompt);output(out,text)", "tip" : "Prompt user for a string"}, \
@@ -23,5 +23,7 @@ data = '[ \
 	{"name" : "WriteImages", "params" : "input_images(in,images);output_directory(directory)", "tip" : "Save a group of images to a directory"}, \
 	{"name" : "PickFromWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);input(in,text);catgories(string=*,tip=What categories if any?);section_name(string,tip=What section to pull text from if any);output(out,text);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Pull text from wikipedia for the articles specified (file with one title per line)"}, \
 	{"name" : "RandomizeLines", "params" : "input(in,text);output(out,text)", "tip" : "Randomize lines in a text file"}, \
-	{"name" : "RemoveTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"} \
+	{"name" : "RemoveTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"}, \
+	{"name" : "MakeLowercase", "params" : "input(in,text);output(out,text)", "tip" : "Make all text in a file lowercase"}, \
+	{"name" : "Repeat", "params" : "input(in,text);output(out,text);times(int)"} \
 ]';

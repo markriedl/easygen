@@ -40,16 +40,16 @@ class WriteTextFile(Module):
 
 class ConcatenateTextFiles(Module):
 
-	def __init__(self, input_a, input_b, output):
-		self.input_a = input_a
-		self.input_b = input_b
+	def __init__(self, input_1, input_2, output):
+		self.input_1 = input_1
+		self.input_2 = input_2
 		self.output = output
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
-			for line in open(self.input_a, 'rU'):
+			for line in open(self.input_1, 'rU'):
 				print >> outfile, line.strip()
-			for line in open(self.input_b, 'rU'):
+			for line in open(self.input_2, 'rU'):
 				print >> outfile, line.strip()
 
 
@@ -82,7 +82,7 @@ class RemoveEmptyLines(Module):
 		with open(self.output, 'w') as outfile:
 			for line in open(self.input, 'rU'):
 				if len(line.strip()) > 0:
-					print >> outfile, line
+					print >> outfile, line.strip()
 
 
 ############
@@ -265,6 +265,7 @@ class CharacterLSTM_Train(Module):
 		self.layers = layers
 		self.epochs = epochs
 		self.hidden_nodes = hidden_nodes
+		#self.dropout = dropout
 
 	def run(self):
 		import lstm
@@ -657,6 +658,20 @@ class RemoveTags(Module):
 		with open(self.output, 'w') as outfile:
 			for line in lines:
 				print >> outfile, line					
+
+
+##############################
+
+class MakeLowercase(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		with open(self.output, 'w') as outfile:
+			for line in open(self.input, 'rU'):
+				print >> outfile, line.lower()
 
 
 			

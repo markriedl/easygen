@@ -39,7 +39,7 @@ def MakeLSTMDictionary(data, dictionary, history = 25):
 #	layers - number of hidden layers of the network
 # 	epochs - how many epochs to run
 #	hidden_nodes - how many nodes per hidden layer
-def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epochs = 10, hidden_nodes = 512):
+def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epochs = 10, hidden_nodes = 512, dropout = False):
 	char_idx_file = dictionary
 	maxlen = history
 
@@ -62,9 +62,11 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 	g = tflearn.input_data([None, maxlen, len(char_idx)])
 	for n in range(layers-1):
 		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
-		g = tflearn.dropout(g, 0.5)
+		if dropout:
+			g = tflearn.dropout(g, 0.5)
 	g = tflearn.lstm(g, hidden_nodes)
-	g = tflearn.dropout(g, 0.5)
+	if dropout:
+		g = tflearn.dropout(g, 0.5)
 	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
 	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
 	'''
@@ -80,8 +82,8 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 	'''
 	m = tflearn.SequenceGenerator(g, dictionary=char_idx, seq_maxlen=maxlen, clip_gradients=5.0) #, checkpoint_path='model_history_gen')
 
-	#if checkpointpath is not None:
-	#	m.load(checkpointpath)
+	#if model is not None:
+	#	m.load(model)
 
 	#for i in range(epochs):
 	seed = random_sequence_from_textfile(data, maxlen)
