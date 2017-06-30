@@ -549,6 +549,7 @@ class DCGAN(Module):
 
 ####################################################
 
+'''
 class ParseWords(Module):
 
 	def __init__(self, input, output):
@@ -593,6 +594,7 @@ class ParseWords(Module):
 		with open(self.output, 'w') as outfile:
 			for line in lines:
 				print >> outfile, line
+'''
 
 ####################################
 
@@ -689,7 +691,7 @@ class Wordify(Module):
 				line = parser.sub(r' \1 ', line)
 				line = re.sub('[  ][ ]*', ' ', line) # might put too many spaces in
 				print >> outfile, line.strip()
-				
+
 
 
 
