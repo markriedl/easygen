@@ -162,8 +162,72 @@ We need to change the working directory of the terminal window to the directory 
 
 Now to finally run your program: type `python easygen.py superhero_program` into the terminal and press Enter.
 
-![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step8.png "A terminal ready to run")
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step9.png "A terminal ready to run")
 
 A bunch of text will be printed to the terminal. You can ignore that. Once the program is done, you can verify that it worked. A new file should have been created called "randomized_superheroes". Open it up and look at it. You can compare it to the original "superheroes" file in the "datasets" directory. They should be different.
+
+## Train a Neural Network
+
+You probably want to train and run a neural network.
+
+Go back to the editor and close the pop-up window. We can just keep building on what we have done so far.
+
+In column "4", add a "CharacterLSTM_Train" module. The CharacterLSTM_Train module teaches a neural network to predict the next character in text data. That is, when it sees certain characters in the superheroes text file, it will try to learn what character should go next. When we run the neural net later, it will try to construct new superhero names character by character. But first things first.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step10.png "LSTM module in editor")
+
+CharacterLSTM_Train is significantly more complicated than the other modules we've seen so far. There are a lot of settings. they all have defaults, so you don't have to do anything. But from trial and error I happen to know that some settings can make the neural network work better.
+
+- Click on the "history" box and change the value to `5`. The history is how much text to keep in memory when trying to predict the next character. That is, it will look at the most recent 5 characters when trying to guess what the 6th character should be. 
+
+- Click on the "layers" box. You can keep this number as `2`. The layers parameter determines how deep the neural network will be. The more layers the more complex the patterns are that can be learned. But more layers means a bigger neural network that will take longer to train and require more data.
+
+- Click on the "hidden_nodes" box and change the value to `64`. The hidden_nodes setting indicates how many nodes will be in the neural network. If layers is depth, think of hidden_nodes as width. A wider neural network may be able to learn more patterns but will take longer to train and require more data.
+
+- Click on the "epochs" box and change teh value to `1000`. The epochs setting tells the neural network how many times to look at the data. The more times it looks at the data, generally the more accurate the neural network gets (but also the longer it takes). This dataset is small, so it is harder to find coherent patterns. I found that this dataset works better to have a lot of epochs.
+
+Let's send our dataset into the neural network training module. Connect the red "output" box in "Randomizedline1" to the green "data" box inside "CharacterLSTM_Train".
+
+It is okay that there are two arrows coming out of "RandomizeLines". The program will write the randomized data to file and also use the randomized data to train the neural network.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step11.png "Connecting the LSTM module")
+
+
+Once the neural network is trained, it must be run. The trained neural network is output as the "model". When the model was created, it converted all the characters into numbers. Neural networks don't really understand anything other than numbers. The "dictionary" is a file that remembers which numbers are mapped to which characters. It's just one of those things.
+
+In column "5", create a "CharacterLSTM_Run" module. Connect the red "model" in the training module to the green "model" in the "CharacterLSTM_Run" module. Do the same for the "dictionary". It should look like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step12.png "Connecting LSTM training to LSTM running")
+
+Inside the "CharacterLSTM_Run" module, the "history", "layers", and "hidden_nodes" settings must all be the same as those in the "CharacterLSTM_Train" module. This is a pain in the butt. But there is a shortcut. If you drag from the white "history" box in "CharacterLSTM_Train" to the white "history" box in "CharacterLSTM_Run", the editor will set the values to be the same. Furthermore, it will remember that these values should always be the same, so that if you change one later, all will change to stay the same. This is indicated by dashed lines between the white boxes.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step13.png "Connecting settings")
+
+Two more settings still need to be set in "CharacterLSTM_Run":
+
+- Click on the "steps" box. The value of `600` is okay and stay the same. This is how many characters to generate when the neural network is run. The bigger the number, them more characters (and thus more names) you will get.
+
+- Click on the "temperature" box. The default values is `0.5`, which can stay the same. The temperature setting will be a number between `0.0` and `1.0`. A higher temperature means the neural network will make more risky choices and the output will be a bit weirder. A lower temperature means the neural network will try to generate things that look more like the original data if possible.
+
+There is one more input to "CharacterLSTM_Run" that we have to deal with. The "seed" is a random sequence of characters to get the neural network started. It works best when the seed is a random sequence pulled from the original data. We can use the "RandomSequence" module. Let's add that module to column "3" (although it can go anywhere you want I like to keep things flowing from a left-to-right fashion). You can have more than one module in a column. You can always drag the other modules into other columns if need to make room.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step14.png "Randomizing a sequence")
+
+Connect the output of the "RandomizeLines" to the input of "RandomSequence". Connect the output of "RandomSequence" to the green "seed" of "CharacterLSTM_Run". It should look like this:
+
+The "length" inside the "RandomSequence" module can be anything, although I like to set it to be the same as "history". You can use the dashed-line trick. 
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step15.png "Running the network is ready to go")
+
+Finally, we need the generated data from the neural network to go somewhere. Add another "WriteTextFile" module to column 6. Connect the output of CharacterLSTM_Run to the input of WriteTextFile2 in column 6. Like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step16.png "The complete program")
+
+Change the "file" setting to `new_superheroes`.
+
+You are all set. Follow the instructions above to save your program and run it in the terminal.
+
+
+
 
 # Documentation
