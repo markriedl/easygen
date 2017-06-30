@@ -25,5 +25,6 @@ data = '[ \
 	{"name" : "RandomizeLines", "params" : "input(in,text);output(out,text)", "tip" : "Randomize lines in a text file"}, \
 	{"name" : "RemoveTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"}, \
 	{"name" : "MakeLowercase", "params" : "input(in,text);output(out,text)", "tip" : "Make all text in a file lowercase"}, \
+	{"name" : "Wordify", "params" : "input(in,text);output(out,text)"}, \
 	{"name" : "Repeat", "params" : "input(in,text);output(out,text);times(int)"} \
 ]';

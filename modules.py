@@ -91,6 +91,7 @@ class StripLines(Module):
 
 	def __init__(self, input, output):
 		self.input = input
+		self.output = output
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -672,6 +673,24 @@ class MakeLowercase(Module):
 		with open(self.output, 'w') as outfile:
 			for line in open(self.input, 'rU'):
 				print >> outfile, line.lower()
+
+################################
+
+class Wordify(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		parser = re.compile(r'([\,\.\?\!\'\"\(\)\[\]\{\}])')
+		with open(self.output, 'w') as outfile:
+			for line in open(self.input, 'rU'):
+				line = parser.sub(r' \1 ', line)
+				line = re.sub('[  ][ ]*', ' ', line) # might put too many spaces in
+				print >> outfile, line.strip()
+				
+
 
 
 			
