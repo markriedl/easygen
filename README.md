@@ -94,5 +94,76 @@ If you will be pulling data from Wikipedia, you must do the following:
    
    [![Superhero generator video](http://img.youtube.com/vi/o_7hnZXR51Q/0.jpg)](http://www.youtube.com/watch?v=o_7hnZXR51Q)
 
+# Tutorial
+
+## Using the Editor
+
+First, open editor.html in a web browser. Typically you can just double-click on editor.html and it will open in your default browser.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step1.png "Empty editor")
+
+You will see a row of numbers across the top of the browser window. Mouse over them. When you do so, they will highlight green empty boxes. These are *columns*. They are where we will put stuff. They will help us keep things organized, although it doesn't matter where things are put.
+
+Right-click on the "1". You will see a menu appear. The menu items are *modules*. Modules are chunks of code that you can arrange into a program.
+
+Pick *ReadTextFile*. You will see a box appear in the first column called "ReadTextFile1". You have indicated that you want this module in your program. Click on the plus sign in the corner of the module. Now you should see that the module has gotten bigger and has some more boxes inside. Like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step2.png "Editor with one module")
+
+Modules have three types of components:
+
+- White boxes: parameters that can be set. 
+- Green boxes: accept inputs from other modules.
+- Red boxes: send output to other modules.
+
+*ReadTextFile* loads a text file so that the data inside can be used by other modules later. Click on the white "file" box. A pop-up window will ask you where the file is located that you want to use. Enter `datasets/superheroes` and press "ok".
+
+Let's add another module. Right-click on the "2" column to get another menu of modules. This time, pick "RandomizeLines". Go ahead and click the plus on this new module to expand it.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step3.png "Editor with two modules")
+
+"RandomizeLines" takes all the lines in some text data and randomizes the order of those lines. If we want to randomize all the lines in the superheroes data, we need to indicate that we want the data that we read in from the text file in the first module to be used by the second module. To do this, click on the red "output" box inside the "ReadTextFile1" module and drag an arrow over to the green "input" box inside the "RandomizeLines1" module. It should look like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step4.png "Connecting modules")
+
+Once the data has been randomize, it needs to go somewhere. Right-click on the "3" column and pick the "WriteTextFile" menu option. Expand the new module.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step5.png "Three modules")
+
+"WriteTextFile" takes some text data and writes it to a new file. Connect the output from "RandomizeLines1" to the input of "WriteTextFile". It should look like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step6.png "Three modules connected")
+
+Click on the white "file" box in "WriteTextFile" and enter `randomized_superheroes` into the pop-up box.
+
+Okay, now we are ready to run our program, which is covered in the next section.
+
+By the way, you can drag modules from column to column. It doesn't matter where the modules are, as long as the arrows move the data in the right order.
+
+If you make a mistake and need to start over, you can just refresh the browser.
+
+## Running EasyGen Programs
+
+Unfortunately, at this stage of development of EasyGen, I have not implemented an easy way to run programs designed in the editor. Sorry :-(
+
+Push the "Done" button in the editor. You will see a pop-up box with a bunch of code-like jibberish. That is a text-version of the program you just designed. It is in a special format called a "JSON" file. But that isn't important.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step7.png "JSON text")
+
+Open up a text editor program. On a Mac, I use a program called "TextEdit".
+
+Cut and paste the JSON jibberish from the editor pop-up window into a blank document in your text editor. Save the text file as `superhero_program`. Be sure to save it in the EasyGen directory so it is easy to find later (note that your text editor may default to saving the file to `superhero_program.txt`. That is okay, just substitute that filename in subsequent steps in this tutorial.)
+
+Now you are going to need to open a terminal window. Depending on your computer's operating system, this will be done in different ways. On my computer, the terminal screen looks like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step8.png "A terminal window")
+
+We need to change the working directory of the terminal window to the directory where you installed EasyGen. On my computer it is in the "EasyGen" directory on my Desktop, so I would do this `cd Desktop/easygen/`. (The `cd` means change directory).
+
+Now to finally run your program: type `python easygen.py superhero_program` into the terminal and press Enter.
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step8.png "A terminal ready to run")
+
+A bunch of text will be printed to the terminal. You can ignore that. Once the program is done, you can verify that it worked. A new file should have been created called "randomized_superheroes". Open it up and look at it. You can compare it to the original "superheroes" file in the "datasets" directory. They should be different.
 
 # Documentation
