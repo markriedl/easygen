@@ -665,6 +665,7 @@
                //var encoder = new mxCodec();
                //var node = encoder.encode(graph.getModel());
                var s = "";
+               var first = true;
 
                var ordered_modules = order_modules(used_modules, ordering);
 
@@ -698,12 +699,21 @@
                         clone_dict[key] = m_dict[key];
                      }
                   }
-                  s = s + JSON.stringify(clone_dict) + "\n";
+
+                  if (first) {
+                     s = JSON.stringify(clone_dict);
+                     first = false;
+                  }
+                  else {
+                     s = s + "," + JSON.stringify(clone_dict);
+
+                  }
                }
                //for (var key in modules) {
                //   var val = modules[key]
                //   s = s + JSON.stringify(val);
                //}
+               s = "[" + s + "]";
                alert(s);
             });
             
