@@ -131,6 +131,16 @@
             style[mxConstants.STYLE_STARTSIZE] = 22;
             graph.getStylesheet().putCellStyle('column', style);
 
+            var edge_style = graph.getStylesheet().getDefaultEdgeStyle();
+            var link_edge_style = mxUtils.clone(edge_style);
+            link_edge_style['endArrow'] = null;
+            link_edge_style['dashed'] = 1;
+            graph.getStylesheet().putCellStyle('link_edge', link_edge_style);
+
+            var arrow_edge_style = mxUtils.clone(edge_style);
+            arrow_edge_style['endArrow'] = mxConstants.ARROW_CLASSIC;
+            arrow_edge_style['dashed'] = 0;
+            graph.getStylesheet().putCellStyle('arrow_edge', arrow_edge_style);
 
             // Installs auto layout for all levels
             var layout = new mxStackLayout(graph, true);
@@ -205,9 +215,9 @@
             var map_param_type = {}; // Dictionary of dictionaries, for module, then params.
             var ordering = []; // module preceeds module
             var linked_params = {}; //list of [cell.id, cell.id]
-            var next_edge_id = 10000; //make edge ids 
+            //var next_edge_id = 10000; //make edge ids 
             var edges = {}; // edges. key = id. value = [source.id, target.id]
-            var selected_cell = null; // which cell or edge is being moused over (id)?
+            var selected_cell = null; // which cell or edge is being moused over 
             //var parameter_ids = []; // these ids are params.
 
             var prototypes = {}; 
@@ -251,11 +261,12 @@
                   if (evt.key == "Delete" || evt.key == "Backspace") {
                      if (selected_cell != null) {
                         // Something selected
-                        if (selected_cell in edges) {
+                        console.log(selected_cell);
+                        if (selected_cell.edge) {
                            // We know about this edge
-                           source_id = edges[selected_cell][0];
-                           target_id = edges[selected_cell][1];
-                           delete edges[selected_cell];
+                           source_id = selected_cell.source.id; //edges[selected_cell][0];
+                           target_id = selected_cell.target.id; //edges[selected_cell][1];
+                           //delete edges[selected_cell];
                            source_module_name = map_cells_modules[source_id];
                            target_module_name = map_cells_modules[target_id];
                            source_param_name = map_cells_params[source_id];
@@ -266,7 +277,7 @@
                               modules[source_module_name][source_param_name] = "";
                               modules[target_module_name][target_param_name] = "";   
                               graph.getModel().beginUpdate();
-                              var cell = graph.getModel().getCell(selected_cell);
+                              var cell = selected_cell; //graph.getModel().getCell(selected_cell);
                               cell.setVisible(false);
                               cell.setStyle("strokecolor=white");
                               cell.source = null;
@@ -298,7 +309,7 @@
                                  links.splice(delete_index, 1);
                               }
                               graph.getModel().beginUpdate();
-                              var cell = graph.getModel().getCell(selected_cell);
+                              var cell = selected_cell; //graph.getModel().getCell(selected_cell);
                               cell.setVisible(false);
                               cell.setStyle("strokecolor=white");
                               cell.source = null;
@@ -319,7 +330,7 @@
                 mouseDown: function(sender, me) { },
                 mouseMove: function(sender, me) { 
                   if (me.getCell() != null) {
-                     selected_cell = me.getCell().id;
+                     selected_cell = me.getCell();
                   }
                   else {
                      selected_cell = null;
@@ -455,13 +466,14 @@
                      ordering.push([source_module_name, target_module_name]);
 
                      // store the edge
-                     id = next_edge_id;
-                     next_edge_id = next_edge_id + 1;
-                     edges[id] = [parseInt(source.id), parseInt(target.id)];
+                     //id = next_edge_id;
+                     //next_edge_id = next_edge_id + 1;
+                     //edges[id] = [parseInt(source.id), parseInt(target.id)];
 
-                     var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
-                     newstyle['endArrow'] = mxConstants.ARROW_CLASSIC;
-                     newstyle['dashed'] = 0;
+                     //var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
+                     //newstyle['endArrow'] = mxConstants.ARROW_CLASSIC;
+                     //newstyle['dashed'] = 0;
+                     style = 'arrow_edge';
 
                      return mxConnectionHandlerInsertEdge.apply(this, arguments);
                   }  
@@ -495,14 +507,15 @@
                      }
 
                      // store the edge
-                     id = next_edge_id;
-                     next_edge_id = next_edge_id + 1;
+                     //id = next_edge_id;
+                     //next_edge_id = next_edge_id + 1;
 
-                     edges[id] = [source.id, target.id];
+                     //edges[id] = [source.id, target.id];
                      
-                     var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
-                     delete newstyle['endArrow'];
-                     newstyle['dashed'] = 1;
+                     //var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
+                     //delete newstyle['endArrow'];
+                     //newstyle['dashed'] = 1;
+                     style = 'link_edge';
                      return mxConnectionHandlerInsertEdge.apply(this, arguments);
                   }              
                }
