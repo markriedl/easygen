@@ -246,13 +246,13 @@ None.
 
 **Parameters:**
 
-| Component | Type | Description |
-| --------- | ---- | ----------- |
-| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. |
-| pattern | string | Describes what should be extracted using a special pattern language (described below). |
-| categories | string | Describes what categories you are looking for (described below) |
-| break_sentences | true/false | Should each sentence be on a separate line in the output? |
-| --- | --- | --- |
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. | None |
+| pattern | string | Describes what should be extracted using a special pattern language (described below). | "*" |
+| categories | string | Describes what categories you are looking for (described below) | "*"
+| break_sentences | true/false | Should each sentence be on a separate line in the output? | False |
+| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -264,9 +264,9 @@ None.
 
 **Patterns:**
 
-The pattern takes a specially formatted text string as follows: `title_keywords:header1_keywords:header2_keywords:...`. `title_keywords` is a set of keywords to look for in Wikipedia article titles. If the keyword is `*`, then all titles match. Any word in title_keywords must be present in the article title. To look for different possibilities, use the `|` to indicate that any of two or more words could be matched.
+The pattern takes a specially formatted text string as follows: `title_keywords:header1_keywords:header2_keywords:...`. `title_keywords` is a set of keywords to look for in Wikipedia article titles. If the keyword is "*", then all titles match. Any word in title_keywords must be present in the article title. To look for different possibilities, use the "|" to indicate that any of two or more words could be matched.
 
-If the title matches, then the article is checked to see if it has a 1st-level header that matches the `header1_keywords`. If no header1_keywords are given or if the header1_keywords are `*`, then all the text underneath that header are grabbed. 
+If the title matches, then the article is checked to see if it has a 1st-level header that matches the `header1_keywords`. If no header1_keywords are given or if the header1_keywords are "*", then all the text underneath that header are grabbed. 
 
 If the title keywords match and the article contains a 1st-level header that matches header1_keywords and `header2_keywords` is given, then the article must also have a 2nd-level header underneath a matching 1st-level that maches the header2_keywords. If all of this happens, then all text underneath the 2nd-level header is grabbed.
 
@@ -284,9 +284,11 @@ Pattern examples:
 
 **Categories:**
 
-All articles have a list of categories. They can usually be found at the bottom of article pages. The categories setting takes a list of keywords separated by the `|` symbol, or `*` to indicate all categories.
+All articles have a list of categories. They can usually be found at the bottom of article pages. The categories setting takes a list of keywords separated by the "|" symbol, or "*" to indicate all categories.
 
 This can be used in conjunction with patterns for more control over article matching. When categories are used, any Wikipedia article must first match one of the keywords within one of its categories. After the category match, then it proceeds with the pattern matches in title and headers.
+
+**Warning:** This module can take a long time to run. Perhaps a day or more.
 
 ## PickFromWikipedia
 
@@ -303,13 +305,13 @@ The standard use case for this module is to provide a list of titles and extract
 
 **Parameters:**
 
-| Component | Type | Description |
-| --------- | ---- | ----------- |
-| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. |
-| categories | string | Describes what categories you are looking for (described below) |
-| sections | string | Keyword for a section header. |
-| break_sentences | true/false | Should each sentence be on a separate line in the output? |
-| --- | --- | --- |
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. | None |
+| categories | string | Describes what categories you are looking for (described below) | "*" |
+| sections | string | Keyword for a section header. | None |
+| break_sentences | true/false | Should each sentence be on a separate line in the output? | False |
+| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -319,4 +321,198 @@ The standard use case for this module is to provide a list of titles and extract
 | titles_file | text data | A list of Wikipedia articles from which data was mined. Each title is on a separate line. |
 | --- | --- | --- |
 
-Example: A list of superhero names passed into `input`, and `categories` set to "*", and `section` set to "biography" would grab all the fictional biographies for all superheroes.
+**Example:** A list of superhero names passed into `input`, and `categories` set to "*", and `section` set to "biography" would grab all the fictional biographies for all superheroes.
+
+**Warning:** This module can take a long time to run. Perhaps a day or more.
+
+## ReadTextFile
+
+The ReadTextFile module is used for loading data into the program from a text file. ReadTextFile makes no assumptions about how the text file is formatted. It has no inputs other than the name of the file, so makes a good module to start a program with. The intended use is that modules will take the output and format it in preparation for use by a neural network, stripping out characters, deleting blank lines, breaking it up into separate datasets, etc. 
+
+**Inputs:**
+
+None
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the directory path to a text file that should be loaded in. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The exact text data from the specified file. |
+| --- | --- | --- |
+
+## WriteTextFile
+
+The WriteTextFile module is used for saving data from the program from a text file. WriteTextFile makes no assumptions about how the text file is formatted. It has no outputs, so makes a good module to end a program with. For example, the outputs of a neural network could be saved.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data to be written to file as is. |
+| --- | --- | --- |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the directory path to a text file that should be saved to. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+None
+
+## CharacterLSTM_Train
+
+A character-level LSTM is a recurrent neural network for generating text, one character at a time. This module trains the neural network on a chunk of text data. The model predicts the next character based on the previous characters it has seen. This module is paired with `CharacterLSTM_Run` which can take the model produced by this module and use to do the actual text generation.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data | text data | The text data to train the network with. |
+| --- | --- | --- |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| history | int | This is how many characters of the input data are held in memory at any given time. The more characters in memory, the more like the neural network will recognize long-range relationships. | 25 |
+| layers | int | Number of layers in the network/ how deep the network should be | 2 |
+| hidden_nodes | int | How many nodes in each layer of the network? | 512 |
+| epochs | int | How many times should the network look at the data/ how long the network should train for | 10 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The model learned by the neural network. |
+| dictionary | dictionary | A mapping from characters to numbers. |
+| --- | --- | --- |
+
+The default parameters are probably good for most paragraph generation tasks, such as generating Shakespearean text. The epochs should probably be increased for most tasks however, especially if there isn't a lot of data to work with.  
+
+For book title generation, superhero name generation, bandname generation, etc, where each line of text is relatively small, one will want to reduce the history, and number of hidden nodes. I've found that `history=5` and `hidden_nodes=64` work better for this task.
+
+## CharacterLSTM_Run
+
+A character-level LSTM is a recurrent neural network for generating text, one character at a time. A model trained with `CharacterLSTM_Train` can be used to generate text. The model and dictionary from `CharacterLSTM_Train` should be connected to the inputs of this module. In addition, the history, layers, and hidden_nodes should be identical to that from `CharacterLSTM_Train` because it can't load the model without knowing the dimensions of the network.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The model learned by the neural network. |
+| dictionary | dictionary | A mapping from characters to numbers. |
+| seed | text data | A string of text to get the neural network started. The length of the text data should be at least as long as the history parameter below. See below for more information. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| history | int | This is how many characters of the input data are held in memory at any given time. The more characters in memory, the more like the neural network will recognize long-range relationships. Should be same as CharacterLSTM_Train. | 25 |
+| layers | int | Number of layers in the network/ how deep the network should be. Should be same as CharacterLSTM_Train. | 2 |
+| hidden_nodes | int | How many nodes in each layer of the network? Should be same as CharacterLSTM_Train. | 512 |
+| steps | int | How many characters to generate. | 600 |
+| temperature | decimal between 0.0 and 0.1 | How risky the generation should be. 0.0 means try to replicate the data as well as possible. 1.0 means make a lot of risky moves. | 0.5 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text generated by running the neural network. |
+| --- | --- | --- |
+
+The seed can come from the original data set that was fed into `CharacterLSTM_Train`. A typical thing to do is to grab a random string from the original dataset because the neural network will be happy starting out with something it recognizes. One can use `RandomSequence` to grab a random string from the original text data. Alternatively, one could use `MakeString` or `UserInput`.  
+
+The temperature parameters affects how random-appearing the generated text will be. A value close to 1.0 will make the output look more random because the neural network will not always take the most likely next character. A value close to 0.0 will make output that looks more like the original input data (assuming the model is properly trained) because it will always take the most likely next character given a history.
+
+## RandomSequence
+
+This module takes some text data and grabs a random chunk of it, discarding the rest. The random chunk could be from anywhere in the text data, or it could always start at the start of a random line. The most typical use of this module is to create a seed from text data to be used in `CharacterLSTM_Run`.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | Some text data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| length | int | This is how many characters to grab from the text data. | 25 |
+| line_start | true/false | Should the random sequence always start at a line start? | False |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The random sequence. |
+| --- | --- | --- |
+
+When using this module with `CharacterLSTM_Run`, it is best to make sure the length is the same as the LSTM's history parameter.
+
+## MakeString
+
+Hard code a text string to be sent into other modules. This is kind of like making a string variable in other programming languages.
+
+**Inputs:**
+
+None.
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| string | string | The characters to save in the string data. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text of the string to be passed along to other modules. |
+| --- | --- | --- |
+
+## UserInput
+
+Pause the program and ask the user to enter some text in the terminal.
+
+**Inputs:**
+
+None.
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| prompt | string | The prompt to be printed out before the user enters some text. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text of the string to be passed along to other modules. |
+| --- | --- | --- |
+
+## Seq2Seq_Train
+
+A Sequence2Sequence neural network is used for translation or prediction (Also called an encoder/decoder network). Given an input sequence, it trains a neural network to predict the output. To do this, it is given pairings of known inputs and outputs. When the inputs and outputs are the same sentence but in different languages (e.g., English and French), a Sequence2Sequence learns to do language translation. When the outputs are identical to the outputs but shifted so that the `i`th input is the `i+1`th input, then it learns to predict (i.e., generate) the next word.
+
+TBW
