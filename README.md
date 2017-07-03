@@ -227,7 +227,96 @@ Change the "file" setting to `new_superheroes`.
 
 You are all set. Follow the instructions above to save your program and run it in the terminal.
 
+## Hints
 
+- To delete a link, click on the link and hit the Delete or Backspace button.
+
+- You can't (yet) delete modules. However, you can delete all incoming and outgoing links and it won't be included in the program.
 
 
 # Documentation
+
+## ReadWikipedia
+
+This module parses content out of Wikipedia. It requires a download of a English Wikipedia dump (see installation instructions above).
+
+**Inputs:**
+
+None.
+
+**Parameters:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. |
+| pattern | string | Describes what should be extracted using a special pattern language (described below). |
+| categories | string | Describes what categories you are looking for (described below) |
+| break_sentences | true/false | Should each sentence be on a separate line in the output? |
+| --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| out_file  | text data | The text mined from Wikipedia. May have many sentences per line, or a single sentence per line. |
+| titles_file | text data | A list of Wikipedia articles from which data was mined. Each title is on a separate line. |
+| --- | --- | --- |
+
+**Patterns:**
+
+The pattern takes a specially formatted text string as follows: `title_keywords:header1_keywords:header2_keywords:...`. `title_keywords` is a set of keywords to look for in Wikipedia article titles. If the keyword is `*`, then all titles match. Any word in title_keywords must be present in the article title. To look for different possibilities, use the `|` to indicate that any of two or more words could be matched.
+
+If the title matches, then the article is checked to see if it has a 1st-level header that matches the `header1_keywords`. If no header1_keywords are given or if the header1_keywords are `*`, then all the text underneath that header are grabbed. 
+
+If the title keywords match and the article contains a 1st-level header that matches header1_keywords and `header2_keywords` is given, then the article must also have a 2nd-level header underneath a matching 1st-level that maches the header2_keywords. If all of this happens, then all text underneath the 2nd-level header is grabbed.
+
+More levels can be provided.
+
+Pattern examples:
+
+- `*` - grab all text in all articles.
+- `cat|tiger|leopard|cougar|feline|cheetah` - grab all text in all articles containing any of those words in the titles. This would match on "Leopard" and "Snow Leopard"
+- `*:plot` - grab text from all articles that have a 1st-level section header that containing the word "plot". The text grabbed is that below the "plot" header. This would grab plot summary text from most books, movies, and computer games. The `out_file` will contain the plot summary text and the `titles_file` would contain the titles of the books/movies/games.
+- `*:discography` - graph text from all articles that have a 1st-level section header that contains the word "discography". This tends to be articles about bands. The `titles_file` would contain the list of band names.
+- `*:*:taxonomy` - grab text from all articles that have a 2nd-level section header containing the word "taxonomy". This will grab a lot of articles about animals. For some reason the section in taxonomy tends to be buried at the 2nd level.
+
+(Advanced feature: If any keyword is replaced with the word "list", then the module will only retrieve the text contained in lists at the specified level. For example `*:*:taxonomy:list` would retrieve any lists beneath the 2nd-level header.)
+
+**Categories:**
+
+All articles have a list of categories. They can usually be found at the bottom of article pages. The categories setting takes a list of keywords separated by the `|` symbol, or `*` to indicate all categories.
+
+This can be used in conjunction with patterns for more control over article matching. When categories are used, any Wikipedia article must first match one of the keywords within one of its categories. After the category match, then it proceeds with the pattern matches in title and headers.
+
+## PickFromWikipedia
+
+This module parses content out of Wikipedia. It requires a download of a English Wikipedia dump (see installation instructions above). Unlike ReadWikipedia, PickFromWikipedia takes as input a list of titles to match. Categories can also be specified, but there is no additional selection criteria that can occur. 
+
+The standard use case for this module is to provide a list of titles and extract the text in a particular section of the article.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input | text data | A list of Wikipedia article titles. |
+| --- | --- | --- |
+
+**Parameters:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| wiki_directory | directory path | This is the directory that the English Wikipedia dump was extracted into. |
+| categories | string | Describes what categories you are looking for (described below) |
+| sections | string | Keyword for a section header. |
+| break_sentences | true/false | Should each sentence be on a separate line in the output? |
+| --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| out_file  | text data | The text mined from Wikipedia. May have many sentences per line, or a single sentence per line. |
+| titles_file | text data | A list of Wikipedia articles from which data was mined. Each title is on a separate line. |
+| --- | --- | --- |
+
+Example: A list of superhero names passed into `input`, and `categories` set to "*", and `section` set to "biography" would grab all the fictional biographies for all superheroes.
