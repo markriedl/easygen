@@ -252,7 +252,6 @@ None.
 | pattern | string | Describes what should be extracted using a special pattern language (described below). | "*" |
 | categories | string | Describes what categories you are looking for (described below) | "*"
 | break_sentences | true/false | Should each sentence be on a separate line in the output? | False |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -260,7 +259,6 @@ None.
 | --------- | ---- | ----------- |
 | out_file  | text data | The text mined from Wikipedia. May have many sentences per line, or a single sentence per line. |
 | titles_file | text data | A list of Wikipedia articles from which data was mined. Each title is on a separate line. |
-| --- | --- | --- |
 
 **Patterns:**
 
@@ -301,7 +299,6 @@ The standard use case for this module is to provide a list of titles and extract
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input | text data | A list of Wikipedia article titles. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -311,7 +308,6 @@ The standard use case for this module is to provide a list of titles and extract
 | categories | string | Describes what categories you are looking for (described below) | "*" |
 | sections | string | Keyword for a section header. | None |
 | break_sentences | true/false | Should each sentence be on a separate line in the output? | False |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -319,7 +315,6 @@ The standard use case for this module is to provide a list of titles and extract
 | --------- | ---- | ----------- |
 | out_file  | text data | The text mined from Wikipedia. May have many sentences per line, or a single sentence per line. |
 | titles_file | text data | A list of Wikipedia articles from which data was mined. Each title is on a separate line. |
-| --- | --- | --- |
 
 **Example:** A list of superhero names passed into `input`, and `categories` set to "*", and `section` set to "biography" would grab all the fictional biographies for all superheroes.
 
@@ -338,14 +333,12 @@ None
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | file | directory path | This is the directory path to a text file that should be loaded in. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The exact text data from the specified file. |
-| --- | --- | --- |
 
 ## WriteTextFile
 
@@ -356,14 +349,12 @@ The WriteTextFile module is used for saving data from the program from a text fi
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data to be written to file as is. |
-| --- | --- | --- |
 
 **Parameters:**
 
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | file | directory path | This is the directory path to a text file that should be saved to. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -378,7 +369,6 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | data | text data | The text data to train the network with. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -388,7 +378,6 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | layers | int | Number of layers in the network/ how deep the network should be | 2 |
 | hidden_nodes | int | How many nodes in each layer of the network? | 512 |
 | epochs | int | How many times should the network look at the data/ how long the network should train for | 10 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -396,7 +385,6 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | --------- | ---- | ----------- |
 | model  | neural network model | The model learned by the neural network. |
 | dictionary | dictionary | A mapping from characters to numbers. |
-| --- | --- | --- |
 
 The default parameters are probably good for most paragraph generation tasks, such as generating Shakespearean text. The epochs should probably be increased for most tasks however, especially if there isn't a lot of data to work with.  
 
@@ -413,7 +401,6 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | model  | neural network model | The model learned by the neural network. |
 | dictionary | dictionary | A mapping from characters to numbers. |
 | seed | text data | A string of text to get the neural network started. The length of the text data should be at least as long as the history parameter below. See below for more information. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -425,14 +412,12 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | hidden_nodes | int | How many nodes in each layer of the network? Should be same as CharacterLSTM_Train. | 512 |
 | steps | int | How many characters to generate. | 600 |
 | temperature | decimal between 0.0 and 0.1 | How risky the generation should be. 0.0 means try to replicate the data as well as possible. 1.0 means make a lot of risky moves. | 0.5 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text generated by running the neural network. |
-| --- | --- | --- |
 
 The seed can come from the original data set that was fed into `CharacterLSTM_Train`. A typical thing to do is to grab a random string from the original dataset because the neural network will be happy starting out with something it recognizes. One can use `RandomSequence` to grab a random string from the original text data. Alternatively, one could use `MakeString` or `UserInput`.  
 
@@ -447,7 +432,6 @@ This module takes some text data and grabs a random chunk of it, discarding the 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | Some text data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -456,14 +440,12 @@ This module takes some text data and grabs a random chunk of it, discarding the 
 | --------- | ---- | ----------- | ------- |
 | length | int | This is how many characters to grab from the text data. | 25 |
 | line_start | true/false | Should the random sequence always start at a line start? | False |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The random sequence. |
-| --- | --- | --- |
 
 When using this module with `CharacterLSTM_Run`, it is best to make sure the length is the same as the LSTM's history parameter.
 
@@ -480,14 +462,12 @@ None.
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | string | string | The characters to save in the string data. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text of the string to be passed along to other modules. |
-| --- | --- | --- |
 
 ## UserInput
 
@@ -502,14 +482,12 @@ None.
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | prompt | string | The prompt to be printed out before the user enters some text. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text of the string to be passed along to other modules. |
-| --- | --- | --- |
 
 ## Seq2Seq_Train
 
@@ -526,7 +504,6 @@ To avoid confusion, we refer to the paired data as X and Y. For example, X can b
 | all_data  | text data | This input should contain all the text data (including what is referred to as X and Y). |
 | x         | text data | The x component of the training data. |
 | y         | text data | the y component of the training data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -536,7 +513,6 @@ To avoid confusion, we refer to the paired data as X and Y. For example, X can b
 | layers | int | Number of layers in the network/ how deep the network should be | 2 |
 | hidden_nodes | int | How many nodes in each layer of the network? | 1024 |
 | epochs | int | How many times should the network look at the data/ how long the network should train for | 10 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -544,7 +520,6 @@ To avoid confusion, we refer to the paired data as X and Y. For example, X can b
 | --------- | ---- | ----------- |
 | model  | neural network model | The trained neural network model. |
 | dictionary | dictionary | A mapping of words to numbers. 
-| --- | --- | --- |
 
 To perform translation, you need text files. One that has sentences in one language, and the other that has sentences in another language. The sentence on any particular line in one file should mean the same thing as the sentence on that same line in the other file. You will need to concatenate the files together to fill `all_data`, but then one file should be passed in a `X` and the other as `Y`. Order matters, if you want the neural network to learn to translate from language A to language B, make sure you put the file with the source language into `X` and put the file with the target language into `Y`.
 
@@ -561,7 +536,6 @@ A Sequence2Sequence neural network is used for translation or prediction (Also c
 | data  | text data | This is the data that you want translated or to use for prediction. It can be different from the data used to train the model. |
 | model     | text data | The model trained by `Seq2Seq_Train`. |
 | dictionary | text data | A mapping from words to numbers. This dictionary should have been created by `Seq2Seq_Train`. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -571,14 +545,12 @@ A Sequence2Sequence neural network is used for translation or prediction (Also c
 | layers | int | Number of layers in the network/ how deep the network should be. Should be the same as that used in `Seq2Seq_Train`. | 2 |
 | hidden_nodes | int | How many nodes in each layer of the network? Should be the same as that used in `Seq2Seq_Train`. | 1024 |
 | stop | string | Stop generating words early when this sequence of characters is seen. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The output of the neural network model applied to the input data. |
-| --- | --- | --- |
 
 The neural network model will run on all the data passed in as an input, and each line of the input data will create a line of output data. You can also specify a special stop string that tells the neural network to stop generating output lines when the particular string is generated. This is particularly useful for prediction, when you know you need to stop making predictions.
 
@@ -593,7 +565,6 @@ This module takes a chunk of text data and splits it into two chunks of text dat
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | data  | text data | This is the data that you want split |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -601,7 +572,6 @@ This module takes a chunk of text data and splits it into two chunks of text dat
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | training_percent | int | A number between 0 and 100 indicating the percentage of the input data that will be training data | 90 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -609,7 +579,6 @@ This module takes a chunk of text data and splits it into two chunks of text dat
 | --------- | ---- | ----------- |
 | training_data  | text data | The data from before the split. |
 | testing_data | text data | The data from after the split. |
-| --- | --- | --- |
 
 ## MakeTransTrainTestData
 
@@ -621,7 +590,6 @@ This modules takes two sources of text data (called `x` and `y`) and splits both
 | --------- | ---- | ----------- |
 | data_x  | text data | This is the x data that you want split. |
 | data_y  | text data | This is the y data that you want split. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -629,7 +597,6 @@ This modules takes two sources of text data (called `x` and `y`) and splits both
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | training_percent | int | A number between 0 and 100 indicating the percentage of the input data that will be training data | 90 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -639,7 +606,6 @@ This modules takes two sources of text data (called `x` and `y`) and splits both
 | training_y_data  | text data | The y data from before the split. |
 | testing_x_data  | text data | The x data from after the split. |
 | testing_y_data  | text data | The y data from after the split. |
-| --- | --- | --- |
 
 ## SplitSentences
 
@@ -650,7 +616,6 @@ This model takes text data and breaks it up into individual lines when it seed e
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | This is the data that you want split up into individual lines, one per sentence. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -662,7 +627,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The data with each sentence on its own line. |
-| --- | --- | --- |
 
 ## RemoveEmptyLines
 
@@ -673,7 +637,6 @@ Takes text data and deletes any lines that are empty.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | This is the data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -685,7 +648,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The data but with no empty lines. |
-| --- | --- | --- |
 
 
 ## StripLines
@@ -697,7 +659,6 @@ Takes text data and deletes any whitespace from the front and end of each line.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | This is the data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -720,7 +681,6 @@ This module looks for subsequences of characters in text data and replaces it wi
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -729,14 +689,12 @@ This module looks for subsequences of characters in text data and replaces it wi
 | --------- | ---- | ----------- | ------- |
 | find | string | The string subsequence to find and replace. | None |
 | replace | string | The string subsequence to replace with. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The data will all occurrences of `find` replaced with `replace`. |
-| --- | --- | --- |
 
 You can remove characters from text data by leaving the `replace` parameter blank.
 
@@ -749,7 +707,6 @@ For each line in text data, if it contains a character (or string subsequence), 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -757,7 +714,6 @@ For each line in text data, if it contains a character (or string subsequence), 
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | character | string | The character (or string subsequence) to look for on each line to make the split at. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
@@ -765,7 +721,6 @@ For each line in text data, if it contains a character (or string subsequence), 
 | --------- | ---- | ----------- |
 | output1  | text data | The data containing lines with text from before the split (or complete lines if the split character wasn't found). |
 | output2  | text data | The data containing lines with text from after the split (or empty lines if the split character wasn't found). |
-| --- | --- | --- |
 
 ## ConcatenateTextFiles
 
@@ -777,7 +732,6 @@ Take two text data files and merge them together.
 | --------- | ---- | ----------- |
 | input_1  | text data | The text data from the first file. |
 | input_2  | text data | The text data from the second file. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -788,7 +742,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The data containing all lines from both inputs. |
-| --- | --- | --- |
 
 ## RandomizeLines
 
@@ -799,7 +752,6 @@ This module takes text data and randomizes the lines. This is useful for trainin
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data to be randomized. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -810,7 +762,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The randomized data. |
-| --- | --- | --- |
 
 ## RemoveTags
 
@@ -821,7 +772,6 @@ This module removes HTML (and XML) tags from text data. This leaves the text bet
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -832,7 +782,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text data without HTML and XML tags. |
-| --- | --- | --- |
 
 ## MakeLowercase
 
@@ -843,7 +792,6 @@ Makes all the text in a text file lowercase.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -854,7 +802,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text data with no uppercase characters. |
-| --- | --- | --- |
 
 
 ## Wordify
@@ -866,7 +813,6 @@ This module takes text data and inserts a blank space between all words and punc
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | text data | The text data. |
-| --- | --- | --- |
 
 **Parameters:**
 
@@ -877,7 +823,6 @@ None.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | text data | The text data with words and punctuation with blank spaces between. |
-| --- | --- | --- |
 
 ## DCGAN
 
@@ -888,7 +833,6 @@ A Generative Adversarial Network (GAN) is a type of neural network that learns t
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input_images  | set of images | This is a set of images to use as examples. |
-| --- | --- | --- |
 
 
 **Parameters:**
@@ -901,14 +845,12 @@ A Generative Adversarial Network (GAN) is a type of neural network that learns t
 | filetype | string | Format of input images (jpg, png). | jpg |
 | crop | true/false | Should input images be center-cropped? | True |
 | num_images | int | Number of images to generate. | 1 |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output_images  | set of images | The set of generated images. |
-| --- | --- | --- |
 
 ## ReadImages
 
@@ -923,14 +865,12 @@ None
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | file | directory path | This is the directory path to a set of images file that should be loaded in. Each image will be a separate file in the directory. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | set of images | The images. |
-| --- | --- | --- |
 
 ## WriteImages
 
@@ -941,14 +881,12 @@ The WriteImages module is used for saving image data.
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | set of images | The set of images to be saved. Each image will be saved to a different file in the specified directory. |
-| --- | --- | --- |
 
 **Parameters:**
 
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | file | directory path | This is the path to a directory to save the images files. | None |
-| --- | --- | --- | --- |
 
 **Outputs:**
 
