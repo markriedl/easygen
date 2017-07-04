@@ -515,4 +515,447 @@ None.
 
 A Sequence2Sequence neural network is used for translation or prediction (Also called an encoder/decoder network). Given an input sequence, it trains a neural network to predict the output. To do this, it is given pairings of known inputs and outputs. When the inputs and outputs are the same sentence but in different languages (e.g., English and French), a Sequence2Sequence learns to do language translation. When the outputs are identical to the outputs but shifted so that the `i`th input is the `i+1`th input, then it learns to predict (i.e., generate) the next word.
 
-TBW
+Once the Sequence2Sequence neural network has been trained on pairs of inputs and outputs, the model can be applied to new inputs that have never been seen before.
+
+To avoid confusion, we refer to the paired data as X and Y. For example, X can be a list of English sentences, and Y can be a list of French sentences that mean the same thing. Each line of X should be paired with a line of Y. Line 1 of X is paired with Line 1 of Y, Line 2 of X is paired with Line 2 of Y, and so on. The number of lines in X must be the same as the number of lines in Y.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| all_data  | text data | This input should contain all the text data (including what is referred to as X and Y). |
+| x         | text data | The x component of the training data. |
+| y         | text data | the y component of the training data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| layers | int | Number of layers in the network/ how deep the network should be | 2 |
+| hidden_nodes | int | How many nodes in each layer of the network? | 1024 |
+| epochs | int | How many times should the network look at the data/ how long the network should train for | 10 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The trained neural network model. |
+| dictionary | dictionary | A mapping of words to numbers. 
+| --- | --- | --- |
+
+To perform translation, you need text files. One that has sentences in one language, and the other that has sentences in another language. The sentence on any particular line in one file should mean the same thing as the sentence on that same line in the other file. You will need to concatenate the files together to fill `all_data`, but then one file should be passed in a `X` and the other as `Y`. Order matters, if you want the neural network to learn to translate from language A to language B, make sure you put the file with the source language into `X` and put the file with the target language into `Y`.
+
+To perform prediction, you need to do something slightly different. You need to take a chunk of text data which is split up into lines, and duplicate the text data. The second text data needs to be shifted so that line 2 in the first file is the same as line 1 in the second file. That is, if you line up the two files side by side the `i`th line in the first file is next to the `1+1`th file in the second file. This is telling the neural network to learn to predict the next line. The first file becomes `X` and the second file becomes `Y`. You can use the `MakePredictionData` module to take a single chunk of text data and split it up exactly for this purpose.
+
+## Seq2Seq_Run
+
+A Sequence2Sequence neural network is used for translation or prediction (Also called an encoder/decoder network). This module runs a Sequence2Sequence model trained by `Seq2Seq_Train`. 
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data  | text data | This is the data that you want translated or to use for prediction. It can be different from the data used to train the model. |
+| model     | text data | The model trained by `Seq2Seq_Train`. |
+| dictionary | text data | A mapping from words to numbers. This dictionary should have been created by `Seq2Seq_Train`. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| layers | int | Number of layers in the network/ how deep the network should be. Should be the same as that used in `Seq2Seq_Train`. | 2 |
+| hidden_nodes | int | How many nodes in each layer of the network? Should be the same as that used in `Seq2Seq_Train`. | 1024 |
+| stop | string | Stop generating words early when this sequence of characters is seen. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The output of the neural network model applied to the input data. |
+| --- | --- | --- |
+
+The neural network model will run on all the data passed in as an input, and each line of the input data will create a line of output data. You can also specify a special stop string that tells the neural network to stop generating output lines when the particular string is generated. This is particularly useful for prediction, when you know you need to stop making predictions.
+
+It is often the case that neural network researchers will create what are called "training" and "testing" datasets. A portion of the total data (e.g., 90%) will be used for training and then the model will be applied to the remaining data. The reason this is done is to verify that the trained model can make sense of data that it has never seen before. You might not want to do this for non-research, but the `MakeTrainTestData` and `MakeTransTrainTestData` will do this splitting for you. Note that if you do this, make sure `Seq2Seq_Train` gets a text data input that includes all the data from before the split is made so that it can make a dictionary.
+
+## MakeTrainTestData
+
+**Inputs:**
+
+This module takes a chunk of text data and splits it into two chunks of text data. A percentage is given to indicate where the split should happen. For testing a neural network, the recommendation is a 90/10 split between training data and testing data.
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data  | text data | This is the data that you want split |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| training_percent | int | A number between 0 and 100 indicating the percentage of the input data that will be training data | 90 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| training_data  | text data | The data from before the split. |
+| testing_data | text data | The data from after the split. |
+| --- | --- | --- |
+
+## MakeTransTrainTestData
+
+This modules takes two sources of text data (called `x` and `y`) and splits both the `x` and the `y` into training and testing datasets. This module is useful for training and testing with `Seq2Seq_Train`. For testing a neural network, the recommendation is a 90/10 split between training data and testing data.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data_x  | text data | This is the x data that you want split. |
+| data_y  | text data | This is the y data that you want split. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| training_percent | int | A number between 0 and 100 indicating the percentage of the input data that will be training data | 90 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| training_x_data  | text data | The x data from before the split. |
+| training_y_data  | text data | The y data from before the split. |
+| testing_x_data  | text data | The x data from after the split. |
+| testing_y_data  | text data | The y data from after the split. |
+| --- | --- | --- |
+
+## SplitSentences
+
+This model takes text data and breaks it up into individual lines when it seed end-of-sentence punctuation (e.g., ".", "!", "?", or ":").
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | This is the data that you want split up into individual lines, one per sentence. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The data with each sentence on its own line. |
+| --- | --- | --- |
+
+## RemoveEmptyLines
+
+Takes text data and deletes any lines that are empty.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | This is the data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The data but with no empty lines. |
+| --- | --- | --- |
+
+
+## StripLines
+
+Takes text data and deletes any whitespace from the front and end of each line.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | This is the data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The data but with no whitespace characters on the front or end of any line. |
+| --- | --- | --- |
+
+## ReplaceCharacters
+
+This module looks for subsequences of characters in text data and replaces it with other subsequences. Like Find and Replace All in your favorite text editor.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| find | string | The string subsequence to find and replace. | None |
+| replace | string | The string subsequence to replace with. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The data will all occurrences of `find` replaced with `replace`. |
+| --- | --- | --- |
+
+You can remove characters from text data by leaving the `replace` parameter blank.
+
+## SplitLines
+
+For each line in text data, if it contains a character (or string subsequence), split that line into two and put the first part in one output file and the second part in another output file. This module only splits on the first instance of the character (or subsequence).
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| character | string | The character (or string subsequence) to look for on each line to make the split at. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output1  | text data | The data containing lines with text from before the split (or complete lines if the split character wasn't found). |
+| output2  | text data | The data containing lines with text from after the split (or empty lines if the split character wasn't found). |
+| --- | --- | --- |
+
+## ConcatenateTextFiles
+
+Take two text data files and merge them together.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input_1  | text data | The text data from the first file. |
+| input_2  | text data | The text data from the second file. |
+| --- | --- | --- |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The data containing all lines from both inputs. |
+| --- | --- | --- |
+
+## RandomizeLines
+
+This module takes text data and randomizes the lines. This is useful for training sometimes.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data to be randomized. |
+| --- | --- | --- |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The randomized data. |
+| --- | --- | --- |
+
+## RemoveTags
+
+This module removes HTML (and XML) tags from text data. This leaves the text between tags intact.
+
+ **Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data. |
+| --- | --- | --- |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data without HTML and XML tags. |
+| --- | --- | --- |
+
+## MakeLowercase
+
+Makes all the text in a text file lowercase.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data. |
+| --- | --- | --- |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data with no uppercase characters. |
+| --- | --- | --- |
+
+
+## Wordify
+
+This module takes text data and inserts a blank space between all words and punctuation marks. For example, it will convert "Mark's" to "Mark" and "'s". This is useful for `Seq2Seq_Train` because it won't confuse the "Mark" in "Mark's" with other instances of "Mark". It treats "." and other punctuation as if they were words. 
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text data. |
+| --- | --- | --- |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data with words and punctuation with blank spaces between. |
+| --- | --- | --- |
+
+## DCGAN
+
+A Generative Adversarial Network (GAN) is a type of neural network that learns to generate images similar to a set of input images.
+
+ **Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input_images  | set of images | This is a set of images to use as examples. |
+| --- | --- | --- |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| epochs | int | The number of times the input data is looked at. | 10 |
+| input_height | int | Each image must be of the same height. Width must be same as height. | 108 |
+| output_height | int | Each image will be output with this height. Width will be same as height. | 108 |
+| filetype | string | Format of input images (jpg, png). | jpg |
+| crop | true/false | Should input images be center-cropped? | True |
+| num_images | int | Number of images to generate. | 1 |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output_images  | set of images | The set of generated images. |
+| --- | --- | --- |
+
+## ReadImages
+
+Read in a set of images to be passed to other modules.
+
+**Inputs:**
+
+None
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the directory path to a set of images file that should be loaded in. Each image will be a separate file in the directory. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | set of images | The images. |
+| --- | --- | --- |
+
+## WriteImages
+
+The WriteImages module is used for saving image data. 
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | set of images | The set of images to be saved. Each image will be saved to a different file in the specified directory. |
+| --- | --- | --- |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the path to a directory to save the images files. | None |
+| --- | --- | --- | --- |
+
+**Outputs:**
+
+None
+
+
+## Repeat
+
+This is not implemented (yet), please do not use this module.
+
