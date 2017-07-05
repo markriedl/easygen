@@ -130,9 +130,11 @@ def CharacterLSTM_Run(seed, dictionary, model, output, steps = 600, layers = 3, 
 	g = tflearn.input_data([None, maxlen, len(char_idx)])
 	for n in range(layers-1):
 		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
-		g = tflearn.dropout(g, 0.5)
+		if dropout:
+			g = tflearn.dropout(g, 0.5)
 	g = tflearn.lstm(g, hidden_nodes)
-	g = tflearn.dropout(g, 0.5)
+	if dropout:
+		g = tflearn.dropout(g, 0.5)
 	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
 	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
 
