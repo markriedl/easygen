@@ -15,7 +15,7 @@ data = '[ \
 	{"name" : "SplitLines", "params" : "input(in,text);output1(out,text);output2(out,text);character(string,tip=Split line when this character shows up)", "tip" : "Break any line into two lines when a particular character is seen"}, \
 	{"name" : "MakePredictionData", "params" : "data(in,text);x(out,text);y(out,text)", "tip" : "Prepare data for prediction--each line will try to predict the next line"}, \
 	{"name" : "ConcatenateTextFiles", "params" : "input_1(in,text);input_2(in,text);output(out,text)", "tip" : "Merge two text files"}, \
-	{"name" : "RandomSequence", "params" : "input(in,text);length(int=25,tip=Length of random sequence);output(out,text);line_start(bool=False,tip=Start the random sequence at the start of a line in the text file?)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN"}, \
+	{"name" : "RandomSequence", "params" : "input(in,text);length(int=25,tip=Length of random sequence);output(out,text)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN"}, \
 	{"name" : "MakeString", "params" : "string(string,tip=Enter a string);output(out,text)", "tip" : "Write a single string to a text file"}, \
 	{"name" : "UserInput", "params" : "prompt(string,tip=Pring this prompt);output(out,text)", "tip" : "Prompt user for a string"}, \
 	{"name" : "DCGAN", "params" : "input_images(images,in);output_images(images,out);epochs(int=10);input_height(int=108);output_height(int=108);filetype(string=jpg);crop(bool=true);num_images(int=1,tip=Number of output images to generate)", "tip" : "Train a generateive adversarial network to make images"}, \

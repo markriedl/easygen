@@ -421,23 +421,15 @@ class Seq2Seq_Run(Module):
 
 class RandomSequence(Module):
 
-	def __init__(self, input, output, length, line_start):
+	def __init__(self, input, output, length):
 		self.input = input
 		self.output = output
 		self.length = length
-		self.line_start = line_start
 
 	def run(self):
 		sequence = ''
-		if self.line_start:
-			lines = []
-			for line in open(self.input, 'rU'):
-				lines.append(line)
-			pick = random.choice(lines)
-			sequence = pick[:min(self.length, len(pick))]
-		else:
-			import lstm
-			sequence = lstm.random_sequence_from_textfile(self.input, self.length)
+		import lstm
+		sequence = lstm.random_sequence_from_textfile(self.input, self.length)
 		with open(self.output, 'w') as f:
 			print >> f, sequence.strip()
 

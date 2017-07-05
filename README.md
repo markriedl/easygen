@@ -444,7 +444,6 @@ This module takes some text data and grabs a random chunk of it, discarding the 
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | length | int | This is how many characters to grab from the text data. | 25 |
-| line_start | true/false | Should the random sequence always start at a line start? | False |
 
 **Outputs:**
 

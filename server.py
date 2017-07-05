@@ -15,7 +15,7 @@ import SocketServer
 import re
 
 def convertHex(s):
-    hexp = re.compile(r'\%([0-9]+)')
+    hexp = re.compile(r'\%([0-9][0-9])')
     match = hexp.search(s)
     while match is not None:
         start_full = match.start(0)
@@ -45,15 +45,13 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         self._set_headers()
         self.wfile.write("<html><body><h1>POST!</h1></body></html>")
         filenameParser = re.compile(r'file\=([a-zA-Z0-9\-\_\%\.\/]+)')
-        jsonParser = re.compile(r'program\=(\[\{[a-zA-Z0-9\%\:\,\/\{\}\[\]\-\_\.]+\}\])')
+        jsonParser = re.compile(r'program\=(\[\{[\S]+\}\])')
         filename_match = filenameParser.search(self.path)
         json_match = jsonParser.search(self.path)
         if filename_match is not None and json_match is not None:
             filename = filename_match.group(1)
             json = convertHex(json_match.group(1))
             if len(filename) > 0 and len(json) > 0:
-                print "filename:", filename
-                print "json:", json
                 with open(filename, 'w') as outfile:
                     print >> outfile, json.strip()
         
