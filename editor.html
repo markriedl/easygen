@@ -733,7 +733,7 @@
                //   s = s + JSON.stringify(val);
                //}
                s = "[" + s + "]";
-               alert(s);
+               //alert(s);
                var filename = prompt("Filename:", 'programs/myprogram');
                xhttp.open("POST", "http://localhost:8000?"+'file='+filename+'&program='+s, true);
                xhttp.send();

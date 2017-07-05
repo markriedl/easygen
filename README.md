@@ -96,17 +96,33 @@ If you will be pulling data from Wikipedia, you must do the following:
 
 # Tutorial
 
+First, you will need to run the easygen server. 
+
+1. Open a terminal window. Depending on your computer's operating system, this will be done in different ways. On my computer, the terminal screen looks like this:
+
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step0.png "Terminal window")
+
+2. Change directory to where you saved EasyGen
+
+   We need to change the working directory of the terminal window to the directory where you installed EasyGen. On my computer it is in the "easygen" directory on my Desktop, so I would do this `cd Desktop/easygen`. (The `cd` means change directory).
+
+3. Run the server.
+
+   Type `python easygen.py superhero_program` into the terminal and press Enter. See the image above for what it should look like when you are done.
+
+Now, you are ready to use the visual editor.
+
 ## Using the Editor
 
-First, open editor.html in a web browser. Typically you can just double-click on editor.html and it will open in your default browser.
-
-![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step1.png "Empty editor")
+First, open editor.html in a web browser. You will find the file in the directory where you saved EasyGen. Typically you can just double-click on editor.html and it will open in your default browser.
 
 You will see a row of numbers across the top of the browser window. Mouse over them. When you do so, they will highlight green empty boxes. These are *columns*. They are where we will put stuff. They will help us keep things organized, although it doesn't matter where things are put.
 
+![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step1.png "Empty editor")
+
 Right-click on the "1". You will see a menu appear. The menu items are *modules*. Modules are chunks of code that you can arrange into a program.
 
-Pick *ReadTextFile*. You will see a box appear in the first column called "ReadTextFile1". You have indicated that you want this module in your program. Click on the plus sign in the corner of the module. Now you should see that the module has gotten bigger and has some more boxes inside. Like this:
+Pick *ReadTextFile*. You will see a box appear in the first column under the "1" called "ReadTextFile1". You have indicated that you want this module in your program. Click on the plus sign in the corner of the module. Now you should see that the module has gotten bigger and has some more boxes inside. Like this:
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step2.png "Editor with one module")
 
@@ -144,27 +160,16 @@ If you make a mistake and need to start over, you can just refresh the browser.
 
 ## Running EasyGen Programs
 
-Unfortunately, at this stage of development of EasyGen, I have not implemented an easy way to run programs designed in the editor. Sorry :-(
+Push the "Done" button in the editor. You will see a pop-up box that asks you for a filename. The editor is going to write the code for your program to a file. The default is "programs/myprogram". You can use this or change the name to whatever you want. Once you click "ok" a new file will be created. If you used the default, you should see that a new file has been created in the "programs" directory inside the "easygen" directory.
 
-Push the "Done" button in the editor. You will see a pop-up box with a bunch of code-like jibberish. That is a text-version of the program you just designed. It is in a special format called a "JSON" file. But that isn't important.
-
-![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step7.png "JSON text")
-
-Open up a text editor program. On a Mac, I use a program called "TextEdit".
-
-Cut and paste the JSON jibberish from the editor pop-up window into a blank document in your text editor. Save the text file as `superhero_program`. Be sure to save it in the EasyGen directory so it is easy to find later (note that your text editor may default to saving the file to `superhero_program.txt`. That is okay, just substitute that filename in subsequent steps in this tutorial.)
-
-Now you are going to need to open a terminal window. Depending on your computer's operating system, this will be done in different ways. On my computer, the terminal screen looks like this:
-
-![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step8.png "A terminal window")
-
-We need to change the working directory of the terminal window to the directory where you installed EasyGen. On my computer it is in the "EasyGen" directory on my Desktop, so I would do this `cd Desktop/easygen/`. (The `cd` means change directory).
+Now you are going to need to open another terminal window and change directory to the place where you saved EasyGen. 
 
 Now to finally run your program: type `python easygen.py superhero_program` into the terminal and press Enter.
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step9.png "A terminal ready to run")
 
-A bunch of text will be printed to the terminal. You can ignore that. Once the program is done, you can verify that it worked. A new file should have been created called "randomized_superheroes". Open it up and look at it. You can compare it to the original "superheroes" file in the "datasets" directory. They should be different.
+
+A bunch of text will be printed to the terminal. You can ignore that. Once the program is done, you can verify that it worked. A new file should have been created called "randomized_superheroes". Open it up and look at it. You can compare it to the original "superheroes" file in the "datasets" directory. They should have the same name, but on different lines.
 
 ## Train a Neural Network
 
