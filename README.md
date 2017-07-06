@@ -177,11 +177,11 @@ You probably want to train and run a neural network.
 
 Go back to the editor and close the pop-up window. We can just keep building on what we have done so far.
 
-In column "4", add a "CharacterLSTM_Train" module. The CharacterLSTM_Train module teaches a neural network to predict the next character in text data. That is, when it sees certain characters in the superheroes text file, it will try to learn what character should go next. When we run the neural net later, it will try to construct new superhero names character by character. But first things first.
+In column "4", add a "CharRNN_Train" module. The CharRNN_Train module teaches a neural network to predict the next character in text data. That is, when it sees certain characters in the superheroes text file, it will try to learn what character should go next. When we run the neural net later, it will try to construct new superhero names character by character. But first things first.
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step10.png "LSTM module in editor")
 
-CharacterLSTM_Train is significantly more complicated than the other modules we've seen so far. There are a lot of settings. they all have defaults, so you don't have to do anything. But from trial and error I happen to know that some settings can make the neural network work better.
+CharRNN_Train is significantly more complicated than the other modules we've seen so far. There are a lot of settings. they all have defaults, so you don't have to do anything. But from trial and error I happen to know that some settings can make the neural network work better.
 
 - Click on the "history" box and change the value to `5`. The history is how much text to keep in memory when trying to predict the next character. That is, it will look at the most recent 5 characters when trying to guess what the 6th character should be. 
 
@@ -191,7 +191,7 @@ CharacterLSTM_Train is significantly more complicated than the other modules we'
 
 - Click on the "epochs" box and change the value to `100`. The epochs setting tells the neural network how many times to look at the data. The more times it looks at the data, generally the more accurate the neural network gets (but also the longer it takes). This dataset is small, so it is harder to find coherent patterns. I found that this dataset works better to have a lot of epochs.
 
-Let's send our dataset into the neural network training module. Connect the red "output" box in "Randomizedline1" to the green "data" box inside "CharacterLSTM_Train".
+Let's send our dataset into the neural network training module. Connect the red "output" box in "Randomizedline1" to the green "data" box inside "CharRNN_Train".
 
 It is okay that there are two arrows coming out of "RandomizeLines". The program will write the randomized data to file and also use the randomized data to train the neural network.
 
@@ -200,31 +200,31 @@ It is okay that there are two arrows coming out of "RandomizeLines". The program
 
 Once the neural network is trained, it must be run. The trained neural network is output as the "model". When the model was created, it converted all the characters into numbers. Neural networks don't really understand anything other than numbers. The "dictionary" is a file that remembers which numbers are mapped to which characters. It's just one of those things.
 
-In column "5", create a "CharacterLSTM_Run" module. Connect the red "model" in the training module to the green "model" in the "CharacterLSTM_Run" module. Do the same for the "dictionary". It should look like this:
+In column "5", create a "CharRNN_Run" module. Connect the red "model" in the training module to the green "model" in the "CharRNN_Run" module. Do the same for the "dictionary". It should look like this:
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step12.png "Connecting LSTM training to LSTM running")
 
-Inside the "CharacterLSTM_Run" module, the "history", "layers", and "hidden_nodes" settings must all be the same as those in the "CharacterLSTM_Train" module. This is a pain in the butt. But there is a shortcut. If you drag from the white "history" box in "CharacterLSTM_Train" to the white "history" box in "CharacterLSTM_Run", the editor will set the values to be the same. Furthermore, it will remember that these values should always be the same, so that if you change one later, all will change to stay the same. This is indicated by dashed lines between the white boxes.
+Inside the "CharRNN_Run" module, the "history", "layers", and "hidden_nodes" settings must all be the same as those in the "CharRNN_Train" module. This is a pain in the butt. But there is a shortcut. If you drag from the white "history" box in "CharRNN_Train" to the white "history" box in "CharRNN_Run", the editor will set the values to be the same. Furthermore, it will remember that these values should always be the same, so that if you change one later, all will change to stay the same. This is indicated by dashed lines between the white boxes.
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step13.png "Connecting settings")
 
-Two more settings still need to be set in "CharacterLSTM_Run":
+Two more settings still need to be set in "CharRNN_Run":
 
 - Click on the "steps" box. The value of `600` is okay and stay the same. This is how many characters to generate when the neural network is run. The bigger the number, them more characters (and thus more names) you will get.
 
 - Click on the "temperature" box. The default values is `0.5`, which can stay the same. The temperature setting will be a number between `0.0` and `1.0`. A higher temperature means the neural network will make more risky choices and the output will be a bit weirder. A lower temperature means the neural network will try to generate things that look more like the original data if possible.
 
-There is one more input to "CharacterLSTM_Run" that we have to deal with. The "seed" is a random sequence of characters to get the neural network started. It works best when the seed is a random sequence pulled from the original data. We can use the "RandomSequence" module. Let's add that module to column "3" (although it can go anywhere you want I like to keep things flowing from a left-to-right fashion). You can have more than one module in a column. You can always drag the other modules into other columns if need to make room.
+There is one more input to "CharRNN_Run" that we have to deal with. The "seed" is a random sequence of characters to get the neural network started. It works best when the seed is a random sequence pulled from the original data. We can use the "RandomSequence" module. Let's add that module to column "3" (although it can go anywhere you want I like to keep things flowing from a left-to-right fashion). You can have more than one module in a column. You can always drag the other modules into other columns if need to make room.
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step14.png "Randomizing a sequence")
 
-Connect the output of the "RandomizeLines" to the input of "RandomSequence". Connect the output of "RandomSequence" to the green "seed" of "CharacterLSTM_Run". It should look like this:
+Connect the output of the "RandomizeLines" to the input of "RandomSequence". Connect the output of "RandomSequence" to the green "seed" of "CharRNN_Run". It should look like this:
 
 The "length" inside the "RandomSequence" module can be anything, although I like to set it to be the same as "history". You can use the dashed-line trick. 
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step15.png "Running the network is ready to go")
 
-Finally, we need the generated data from the neural network to go somewhere. Add another "WriteTextFile" module to column 6. Connect the output of CharacterLSTM_Run to the input of WriteTextFile2 in column 6. Like this:
+Finally, we need the generated data from the neural network to go somewhere. Add another "WriteTextFile" module to column 6. Connect the output of CharRNN_Run to the input of WriteTextFile2 in column 6. Like this:
 
 ![alt text](https://raw.githubusercontent.com/markriedl/easygen/master/web/step16.png "The complete program")
 
@@ -365,9 +365,9 @@ The WriteTextFile module is used for saving data from the program from a text fi
 
 None
 
-## CharacterLSTM_Train
+## CharRNN_Train
 
-A character-level LSTM is a recurrent neural network for generating text, one character at a time. This module trains the neural network on a chunk of text data. The model predicts the next character based on the previous characters it has seen. This module is paired with `CharacterLSTM_Run` which can take the model produced by this module and use to do the actual text generation.
+A character-level LSTM is a recurrent neural network for generating text, one character at a time. This module trains the neural network on a chunk of text data. The model predicts the next character based on the previous characters it has seen. This module is paired with `CharRNN_Run` which can take the model produced by this module and use to do the actual text generation.
 
 **Inputs:**
 
@@ -395,9 +395,9 @@ The default parameters are probably good for most paragraph generation tasks, su
 
 For book title generation, superhero name generation, bandname generation, etc, where each line of text is relatively small, one will want to reduce the history, and number of hidden nodes. I've found that `history=5` and `hidden_nodes=64` work better for this task.
 
-## CharacterLSTM_Run
+## CharRNN_Run
 
-A character-level LSTM is a recurrent neural network for generating text, one character at a time. A model trained with `CharacterLSTM_Train` can be used to generate text. The model and dictionary from `CharacterLSTM_Train` should be connected to the inputs of this module. In addition, the history, layers, and hidden_nodes should be identical to that from `CharacterLSTM_Train` because it can't load the model without knowing the dimensions of the network.
+A character-level LSTM is a recurrent neural network for generating text, one character at a time. A model trained with `CharRNN_Train` can be used to generate text. The model and dictionary from `CharRNN_Train` should be connected to the inputs of this module. In addition, the history, layers, and hidden_nodes should be identical to that from `CharRNN_Train` because it can't load the model without knowing the dimensions of the network.
 
 **Inputs:**
 
@@ -412,9 +412,9 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
-| history | int | This is how many characters of the input data are held in memory at any given time. The more characters in memory, the more like the neural network will recognize long-range relationships. Should be same as CharacterLSTM_Train. | 25 |
-| layers | int | Number of layers in the network/ how deep the network should be. Should be same as CharacterLSTM_Train. | 2 |
-| hidden_nodes | int | How many nodes in each layer of the network? Should be same as CharacterLSTM_Train. | 512 |
+| history | int | This is how many characters of the input data are held in memory at any given time. The more characters in memory, the more like the neural network will recognize long-range relationships. Should be same as CharRNN_Train. | 25 |
+| layers | int | Number of layers in the network/ how deep the network should be. Should be same as CharRNN_Train. | 2 |
+| hidden_nodes | int | How many nodes in each layer of the network? Should be same as CharRNN_Train. | 512 |
 | steps | int | How many characters to generate. | 600 |
 | temperature | decimal between 0.0 and 0.1 | How risky the generation should be. 0.0 means try to replicate the data as well as possible. 1.0 means make a lot of risky moves. | 0.5 |
 
@@ -424,13 +424,13 @@ A character-level LSTM is a recurrent neural network for generating text, one ch
 | --------- | ---- | ----------- |
 | output  | text data | The text generated by running the neural network. |
 
-The seed can come from the original data set that was fed into `CharacterLSTM_Train`. A typical thing to do is to grab a random string from the original dataset because the neural network will be happy starting out with something it recognizes. One can use `RandomSequence` to grab a random string from the original text data. Alternatively, one could use `MakeString` or `UserInput`.  
+The seed can come from the original data set that was fed into `CharRNN_Train`. A typical thing to do is to grab a random string from the original dataset because the neural network will be happy starting out with something it recognizes. One can use `RandomSequence` to grab a random string from the original text data. Alternatively, one could use `MakeString` or `UserInput`.  
 
 The temperature parameters affects how random-appearing the generated text will be. A value close to 1.0 will make the output look more random because the neural network will not always take the most likely next character. A value close to 0.0 will make output that looks more like the original input data (assuming the model is properly trained) because it will always take the most likely next character given a history.
 
 ## RandomSequence
 
-This module takes some text data and grabs a random chunk of it, discarding the rest. The random chunk could be from anywhere in the text data, or it could always start at the start of a random line. The most typical use of this module is to create a seed from text data to be used in `CharacterLSTM_Run`.
+This module takes some text data and grabs a random chunk of it, discarding the rest. The random chunk could be from anywhere in the text data, or it could always start at the start of a random line. The most typical use of this module is to create a seed from text data to be used in `CharRNN_Run`.
 
 **Inputs:**
 
@@ -451,7 +451,7 @@ This module takes some text data and grabs a random chunk of it, discarding the 
 | --------- | ---- | ----------- |
 | output  | text data | The random sequence. |
 
-When using this module with `CharacterLSTM_Run`, it is best to make sure the length is the same as the LSTM's history parameter.
+When using this module with `CharRNN_Run`, it is best to make sure the length is the same as the LSTM's history parameter.
 
 ## MakeString
 

@@ -256,7 +256,7 @@ class MakeLSTMDictionary(Module):
 
 ##########################
 
-class CharacterLSTM_Train(Module):
+class CharRNN_Train(Module):
 
 	def __init__(self, data, model, dictionary, history = 25, layers = 3, epochs = 10, hidden_nodes = 512):
 		self.data = data
@@ -275,7 +275,7 @@ class CharacterLSTM_Train(Module):
 
 ##########################
 
-class CharacterLSTM_Train_More(Module):
+class CharRNN_Train_More(Module):
 
 	def __init__(self, data, in_model, out_model, dictionary, history = 25, layers = 3, epochs = 10, hidden_nodes = 512):
 		self.data = data
@@ -295,7 +295,7 @@ class CharacterLSTM_Train_More(Module):
 
 #########################
 
-class CharacterLSTM_Run(Module):
+class CharRNN_Run(Module):
 
 	def __init__(self, seed, dictionary, model, output, steps = 600, layers = 3, hidden_nodes = 512, history = 25, temperature = 0.5):
 		self.seed = seed
@@ -774,6 +774,55 @@ class LoadModel(Module):
 				f_rest = f[len(file_name):]
 				outname = self.model + f_rest
 				copyfile(os.path.join(file_directory, f), outname)
+
+
+##########################################
+
+class KeepFirstLine(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		with open(self.output, 'w') as outfile:
+			for line in open(self.input, 'rU'):
+				print >> outfile, line.strip()
+				break
+
+
+###########################################
+
+class DeleteFirstLine(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		with open(self.output, 'w') as outfile:
+			first = True
+			for line in open(self.input, 'rU'):
+				if first:
+					first = False
+				else:
+					print >> outfile, line.strip()
+
+##########################################
+
+class DeleteLastLine(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		lines = []
+		for line in open(self.input, 'rU'):
+			lines.append(line)
+		with open(self.output, 'w') as outfile:
+			for line in lines[0:len(lines)-1]:
+				print >> outfile, line
 
 
 			
