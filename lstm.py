@@ -77,7 +77,7 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 	#	m.load(model)
 
 	#for i in range(epochs):
-	seed = random_sequence_from_textfile(data, maxlen)
+	#seed = random_sequence_from_textfile(data, maxlen)
 	m.fit(X, Y, validation_set=0.1, batch_size=128, n_epoch=epochs, run_id='run_gen')
 	print("Saving...")
 	m.save(model)
@@ -87,6 +87,66 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 	#print("-- Test with temperature of 0.5 --")
 	#print(m.generate(600, temperature=0.5, seq_seed=seed))
 
+
+# inputs:
+#	data - textfile
+#   in_model - a TFLearn model file
+# outputs:
+#	out_model - a TFlearn model file
+# params:
+# 	history - max length of sequence to feed into neural net
+#	layers - number of hidden layers of the network
+# 	epochs - how many epochs to run
+#	hidden_nodes - how many nodes per hidden layer
+def CharacterLSTM_Train_More(data, in_model, dictionary, out_model, history = 25, layers = 3, epochs = 10, hidden_nodes = 512, dropout = False):
+	char_idx_file = dictionary
+	maxlen = history
+
+	char_idx = None
+	'''
+	if os.path.isfile(char_idx_file):
+		print('Loading previous char_idx')
+		char_idx = pickle.load(open(char_idx_file, 'rb'))
+	print("---------------")
+	print(char_idx)
+	print(len(char_idx))
+	'''
+
+	X, Y, char_idx = textfile_to_semi_redundant_sequences(data, seq_maxlen=maxlen, redun_step=3)
+
+	if os.path.isfile(char_idx_file):
+		print('Loading previous char_idx')
+		char_idx = pickle.load(open(char_idx_file, 'rb'))
+
+	tf.reset_default_graph()
+	print("layers " + str(layers) + " hidden " + str(hidden_nodes))
+	'''
+	g = tflearn.input_data([None, maxlen, len(char_idx)])
+	for n in range(layers-1):
+		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
+		if dropout:
+			g = tflearn.dropout(g, 0.5)
+	g = tflearn.lstm(g, hidden_nodes)
+	if dropout:
+		g = tflearn.dropout(g, 0.5)
+	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
+	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
+	'''
+	g = buildModel(layers, hidden_nodes, maxlen, char_idx, dropout)
+	m = tflearn.SequenceGenerator(g, dictionary=char_idx, seq_maxlen=maxlen, clip_gradients=5.0) #, checkpoint_path='model_history_gen')
+
+	m.load(in_model)
+
+	#for i in range(epochs):
+	seed = random_sequence_from_textfile(data, maxlen)
+	m.fit(X, Y, validation_set=0.1, batch_size=128, n_epoch=epochs, run_id='run_gen')
+	print("Saving...")
+	m.save(out_model)
+	#print("-- TESTING...")
+	#print("-- Test with temperature of 1.0 --")
+	#print(m.generate(600, temperature=1.0, seq_seed=seed))
+	#print("-- Test with temperature of 0.5 --")
+	#print(m.generate(600, temperature=0.5, seq_seed=seed))
 
 # inputs:
 #	dictionary - char_idx pickle

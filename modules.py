@@ -273,6 +273,25 @@ class CharacterLSTM_Train(Module):
 		lstm.CharacterLSTM_Train(self.data, self.model, self.dictionary, self.history, self.layers, self.epochs, self.hidden_nodes)
 		copyfile('temp/checkpoint', self.model)
 
+##########################
+
+class CharacterLSTM_Train_More(Module):
+
+	def __init__(self, data, in_model, out_model, dictionary, history = 25, layers = 3, epochs = 10, hidden_nodes = 512):
+		self.data = data
+		self.in_model = in_model
+		self.out_model = out_model
+		self.dictionary = dictionary
+		self.history = history
+		self.layers = layers
+		self.epochs = epochs
+		self.hidden_nodes = hidden_nodes
+		#self.dropout = dropout
+
+	def run(self):
+		import lstm
+		lstm.CharacterLSTM_Train_More(self.data, self.in_model, self.dictionary, self.out_model, self.history, self.layers, self.epochs, self.hidden_nodes)
+		copyfile('temp/checkpoint', self.out_model)
 
 #########################
 
