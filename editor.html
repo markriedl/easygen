@@ -17,7 +17,7 @@
    <script type="text/javascript" src="mxgraph/javascript/src/js/mxClient.js"></script>
 
    <!-- Example code -->
-   <script type="text/javascript" src="modules.json"></script>
+   <script type="text/javascript" src="modules-cat.json"></script>
    <script type="text/javascript">
       function openFileDialog()
       {
@@ -556,6 +556,9 @@
                   if (mydata[i].tip != null) {
                      module_dict["tip"] = mydata[i].tip;
                   }
+                  if (mydata[i].category != null) {
+                     module_dict["category"] = mydata[i].category
+                  }
                   /*
                   map_cells_modules[module.id] = name;
                   var my_cells = [];
@@ -708,7 +711,7 @@
                   }
                   var clone_dict = {};
                   for (var key in m_dict) {
-                     if (key != "tip") {
+                     if (key != "tip" && key != "category") {
                         clone_dict[key] = m_dict[key];
                      }
                   }
@@ -839,12 +842,28 @@
       {
          if (cell != null) {
             if (cell.style == 'column') {
+               var map_cat_menu = {};
+               for (var key in prototypes) {
+                  var proto = prototypes[key];
+                  if (proto.category != null) {
+                     var cat = proto.category;
+                     if (map_cat_menu[cat] == null) {
+                        var submenu = menu.addItem(cat);
+                        map_cat_menu[cat] = submenu;
+                     }
+                  }
+               }
                for (var key in prototypes){
+                  var proto = prototypes[key];
+                  var parent_menu = null;
+                  if (proto.category != null) {
+                     parent_menu = map_cat_menu[proto.category];
+                  }
                   menu.addItem(key, '', function(e)
                   {
                      //alert(e);
                      makeModule(e.target.textContent, graph, cell, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
-                  });
+                  }, parent_menu);
                }
                return true;
             }
