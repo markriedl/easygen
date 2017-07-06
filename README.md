@@ -963,7 +963,7 @@ None
 | dictionary  | neural network dictionary | The dictionary. |
 
 
-## SaveModel
+## SaveDictionary
 
 Save a neural network dictionary.
 
