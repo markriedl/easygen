@@ -26,5 +26,9 @@ data = '[ \
 	{"name" : "RemoveTags", "params" : "input(in,text);output(out,text)", "tip" : "Remove XML and HTML tags from a text file"}, \
 	{"name" : "MakeLowercase", "params" : "input(in,text);output(out,text)", "tip" : "Make all text in a file lowercase"}, \
 	{"name" : "Wordify", "params" : "input(in,text);output(out,text)"}, \
+	{"name" : "SaveModel", "params" : "model(in,model);file(string,tip=Name of the model file)", "tip" : "Save a neural network model"}, \
+	{"name" : "LoadModel", "params" : "file(string,tip=Name of the model file);model(out,model)", "tip" : "Load a neural network model"}, \
+	{"name" : "SaveDictionary", "params" : "dictionary(in,dictionary);file(string,tip=Name of dictionary file)", "tip" : "Save a neural network dictionary"}, \
+	{"name" : "LoadDictionary", "params" : "file(string,tip=Nme of dictionary file);dictionary(out,dictionary)", "tip" : "Load a neural network dictionary"}, \
 	{"name" : "Repeat", "params" : "input(in,text);output(out,text);times(int)"} \
 ]';

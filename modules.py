@@ -271,6 +271,8 @@ class CharacterLSTM_Train(Module):
 	def run(self):
 		import lstm
 		lstm.CharacterLSTM_Train(self.data, self.model, self.dictionary, self.history, self.layers, self.epochs, self.hidden_nodes)
+		copyfile('temp/checkpoint', self.model)
+
 
 #########################
 
@@ -291,6 +293,10 @@ class CharacterLSTM_Run(Module):
 		import lstm		
 		file = open(self.seed, 'r') 
 		seed = file.read() 
+		file.close()
+
+		copyfile(self.model, 'temp/checkpoint')
+
 		result = lstm.CharacterLSTM_Run(seed, self.dictionary, self.model, self.output, self.steps, self.layers, self.hidden_nodes, self.history, self.temperature)
 
 		with open(self.output, 'w') as outfile:
@@ -685,6 +691,70 @@ class Wordify(Module):
 				print >> outfile, line.strip()
 
 
+#####################################
+
+class SaveModel(Module):
+
+	def __init__(self, model, file):
+		self.model = model
+		self.file = file
+
+	def run(self):
+		split_model_path = os.path.split(self.model)
+		model_directory = ''
+		model_file = split_model_path[-1]
+		for d in split_model_path[0:len(split_model_path)-1]:
+			model_directory = os.path.join(model_directory, d)
+		for f in os.listdir('temp'):
+			match = re.match(model_file, f)
+			if match is not None:
+				f_rest = f[len(model_file):]
+				filename = os.path.join(model_directory, f)
+				copyfile(filename, self.file + f_rest)
+
+###################################
+
+class SaveDictionary(Module):
+
+	def __init__(self, dictionary, file):
+		self.dictionary = dictionary
+		self.file = file
+
+	def run(self):
+		copyfile(self.dictionary, self.file)
+
+#####################################
+
+class LoadDictionary(Module):
+
+	def __init__(self, file, dictionary):
+		self.dictionary = dictionary
+		self.file = file
+
+	def run(self):
+		copyfile(self.file, self.dictionary)
+
+######################################
+
+class LoadModel(Module):
+
+	def __init__(self, file, model):
+		self.file = file
+		self.model = model
+
+	def run(self):
+		split_file_path = os.path.split(self.file)
+		file_name = split_file_path[-1]
+		split_file_directory = split_file_path[0:len(split_file_path)-1]
+		file_directory = '.'
+		for d in split_file_directory:
+			file_directory = os.path.join(file_directory, d)
+		for f in os.listdir(file_directory):
+			match = re.match(file_name, f)
+			if match is not None:
+				f_rest = f[len(file_name):]
+				outname = self.model + f_rest
+				copyfile(os.path.join(file_directory, f), outname)
 
 
 			

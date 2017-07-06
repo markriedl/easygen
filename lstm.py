@@ -15,25 +15,24 @@ pip install -I tensorflow==0.12.1
 pip install -I tflearn==0.2.1
 '''
 
-# inputs: 
-# 	data - textfile
-# outputs:
-# 	dictionary - char_idx pickle file
-# params:
-#	history - max length of sequence to feed into neural net
-def MakeLSTMDictionary(data, dictionary, history = 25):
-	char_idx = None
-	X, Y, char_idx = textfile_to_semi_redundant_sequences(data, seq_maxlen=history, redun_step=3)
-	pickle.dump(char_idx, open(dictionary,'wb'))
-	print(char_idx)
-	print(len(char_idx))
-
+def buildModel(layers, hidden_nodes, maxlen, char_idx, dropout = False):
+	g = tflearn.input_data([None, maxlen, len(char_idx)])
+	for n in range(layers-1):
+		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
+		if dropout:
+			g = tflearn.dropout(g, 0.5)
+	g = tflearn.lstm(g, hidden_nodes)
+	if dropout:
+		g = tflearn.dropout(g, 0.5)
+	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
+	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
+	return g
 
 # inputs:
 #	data - textfile
-#	dictionary - char_idx pickle
 # outputs:
 #	model - a TFlearn model file
+#	dictionary - char_idx pickle
 # params:
 # 	history - max length of sequence to feed into neural net
 #	layers - number of hidden layers of the network
@@ -59,6 +58,7 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 
 	tf.reset_default_graph()
 	print("layers " + str(layers) + " hidden " + str(hidden_nodes))
+	'''
 	g = tflearn.input_data([None, maxlen, len(char_idx)])
 	for n in range(layers-1):
 		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
@@ -70,16 +70,7 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
 	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
 	'''
-	g = tflearn.input_data([None, maxlen, len(char_idx)])
-	g = tflearn.lstm(g, 512, return_seq=True)
-	g = tflearn.dropout(g, 0.5)
-	g = tflearn.lstm(g, 512, return_seq=True)
-	g = tflearn.dropout(g, 0.5)
-	g = tflearn.lstm(g, 512)
-	g = tflearn.dropout(g, 0.5)
-	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
-	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
-	'''
+	g = buildModel(layers, hidden_nodes, maxlen, char_idx, dropout)
 	m = tflearn.SequenceGenerator(g, dictionary=char_idx, seq_maxlen=maxlen, clip_gradients=5.0) #, checkpoint_path='model_history_gen')
 
 	#if model is not None:
@@ -109,7 +100,7 @@ def CharacterLSTM_Train(data, model, dictionary, history = 25, layers = 3, epoch
 # 	temperature - float (0..1)
 # 	steps - number of characters to generate
 # 	seed - a string to kick generation off (preferably from the original data)
-def CharacterLSTM_Run(seed, dictionary, model, output, steps = 600, layers = 3, hidden_nodes = 512, history = 25, temperature = 0.5):
+def CharacterLSTM_Run(seed, dictionary, model, output, steps = 600, layers = 3, hidden_nodes = 512, history = 25, temperature = 0.5, dropout = False):
 	char_idx_file = dictionary
 	maxlen = history
 	
@@ -118,15 +109,9 @@ def CharacterLSTM_Run(seed, dictionary, model, output, steps = 600, layers = 3, 
 		print('Loading previous char_idx')
 		char_idx = pickle.load(open(char_idx_file, 'rb'))
 
-	'''
-	g = tflearn.input_data([None, maxlen, len(char_idx)])
-	for n in range(layers):
-		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
-		g = tflearn.dropout(g, 0.5)
-	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
-	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
-	'''
 	tf.reset_default_graph()
+	g = buildModel(layers, hidden_nodes, maxlen, char_idx, dropout)
+	'''
 	g = tflearn.input_data([None, maxlen, len(char_idx)])
 	for n in range(layers-1):
 		g = tflearn.lstm(g, hidden_nodes, return_seq=True)
@@ -137,8 +122,7 @@ def CharacterLSTM_Run(seed, dictionary, model, output, steps = 600, layers = 3, 
 		g = tflearn.dropout(g, 0.5)
 	g = tflearn.fully_connected(g, len(char_idx), activation='softmax')
 	g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
-
-
+	'''
 	m = tflearn.SequenceGenerator(g, dictionary=char_idx, seq_maxlen=maxlen, clip_gradients=5.0) #, checkpoint_path='model_history_gen')
 
 	m.load(model)

@@ -41,7 +41,6 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         self._set_headers()
         
     def do_POST(self):
-        print self.path;
         self._set_headers()
         self.wfile.write("<html><body><h1>POST!</h1></body></html>")
         filenameParser = re.compile(r'file\=([a-zA-Z0-9\-\_\%\.\/]+)')

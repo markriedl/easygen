@@ -189,7 +189,7 @@ CharacterLSTM_Train is significantly more complicated than the other modules we'
 
 - Click on the "hidden_nodes" box and change the value to `64`. The hidden_nodes setting indicates how many nodes will be in the neural network. If layers is depth, think of hidden_nodes as width. A wider neural network may be able to learn more patterns but will take longer to train and require more data.
 
-- Click on the "epochs" box and change teh value to `1000`. The epochs setting tells the neural network how many times to look at the data. The more times it looks at the data, generally the more accurate the neural network gets (but also the longer it takes). This dataset is small, so it is harder to find coherent patterns. I found that this dataset works better to have a lot of epochs.
+- Click on the "epochs" box and change the value to `100`. The epochs setting tells the neural network how many times to look at the data. The more times it looks at the data, generally the more accurate the neural network gets (but also the longer it takes). This dataset is small, so it is harder to find coherent patterns. I found that this dataset works better to have a lot of epochs.
 
 Let's send our dataset into the neural network training module. Connect the red "output" box in "Randomizedline1" to the green "data" box inside "CharacterLSTM_Train".
 
@@ -895,6 +895,94 @@ The WriteImages module is used for saving image data.
 **Outputs:**
 
 None
+
+## LoadModel
+
+Load a neural network model.
+
+**Inputs:**
+
+None
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the filename of the model to load. | None |
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The model. |
+
+The model may be saved as a group of several files all with the same start of the filename, e.g., "mymodel", "mymodel.index", "mymodel.meta", and "mymodel.data-00000-of-00001". The file name is just the common part before the period. All files will be loaded.
+
+Note: hasn't been tested with `DCGAN`.
+
+## SaveModel
+
+Save a neural network model.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The model. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the filename to save the model to. | None |
+
+**Outputs:**
+
+None
+
+The model may be saved as a group of several files all with the same start of the filename, e.g., if you give the file name as "mymodel", the following files may be save: "mymodel", "mymodel.index", "mymodel.meta", and "mymodel.data-00000-of-00001".
+
+Note: hasn't been tested with `DCGAN`.
+
+## LoadDictionary
+
+Load a neural network dictionary.
+
+**Inputs:**
+
+None
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the filename of the dictionary to load. | None |
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| dictionary  | neural network dictionary | The dictionary. |
+
+
+## SaveModel
+
+Save a neural network dictionary.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| dictionary  | neural network dictionary | The dictionary. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| file | directory path | This is the filename to save the dictionary to. | None |
+
+**Outputs:**
+
+None
+
 
 
 ## Repeat
