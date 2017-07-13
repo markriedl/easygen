@@ -61,6 +61,12 @@ That last one sounds like a really strange thing to do. But if you start with so
 
    `git clone https://github.com/markriedl/easygen.git`
 
+3. In the easygen directory, install the [mxGraph](https://github.com/jgraph/mxgraph) package.
+
+   `git clone https://github.com/jgraph/mxgraph.git`
+
+   You should now have a /mxgraph directory inside of your easygen directory.
+
 3. Install Tensorflow 0.12
 
    `pip install -I tensorflow==0.12.1`
