@@ -37,8 +37,8 @@ data = '[ \
 	{"name" : "Repeat", "params" : "input(in,text);output(out,text);times(int)", "category" : "Do not use"}, \
 	{"name" : "ReadFromWeb", "params" : "url(string,tip=URL of webpage to download);data(out,text)", "tip" : "Download a webpage", "category" : "Do not use"}, \
 	{"name" : "ReadAllFromWeb", "params" : "urls(in,text);data(out,text)" , "tip" : "Download many web pages, each url in a file on a separate line", "category" : "Do not use"}, \
-	{"name" : "KeepLineWhen", "params" : "input(in,text);match(string,tip=keep lines with this string);output(out,text)", "tip" : "Throw out any lines of text that do not contain a specified string", "category" : "Do not use"}, \
-	{"name" : "KeepLineUnless" , "params" : "input(in,text);match(string,tip=keep lines that do not contain this string);output(out,text)", "tip" : "Throw out any lines of text that have a specified string", "category" : "Do not use"}, \
+	{"name" : "KeepLineWhen", "params" : "input(in,text);match(string,tip=keep lines with this string);output(out,text)", "tip" : "Throw out any lines of text that do not contain a specified string", "category" : "Text"}, \
+	{"name" : "KeepLineUnless" , "params" : "input(in,text);match(string,tip=keep lines that do not contain this string);output(out,text)", "tip" : "Throw out any lines of text that have a specified string", "category" : "Text"}, \
 	{"name" : "MakeCountFile", "params" : "num(int,tip=Count up to this number);prefix(string,tip=Text before the number);postfix(string,tip=Text after the number);output(out,text)", "tip" : "Make a text file where each line has a number on it, counting up", "category" : "Do not use"}, \
 	{"name" : "SplitHTML" , "params" : "input(in,text);output(out,text)", "tip" : "Break up a file so each line contains a single HTML tag", "category" : "Do not use"} \
 ]';
