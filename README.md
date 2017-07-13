@@ -67,27 +67,27 @@ That last one sounds like a really strange thing to do. But if you start with so
 
    You should now have a /mxgraph directory inside of your easygen directory.
 
-3. Install Tensorflow 0.12
+4. Install Tensorflow 0.12
 
    `pip install -I tensorflow==0.12.1`
 
    If you are using a GPU, follow these [Instructions](https://www.tensorflow.org/versions/r0.12/get_started/os_setup)
 
-4. Install TFLearn 0.2.1
+5. Install TFLearn 0.2.1
 
    `pip install -I tflearn==0.2.1`
 
-5. Install Beautiful Soup 4
+6. Install Beautiful Soup 4
 
    `pip install beautifulsoup4`
 
 If you will be pulling data from Wikipedia, you must do the following:
 
-6. Download an English language [Wikipedia dump](https://dumps.wikimedia.org/enwiki/). From this link you will find a file named something like "enwiki-20170401-pages-articles-multistream.xml.bz2". Make sure you download the .bz2 file that is not the index file.
+7. Download an English language [Wikipedia dump](https://dumps.wikimedia.org/enwiki/). From this link you will find a file named something like "enwiki-20170401-pages-articles-multistream.xml.bz2". Make sure you download the .bz2 file that is not the index file.
 
-7. Unzip the bz2 file to extract the .xml file.
+8. Unzip the bz2 file to extract the .xml file.
 
-8. Run a script to extract the information in the Wikipedia dump:
+9. Run a script to extract the information in the Wikipedia dump:
    
    `python wikiextractor/wikiextractor.py -o wiki --json --html --lists -s enwiki-...xml`
 
