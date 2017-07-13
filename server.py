@@ -13,6 +13,8 @@ Send a POST request::
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
 import re
+import os
+
 
 def convertHex(s):
     hexp = re.compile(r'\%([0-9][0-9])')
@@ -33,9 +35,19 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
+    
     def do_GET(self):
         self._set_headers()
-        self.wfile.write("<html><body><h1>hi!</h1></body></html>")
+        print "get", self.path
+        cwd = os.getcwd()
+        print "cwd", cwd
+        print "joined", cwd + self.path
+        file = open(cwd + self.path)
+        out = file.read()
+        file.close()
+        #self.wfile.write("<html><body><h1>hi!</h1></body></html>")
+        self.wfile.write(out)
+    
 
     def do_HEAD(self):
         self._set_headers()

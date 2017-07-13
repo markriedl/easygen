@@ -9,6 +9,8 @@ from module import *
 #import DCGAN.main as gan
 from shutil import copyfile
 from shutil import move
+import urllib2
+import time
 
 ########################
 
@@ -824,6 +826,143 @@ class DeleteLastLine(Module):
 			for line in lines[0:len(lines)-1]:
 				print >> outfile, line
 
+###########################################
 
+class ReadFromWeb(Module):
+
+	def __init__(self, url, data):
+		self.url = url
+		self.data = data
+
+	def run(self):
+		import urllib2
+		response = urllib2.urlopen(self.url)
+		html = response.read()
+		html_lines = html.splitlines()
+		with open(self.data, 'w') as outfile:
+			for line in html_lines:
+				print >> outfile, line.strip()
+
+############################################
+
+class ReadAllFromWeb(Module):
+
+	def __init__(self, urls, data):
+		self.urls = urls
+		self.data = data
+
+	def run(self):
+		html_lines = []
+		try:
+			for url in open(self.urls, 'rU'):
+				response = urllib2.urlopen(url)
+				print "reading", url
+				html = response.read()
+				html_lines = html_lines + html.splitlines()
+				time.sleep(30+random.randint(0,10))
+		except urllib2.HTTPError:
+			print "Service unavailable"
+		with open(self.data, 'w') as outfile:
+			for line in html_lines:
+				print >> outfile, line.strip()
+
+###########################################
+
+class KeepLineWhen(Module):
+
+	def __init__(self, input, match, output):
+		self.input = input
+		self.output = output
+		self.match = match
+
+	def run(self):
+		lines = []
+		with open(self.output, 'w') as outfile:
+			for line in open(self.input, 'rU'):
+				m = re.search(self.match, line)
+				if m is not None:
+					print >> outfile, line
+
+##########################################
+
+class KeepLineUnless(Module):
+
+	def __init__(self, input, match, output):
+		self.input = input
+		self.output = output
+		self.match = match
+
+	def run(self):
+		lines = []
+		with open(self.output, 'w') as outfile:
+			for line in open(self.input, 'rU'):
+				m = re.search(self.match, line)
+				if m is None:
+					print >> outfile, line
+
+
+#############################################
+
+class MakeCountFile(Module):
+
+	def __init__(self, num, prefix, postfix, output):
+		self.num = num
+		self.prefix = prefix
+		self.postfix = postfix
+		self.output = output
+
+	def run(self):
+		num = self.num
+		if num < 0:
+			num = 0
+
+		with open(self.output, 'w') as outfile:
+			for n in range(num+1):
+				if n > 0:			
+					print >> outfile, self.prefix.strip() + str(n) + self.postfix.strip()
+
+############################################
+
+class SplitHTML(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+
+	def run(self):
+		file = open(self.input, 'rU')
+		text = file.read()
+		file.close()
+		lines = []
+		can_close = True
+		parser = re.compile(r'<[\S\s]+?>')
+		while len(text) > 0:
+			match = parser.match(text)
+			if match is not None:
+				tag = match.group(0)
+				if tag[1] == '/' and can_close:
+					lines[-1] += tag
+					can_close = False
+				else :
+					lines.append(tag)
+					can_close = True
+				text = text[match.end(0):]
+			elif '<' in text:
+				i = text.index('<')
+				temp = text[0:i]
+				if len(lines) > 0:
+					lines[-1] += temp
+				else:
+					lines.append(temp)
+				text = text[i:]
+			else:
+				if len(lines) > 0:
+					lines[-1] += text
+				else:
+					lines.append(text)
+				text = ''
+		with open(self.output, 'w') as outfile:
+			for line in lines:
+				print >>outfile, line
 
 			
