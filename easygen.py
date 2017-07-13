@@ -19,7 +19,7 @@ def runModule(module_json):
 	#params = re.sub(r'u\'', '', params)
 	#params = re.sub(r'\'', '', params)
 	#params = re.sub(r': ', '=', params)
-	p1 = re.compile('u\'([0-9a-zA-Z\_]+)\'[\s]*:[\s]*u(\'[\(\)0-9a-zA-Z\_\.\/:\*\-]*\')')
+	p1 = re.compile('u\'([0-9a-zA-Z\_]+)\'[\s]*:[\s]*u(\'[\(\)0-9a-zA-Z\_\.\/:\*\- ]*\')')
 	params = p1.sub(r'\1=\2', params)
 	params = re.sub('\'True\'', 'True', params)
 	params = re.sub('\'False\'', 'False', params)

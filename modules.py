@@ -825,4 +825,5 @@ class DeleteLastLine(Module):
 				print >> outfile, line
 
 
+
 			
