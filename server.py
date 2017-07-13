@@ -38,15 +38,16 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
     
     def do_GET(self):
         self._set_headers()
-        print "get", self.path
         cwd = os.getcwd()
-        print "cwd", cwd
-        print "joined", cwd + self.path
-        file = open(cwd + self.path)
-        out = file.read()
-        file.close()
-        #self.wfile.write("<html><body><h1>hi!</h1></body></html>")
-        self.wfile.write(out)
+        split_path = os.path.split(self.path)
+        if len(split_path) > 1 and split_path[1] == "mxClient.js":
+            file = open(cwd + self.path)
+            out = file.read()
+            file.close()
+            self.wfile.write(out)
+        else:
+            print "Unauthorized access!"
+            self.wfile.write("<html><body><h1>Don't do that!</h1></body></html>")
     
 
     def do_HEAD(self):
