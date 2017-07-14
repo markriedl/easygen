@@ -987,6 +987,7 @@ class Regex_Search(Module):
 				with open(self.group_2, 'w') as group2file:
 					for match in re.finditer(self.expression, text):
 						num_groups = len(match.groups())
+						print num_groups
 						print >> outfile, match.group(0)
 						if num_groups > 0:
 							print >> group1file, match.group(1)
@@ -1014,7 +1015,7 @@ class Regex_Sub(Module):
 		file.close()
 
 		with open(self.output, 'w') as outfile:
-			new_text = re.subn(self.expression, self.replace, text)
+			new_text = re.subn(self.expression, self.replace, text)[0]
 			outfile.write(new_text)
 
 
