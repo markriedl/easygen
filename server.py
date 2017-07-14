@@ -67,6 +67,10 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
                 with open(filename, 'w') as outfile:
                     print >> outfile, json.strip()
         
+programs_directory = './programs'
+if not os.path.exists(programs_directory):
+    os.makedirs(programs_directory)
+
 server_address = ('', 8000)
 httpd = HTTPServer(server_address, MyHTTPRequestHandler)
 print 'Starting httpd...'

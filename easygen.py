@@ -30,7 +30,13 @@ def runModule(module_json):
 	module = eval(evalString)
 	module.run()
 
-
+### Make sure required directories exist
+temp_directory = './temp'
+checkpoints_directory = './checkpoints'
+if not os.path.exists(temp_directory):
+    os.makedirs(temp_directory)
+if not os.path.exists(checkpoints_directory):
+    os.makedirs(checkpoints_directory)
 
 ### Read in the program file
 data_text = ''
@@ -43,5 +49,8 @@ data = json.loads(data_text)
 
 ### Run each module
 if data is not None:
+	print "Running", args.program
 	for d in data:
 		runModule(d)
+else:
+	print "Program is empty"
