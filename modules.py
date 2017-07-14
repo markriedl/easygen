@@ -693,7 +693,7 @@ class MakeLowercase(Module):
 	def run(self):
 		with open(self.output, 'w') as outfile:
 			for line in open(self.input, 'rU'):
-				print >> outfile, line.lower()
+				print >> outfile, line.lower().strip()
 
 ################################
 
