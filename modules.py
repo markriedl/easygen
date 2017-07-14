@@ -922,6 +922,7 @@ class MakeCountFile(Module):
 					print >> outfile, self.prefix.strip() + str(n) + self.postfix.strip()
 
 ############################################
+## This probably doesn't work very well
 
 class SplitHTML(Module):
 
@@ -964,5 +965,57 @@ class SplitHTML(Module):
 		with open(self.output, 'w') as outfile:
 			for line in lines:
 				print >>outfile, line
+
+###########################################
+
+class Regex_Search(Module):
+
+	def __init__(self, input, expression, output, group_1, group_2):
+		self.input = input
+		self.expression = expression
+		self.output = output
+		self.group_1 = group_1
+		self.group_2 = group_2
+
+	def run(self):
+		file = open(self.input, 'rU')
+		text = file.read()
+		file.close()
+
+		with open(self.output, 'w') as outfile:
+			with open(self.group_1, 'w') as group1file:
+				with open(self.group_2, 'w') as group2file:
+					for match in re.finditer(self.expression, text):
+						num_groups = len(match.groups())
+						print >> outfile, match.group(0)
+						if num_groups > 0:
+							print >> group1file, match.group(1)
+						else:
+							print >> group1file, ''
+						if num_groups > 1:
+							print >> group2file, match.group(2)
+						else:
+							print >> group2file, ''
+
+
+#############################################
+
+class Regex_Sub(Module):
+
+	def __init__(self, input, expression, replace, output):
+		self.input = input
+		self.expression = expression
+		self.replace = replace
+		self.output = output
+
+	def run(self):
+		file = open(self.input, 'rU')
+		text = file.read()
+		file.close()
+
+		with open(self.output, 'w') as outfile:
+			new_text = re.subn(self.expression, self.replace, text)
+			outfile.write(new_text)
+
 
 			

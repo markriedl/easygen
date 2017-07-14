@@ -40,5 +40,7 @@ data = '[ \
 	{"name" : "KeepLineWhen", "params" : "input(in,text);match(string,tip=keep lines with this string);output(out,text)", "tip" : "Throw out any lines of text that do not contain a specified string", "category" : "Text"}, \
 	{"name" : "KeepLineUnless" , "params" : "input(in,text);match(string,tip=keep lines that do not contain this string);output(out,text)", "tip" : "Throw out any lines of text that have a specified string", "category" : "Text"}, \
 	{"name" : "MakeCountFile", "params" : "num(int,tip=Count up to this number);prefix(string,tip=Text before the number);postfix(string,tip=Text after the number);output(out,text)", "tip" : "Make a text file where each line has a number on it, counting up", "category" : "Do not use"}, \
-	{"name" : "SplitHTML" , "params" : "input(in,text);output(out,text)", "tip" : "Break up a file so each line contains a single HTML tag", "category" : "Do not use"} \
+	{"name" : "SplitHTML" , "params" : "input(in,text);output(out,text)", "tip" : "Break up a file so each line contains a single HTML tag", "category" : "Do not use"}, \
+	{"name" : "Regex_Search", "params" : "input(in,text);expression(string,tip=Regular expression);output(out,text);group_1(out,text);group_2(out,text)", "tip" : "Search for all sequences that match a regular expression", "category" : "Regex"}, \
+	{"name" : "Regex_Sub", "params" : "input(in,text);expression(string,tip=Regular expression);replace(string,tip=Replace match with this);output(out,text)", "category" : "Regex"} \
 ]';
