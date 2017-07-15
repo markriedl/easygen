@@ -722,16 +722,24 @@ class SaveModel(Module):
 
 	def run(self):
 		split_model_path = os.path.split(self.model)
-		model_directory = ''
-		model_file = split_model_path[-1]
-		for d in split_model_path[0:len(split_model_path)-1]:
-			model_directory = os.path.join(model_directory, d)
+		model_directory = split_model_path[0]
+		model_file = split_model_path[1]
+
+		split_file_path = os.path.split(self.file)
+		target_file = split_file_path[1]
+		target_directory = split_file_path[0]
+
 		for f in os.listdir('temp'):
 			match = re.match(model_file, f)
 			if match is not None:
 				f_rest = f[len(model_file):]
 				filename = os.path.join(model_directory, f)
 				copyfile(filename, self.file + f_rest)
+
+		with open(self.file, 'w') as f:
+			print >> f, 'model_checkpoint_path: "'+ target_file + '"'
+			print >> f, 'all_model_checkpoint_paths: "' + target_file + '"'
+
 
 ###################################
 
@@ -765,17 +773,23 @@ class LoadModel(Module):
 
 	def run(self):
 		split_file_path = os.path.split(self.file)
-		file_name = split_file_path[-1]
-		split_file_directory = split_file_path[0:len(split_file_path)-1]
-		file_directory = '.'
-		for d in split_file_directory:
-			file_directory = os.path.join(file_directory, d)
+		file_name = split_file_path[1]
+		file_directory = split_file_path[0]
+
+		split_model_path = os.path.split(self.model)
+		model_file = split_model_path[1]
+		model_directory = split_model_path[0]
+
 		for f in os.listdir(file_directory):
 			match = re.match(file_name, f)
 			if match is not None:
 				f_rest = f[len(file_name):]
 				outname = self.model + f_rest
 				copyfile(os.path.join(file_directory, f), outname)
+
+		with open(self.model, 'w') as f:
+			print >> f, 'model_checkpoint_path: "'+ model_file + '"'
+			print >> f, 'all_model_checkpoint_paths: "' + model_file + '"'
 
 
 ##########################################
