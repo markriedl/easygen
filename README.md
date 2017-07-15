@@ -1120,3 +1120,61 @@ This module reads many web pages and concatenates all the text together. The URL
 | --------- | ---- | ----------- |
 | data  | text data | The raw HTML from the web pages concatenated together. |
 
+## Regex_Search
+
+This module takes text data and generates new text data that includes only what matches a regular expression pattern. It supports "groups", in which sub-sequences within the matched sequence are saved out separately. Up to two groups can be specified. The module will capture all non-overlapping matches. Matches can span across lines.
+
+[Information on writing regular expressions](http://www.rexegg.com/regex-quickstart.html)
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| expression | string | The regular expression. | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text that is matched by the regular expression. |
+| group_1 | text data | If one group is captured in the regular expression, the first group of captured text will be here. |
+| group_2 | text data | If two groups are captured in the regular expression, the second group of captured text will be here. |
+
+Using groups: When there are paired parentheses `( ... )` in the regular expression, then if a match occurs, the parentheses further specify that some of those characters should be pulled aside.
+
+For example: `<a href\=[\"]?([.]+)[\"]?>([.]+)</a>` will match against anchor tags in an html file. The primary output of the module would contain the full tags. There are two groups captured in the regular expression. The first is the URL. The `group_1` output will contain a list of URLs. The second is the content between the open of the anchor tag and the close of the anchor tag. The `group_2` output will contain the text of the links.
+
+## Regex_Sub
+
+This module uses a regular expression to find a sequence of text and then replace it. Groups are supported. Matches can span across lines.
+
+[Information on writing regular expressions](http://www.rexegg.com/regex-quickstart.html)
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| expression | string | The regular expression. | None |
+| replace | string | What to replace any matches with. | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text with any sequences matched by the regular expression replaced. |
+
+Using groups: When there are paired parentheses `( ... )` in the regular expression, then if a match occurs, the parentheses further specify that some of those characters should be pulled aside. Groups can then be referenced in the `replace` specification using `\1` for the first group, `\2` for the second group, and so on.
+
+For example: `<a href\=[\"]?([.]+)[\"]?>([.]+)</a>` will match against anchor tags in an html file. The first group grabs the URL and the second group will grab the text of the link. If the replace string is `\2: \1`, it will replace all anchor tags with "the link text: URL".
