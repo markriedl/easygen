@@ -962,6 +962,7 @@ None
 | Component | Type | Description | Default |
 | --------- | ---- | ----------- | ------- |
 | file | directory path | This is the filename of the dictionary to load. | None |
+
 **Outputs:**
 
 | Component | Type | Description |
@@ -989,9 +990,133 @@ Save a neural network dictionary.
 
 None
 
+## KeepFirstLine
+
+Discard all text data except the first line.
+
+## DeleteFirstLine
+
+Discard the first line of text data and pass the rest on.
+
+## DeleteLastLine
+
+Discard the last line of text data and pass the rest on.
+
+## KeepLineWhen
+
+Delete all lines of text that do not have a given sub-sequence.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| match | string | The substring to look for in each line. | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data with only lines containing the match. |
+
+## KeepLineUnless
+
+Delete all lines of text that have a given sub-sequence.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| match | string | The substring to look for in each line. | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data with only lines that do not contain the match. |
 
 
-## Repeat
+## MakeCountFile
 
-This is not implemented (yet), please do not use this module.
+This module creates a new text file where each line contains a number, counting up. The module allows text to be placed before and after the number.
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| num | int | The number of lines. | 10 |
+| prefix | string | Text to place before the number on each line. | None |
+| postfix | string | Text to place after the number on each line.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | text data | The text data with the given number of lines and the line number on each line. |
+
+The default usage of this module would create a new text file with each line numbered 1-10.
+
+```
+1
+2
+3
+...
+9
+10
+```
+
+This module is useful in combination with `ReadAllFromWeb` because it can be used to create URLs as such:
+
+```
+https://www.barnesandnoble.com/s/paranormal+romance+in+Books?Nrpp=100&page=1
+https://www.barnesandnoble.com/s/paranormal+romance+in+Books?Nrpp=100&page=2
+https://www.barnesandnoble.com/s/paranormal+romance+in+Books?Nrpp=100&page=3
+...
+```
+
+## ReadFromWeb
+
+This module grabs raw HTML from a URL.
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| url | string | The URL to grab text from. Starts with http:// | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data  | text data | The raw HTML from the web page. |
+
+## ReadAllFromWeb
+
+This module reads many web pages and concatenates all the text together. The URLs are given in input text data, with one url per line.
+
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | text data | The text containing a list of URLs, one per line. |
+
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| data  | text data | The raw HTML from the web pages concatenated together. |
 
