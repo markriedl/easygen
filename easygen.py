@@ -32,11 +32,15 @@ def runModule(module_json):
 		params = p2.sub(r'\1', params)
 		## Put the module name back on as class name
 		evalString = module + '(' + params + ')'
-		print evalString
+		print "Module:", evalString
 		## If everything went well, we can now evaluate the string and create a new class.
 		module = eval(evalString)
 		## Run the class.
-		module.run()
+		if module.ready:
+			print "Running..."
+			module.run()
+		else:
+			print "Module not ready."
 
 ### Make sure required directories exist
 temp_directory = './temp'

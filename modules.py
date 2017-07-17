@@ -14,6 +14,13 @@ import time
 
 ########################
 
+def checkFiles(*filenames):
+	for filename in filenames:
+		if not os.path.exists(filename):
+			return False
+	return True
+
+
 #######################
 
 class ReadTextFile(Module):
@@ -21,6 +28,8 @@ class ReadTextFile(Module):
 	def __init__(self, file, output):
 		self.file = file
 		self.output = output
+		if checkFiles(file):
+			self.ready = True
 
 	def run(self):
 		copyfile(self.file, self.output)
@@ -46,6 +55,9 @@ class ConcatenateTextFiles(Module):
 		self.input_1 = input_1
 		self.input_2 = input_2
 		self.output = output
+		if checkFiles(input_1, input_2):
+			self.ready = True
+
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -62,6 +74,8 @@ class SplitSentences(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		parser = re.compile(r'([\?\.\!:])')
@@ -79,6 +93,8 @@ class RemoveEmptyLines(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -94,6 +110,8 @@ class StripLines(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -111,6 +129,8 @@ class ReplaceCharacters(Module):
 		self.output = output
 		self.find = find
 		self.replace = replace
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -127,6 +147,8 @@ class MakeTrainTestData(Module):
 		self.training_percent = training_percent
 		self.training_data = training_data
 		self.testing_data = testing_data
+		if checkFiles(data):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -151,6 +173,8 @@ class MakeTransTrainTestData(Module):
 		self.training_y_data = training_y_data
 		self.testing_x_data = testing_x_data
 		self.testing_y_data = testing_y_data
+		if checkFiles(data_x, data_y):
+			self.ready = True
 
 	def run(self):
 		lines1 = []
@@ -184,6 +208,8 @@ class ReadWikipedia(Module):
 		self.titles_file = titles_file
 		self.break_sentences = break_sentences
 		self.categories = categories
+		if checkFiles(wiki_directory):
+			self.ready = True
 
 	def run(self):
 		import readWikipedia
@@ -199,6 +225,8 @@ class SplitLines(Module):
 		self.output1 = output1
 		self.output2 = output2
 		self.character = character
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		data1 = []
@@ -225,6 +253,8 @@ class MakePredictionData(Module):
 		self.data = data
 		self.x = x
 		self.y = y
+		if checkFiles(data):
+			self.ready = True
 
 	def run(self):
 		last = None
@@ -269,6 +299,8 @@ class CharRNN_Train(Module):
 		self.epochs = epochs
 		self.hidden_nodes = hidden_nodes
 		#self.dropout = dropout
+		if checkFiles(data):
+			self.ready = True
 
 	def run(self):
 		import lstm
@@ -289,6 +321,8 @@ class CharRNN_Train_More(Module):
 		self.epochs = epochs
 		self.hidden_nodes = hidden_nodes
 		#self.dropout = dropout
+		if checkFiles(data, in_model, directory):
+			self.ready = True
 
 	def run(self):
 		import lstm
@@ -309,6 +343,8 @@ class CharRNN_Run(Module):
 		self.history = history
 		self.temperature = temperature
 		self.output = output
+		if checkFiles(seed, dictionary, model):
+			self.ready = True
 
 	def run(self):
 		import lstm		
@@ -337,6 +373,8 @@ class Seq2Seq_Train(Module):
 		self.x = x
 		self.y = y
 		self.dictionary = dictionary
+		if checkFiles(all_data, x, y):
+			self.ready = True
 
 	def run(self):
 		import seq2seq_translate
@@ -419,6 +457,8 @@ class Seq2Seq_Run(Module):
 		self.hidden_nodes = hidden_nodes
 		self.stop = stop
 		self.output = output
+		if checkFiles(model, data, dictionary):
+			self.ready = True
 
 
 	def run(self):
@@ -452,6 +492,8 @@ class RandomSequence(Module):
 		self.input = input
 		self.output = output
 		self.length = length
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		sequence = ''
@@ -498,6 +540,8 @@ class ReadImages(Module):
 	def __init__(self, data_directory, output_images):
 		self.data_directory = data_directory
 		self.output_images = output_images
+		if checkFiles(data_directory):
+			self.ready = True
 
 	def run(self):
 		with open(self.output_images, 'w') as f:
@@ -539,6 +583,8 @@ class DCGAN(Module):
 		self.crop = crop
 		self.output_images = output_images
 		self.num_images = num_images
+		if checkFiles(input_images):
+			self.ready = True
 
 	def run(self):
 		import DCGAN.main as gan
@@ -626,6 +672,8 @@ class PickFromWikipedia(Module):
 		self.section_name = section_name # Do you just want a sub-section? Or '' for all.
 		self.break_sentences = break_sentences # bool - one sentence per line?
 		self.categories = categories # Restrict to certain categories
+		if checkFiles(wiki_directory, input):
+			self.ready = True
 
 	def run(self):
 		import readWikipedia
@@ -652,6 +700,8 @@ class RandomizeLines(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -670,6 +720,8 @@ class RemoveTags(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -689,6 +741,8 @@ class MakeLowercase(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -702,6 +756,8 @@ class Wordify(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		parser = re.compile(r'([\,\.\?\!\'\"\(\)\[\]\{\}])')
@@ -759,6 +815,8 @@ class LoadDictionary(Module):
 	def __init__(self, file, dictionary):
 		self.dictionary = dictionary
 		self.file = file
+		if checkFiles(dictionary):
+			self.ready = True
 
 	def run(self):
 		copyfile(self.file, self.dictionary)
@@ -770,6 +828,8 @@ class LoadModel(Module):
 	def __init__(self, file, model):
 		self.file = file
 		self.model = model
+		if checkFiles(file):
+			self.ready = True
 
 	def run(self):
 		split_file_path = os.path.split(self.file)
@@ -799,6 +859,8 @@ class KeepFirstLine(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -814,6 +876,8 @@ class DeleteFirstLine(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		with open(self.output, 'w') as outfile:
@@ -831,6 +895,8 @@ class DeleteLastLine(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -864,6 +930,8 @@ class ReadAllFromWeb(Module):
 	def __init__(self, urls, data):
 		self.urls = urls
 		self.data = data
+		if checkFiles(urls):
+			self.ready = True
 
 	def run(self):
 		html_lines = []
@@ -888,6 +956,8 @@ class KeepLineWhen(Module):
 		self.input = input
 		self.output = output
 		self.match = match
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -905,6 +975,8 @@ class KeepLineUnless(Module):
 		self.input = input
 		self.output = output
 		self.match = match
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		lines = []
@@ -943,6 +1015,8 @@ class SplitHTML(Module):
 	def __init__(self, input, output):
 		self.input = input
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		file = open(self.input, 'rU')
@@ -990,6 +1064,8 @@ class Regex_Search(Module):
 		self.output = output
 		self.group_1 = group_1
 		self.group_2 = group_2
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		file = open(self.input, 'rU')
@@ -1022,6 +1098,8 @@ class Regex_Sub(Module):
 		self.expression = expression
 		self.replace = replace
 		self.output = output
+		if checkFiles(input):
+			self.ready = True
 
 	def run(self):
 		file = open(self.input, 'rU')

@@ -1,4 +1,5 @@
 class Module():
 
 	def run():
-		pass
+		
+		ready = False
