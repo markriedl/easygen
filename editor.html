@@ -217,7 +217,7 @@
             var ordering = []; // module preceeds module
             var linked_params = {}; //list of [cell.id, cell.id]
             //var next_edge_id = 10000; //make edge ids 
-            var edges = {}; // edges. key = id. value = [source.id, target.id]
+            //var edges = {}; // edges. key = id. value = [source.id, target.id]
             var selected_cell = null; // which cell or edge is being moused over 
             //var parameter_ids = []; // these ids are params.
 
@@ -328,6 +328,46 @@
                               graph.view.refresh();
                               graph.getModel().endUpdate();
                            }
+                        }
+                        else if (selected_cell.style == "module") {
+                           // Delete a module
+                           console.log(selected_cell);
+                           module_name = map_cells_modules[selected_cell.id];
+                           console.log(module_name);
+                           delete modules[module_name];
+                           var new_ordering = [];
+                           for (var i=0; i < ordering.length; i++) {
+                              if (ordering[i][0] != module_name && ordering[i][1] != module_name) {
+                                 new_ordering.push(ordering[i]);
+                              }
+                           }
+                           ordering = new_ordering;
+                           graph.getModel().beginUpdate();
+                           var cell = selected_cell; //graph.getModel().getCell(selected_cell);
+                           //cell.setStyle("strokecolor=white");
+                           cell.setCollapsed(true);
+                           //for (var i=0; i < cell.children.length; i++) {
+                           //   cell.children[i].setVisible(false);
+                           //}
+                           cell.setVisible(false);
+                           child_edges = [];
+                           for (var i=0; i < selected_cell.children.length; i++) {
+                              var kid = selected_cell.children[i];
+                              edges = graph.getConnections(kid);
+                              for (var j = 0; j < edges.length; j++) {
+                                 child_edges.push(edges[j]);
+                              }
+                           }
+                           console.log(child_edges);
+                           for (var i=0; i < child_edges.length; i++) {
+                              kid = child_edges[i]
+                              kid.setVisible(false);
+                              kid.setStyle("strokecolor=white");
+                              kid.source = null;
+                              kid.target = null;
+                           }
+                           graph.view.refresh();
+                           graph.getModel().endUpdate();
                         }
                      }
                   }
