@@ -39,6 +39,7 @@ def runModule(module_json):
 		if module.ready:
 			print "Running..."
 			module.run()
+			print "Done."
 		else:
 			print "Module not ready."
 
