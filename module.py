@@ -1,6 +1,6 @@
 class Module():
 
-	ready = False
+	ready = True
 
 	def run():
 		pass
