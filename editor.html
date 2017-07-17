@@ -125,6 +125,12 @@
 
             var param_style = mxUtils.clone(style);
             graph.getStylesheet().putCellStyle('parameter', param_style);
+            var input_param_style = mxUtils.clone(style);
+            input_param_style[mxConstants.STYLE_FILLCOLOR] = '#66cdaa';
+            graph.getStylesheet().putCellStyle('input_parameter', input_param_style);
+            var output_param_style = mxUtils.clone(style);
+            output_param_style[mxConstants.STYLE_FILLCOLOR] = '#cd5c5c';
+            graph.getStylesheet().putCellStyle('output_parameter', output_param_style);
             var module_style = mxUtils.clone(style);
             graph.getStylesheet().putCellStyle('module', module_style);
 
@@ -871,16 +877,19 @@
                   }
                }
 
-               var color = "white";
+               var style = 'parameter'
+               //var color = "white";
                if (is_output) {
-                  color = "red"
+                  //color = "#cd5c5c"
+                  style = 'output_parameter'
                }
                else if (is_input) {
-                  color = "green"
+                  //color = "#66cdaa"
+                  style = 'input_parameter'
                }
 
-               var submod = graph.insertVertex(module, null, param_name, 0, 0, 120, 30, 'parameter');//"fillColor="+color);
-               submod.setStyle("fillColor="+color);
+               var submod = graph.insertVertex(module, null, param_name, 0, 0, 120, 30, style);//"fillColor="+color);
+               //submod.setStyle("fillColor="+color);
 
                map_cells_modules[submod.id] = name;
                map_cells_params[submod.id] = param_name;
