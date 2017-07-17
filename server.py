@@ -55,17 +55,30 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         
     def do_POST(self):
         self._set_headers()
-        self.wfile.write("<html><body><h1>POST!</h1></body></html>")
-        filenameParser = re.compile(r'file\=([a-zA-Z0-9\-\_\%\.\/]+)')
+        saveFilenameParser = re.compile(r'save\=([a-zA-Z0-9\-\_\%\.\/]+)')
+        loadFilenameParser = re.compile(r'load\=([a-zA-Z0-9\-\_\%\.\/]+)')
         jsonParser = re.compile(r'program\=(\[\{[\S]+\}\])')
-        filename_match = filenameParser.search(self.path)
+        save_filename_match = saveFilenameParser.search(self.path)
+        load_filename_match = loadFilenameParser.search(self.path)
         json_match = jsonParser.search(self.path)
-        if filename_match is not None and json_match is not None:
-            filename = filename_match.group(1)
+        if save_filename_match is not None and json_match is not None:
+            filename = save_filename_match.group(1)
             json = convertHex(json_match.group(1))
             if len(filename) > 0 and len(json) > 0:
                 with open(filename, 'w') as outfile:
                     print >> outfile, json.strip()
+            self.wfile.write("<html><body><h1>POST!</h1></body></html>")
+        elif load_filename_match is not None:
+            filename = load_filename_match.group(1)
+            if os.path.exists(filename):
+                file = open(filename, 'r')
+                json = file.read()
+                file.close()
+                self.wfile.write(json)
+            else:
+                self.wfile.write("<html><body><h1>POST!</h1></body></html>")
+        else:
+            self.wfile.write("<html><body><h1>POST!</h1></body></html>")
         
 programs_directory = './programs'
 if not os.path.exists(programs_directory):

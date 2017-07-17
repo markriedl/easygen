@@ -726,8 +726,8 @@
                return createPopupMenu(graph, menu, cell, evt, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
             };
 
-            // Done button pressed
-            var button = mxUtils.button('Done', function()
+            // Save button pressed
+            var save_button = mxUtils.button('Save', function()
             {
                //var encoder = new mxCodec();
                //var node = encoder.encode(graph.getModel());
@@ -738,8 +738,11 @@
                for (var key in modules) {
                   used_modules.push(key);
                }
-               console.log(used_modules);
-               console.log(ordering);
+
+               if (used_modules.length == 0) {
+                  alert("Nothing to save.")
+                  return;
+               }
 
                var ordered_modules = order_modules(used_modules, ordering);
                console.log(ordered_modules);
@@ -797,11 +800,27 @@
                      // Action to be performed when the document is read;
                   }
                };
-               xhttp.open("POST", "http://localhost:8000?"+'file='+filename+'&program='+s, true);
+               xhttp.open("POST", "http://localhost:8000?"+'save='+filename+'&program='+s, true);
+               xhttp.send();
+            });
+
+            var load_button = mxUtils.button('Load', function()
+            {
+               alert("Load is not implemented yet. Sorry.");
+               var filename = prompt("Filename:", '');
+               var xhttp = new XMLHttpRequest();
+               xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                     // Action to be performed when the document is read;
+                     console.log(this.responseText);
+                  }
+               };
+               xhttp.open("POST", "http://localhost:8000?"+'load='+filename, true);
                xhttp.send();
             });
             
-            document.body.insertBefore(button, container.nextSibling);
+            document.body.insertBefore(load_button, container.nextSibling);
+            document.body.insertBefore(save_button, container.nextSibling);
 
          }
 
