@@ -207,7 +207,7 @@
             var outputs = []; // Which cell.ids are outputs?
             var types = {}; // The type of input for each parameter of each module. Indexed on the cell.id for the parameter
             var modules = {}; // all modules, as dictionaries
-            var used_modules = []; // which modules actually in use (names?)
+            //var used_modules = []; // which modules actually in use (names?)
             var map_cells_modules = {}; // Map cells to modules
             var map_modules_cells = {}; // Map of modules (ids) to cells (ids)
             var map_cells_params = {}; // What is the name of the parameter in the cell?
@@ -266,7 +266,6 @@
                            // We know about this edge
                            source_id = selected_cell.source.id; //edges[selected_cell][0];
                            target_id = selected_cell.target.id; //edges[selected_cell][1];
-                           //delete edges[selected_cell];
                            source_module_name = map_cells_modules[source_id];
                            target_module_name = map_cells_modules[target_id];
                            source_param_name = map_cells_params[source_id];
@@ -275,7 +274,19 @@
                               //undo filenames
                               file_map[source_module_name][source_param_name] = "";
                               modules[source_module_name][source_param_name] = "";
-                              modules[target_module_name][target_param_name] = "";   
+                              modules[target_module_name][target_param_name] = ""; 
+                              //Remove ordering
+                              var to_remove = null;  
+                              for (var i=0; i < ordering.length; i++) {
+                                 if (ordering[i][0] == source_module_name && ordering[i][1] == target_module_name) {
+                                    to_remove = i;
+                                    break;
+                                 }
+                              }
+                              if (to_remove != null) {
+                                 ordering.splice(to_remove, 1);
+                              }
+                              //Update UI
                               graph.getModel().beginUpdate();
                               var cell = selected_cell; //graph.getModel().getCell(selected_cell);
                               cell.setVisible(false);
@@ -435,12 +446,12 @@
                      // record the use of the modules
                      var source_module_name = map_cells_modules[source.id];
                      var target_module_name = map_cells_modules[target.id];
-                     if (used_modules.indexOf(source_module_name) < 0) {
-                        used_modules.push(source_module_name);
-                     }
-                     if (used_modules.indexOf(target_module_name) < 0) {
-                        used_modules.push(target_module_name);
-                     }
+                     //if (used_modules.indexOf(source_module_name) < 0) {
+                     //   used_modules.push(source_module_name);
+                     //}
+                     //if (used_modules.indexOf(target_module_name) < 0) {
+                     //   used_modules.push(target_module_name);
+                     //}
                      // Make a filename
                      if (!(source_module_name in file_map)) {
                         file_map[source_module_name] = {};
@@ -480,12 +491,12 @@
                   else if (inputs.indexOf(target.id) < 0 && outputs.indexOf(target.id) < 0 && inputs.indexOf(source.id) < 0 && outputs.indexOf(source.id) < 0) {
                      var source_module_name = map_cells_modules[source.id];
                      var target_module_name = map_cells_modules[target.id];
-                     if (used_modules.indexOf(source_module_name) < 0) {
-                        used_modules.push(source_module_name);
-                     }
-                     if (used_modules.indexOf(target_module_name) < 0) {
-                        used_modules.push(target_module_name);
-                     }
+                     //if (used_modules.indexOf(source_module_name) < 0) {
+                     //   used_modules.push(source_module_name);
+                     //}
+                     //if (used_modules.indexOf(target_module_name) < 0) {
+                     //   used_modules.push(target_module_name);
+                     //}
                      var source_param = map_cells_params[source.id];
                      var target_param = map_cells_params[target.id];
                      var source_id = parseInt(source.id);
@@ -683,7 +694,15 @@
                var s = "";
                var first = true;
 
+               var used_modules = [];
+               for (var key in modules) {
+                  used_modules.push(key);
+               }
+               console.log(used_modules);
+               console.log(ordering);
+
                var ordered_modules = order_modules(used_modules, ordering);
+               console.log(ordered_modules);
 
                for (i = 0; i < ordered_modules.length; i++) {
                   var name = ordered_modules[i];
