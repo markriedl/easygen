@@ -28,7 +28,16 @@
          alert(fileSelector.value.length);
       }
 
-
+      function findCell(module_name, param_name, cells, map_cells_modules, map_cells_params)
+      {
+         for (var c=0; c < cells.length; c++) {
+            var cell = cells[c];
+            if (map_cells_modules[cell.id] == module_name && map_cells_params[cell.id] == param_name) {
+               return cell;
+            }
+         }
+         return null;
+      }
 
       function order_modules(modules, ordering) 
       {
@@ -226,6 +235,7 @@
             var prototype_parameter_attributes = {};
             var parameter_defaults = {}; //dictionary of dictionaries
             var tips = {}; //cell.ids to tool tips
+            var columns = []; // pointers to all of the columns.
 
             // Disables built-in context menu
             mxEvent.disableContextMenu(container);
@@ -588,19 +598,15 @@
  
             try
             {
-               //var col1 = graph.insertVertex(parent, null, 'Modules', 0, 0, 160, 1000, 'column');
-               for (i = 0; i < 10; i++) {
-                  var col2 = graph.insertVertex(parent, null, parseInt(i+1), (i+1)*160, 0, 160, 250, 'column');
+               // Make columns
+               for (var i = 0; i < 10; i++) {
+                  var col = graph.insertVertex(parent, null, parseInt(i+1), (i+1)*160, 0, 160, 250, 'column');
+                  columns.push(col);
                }
 
-               // Make a node for every module
+               // Make prototypes
                for (i = 0; i < mydata.length; i++) { 
                   var name = mydata[i].name
-                  /*
-                  var module = graph.insertVertex(col1, null, name, 0, 0, 140, 30, 'module');
-                  module.setConnectable(false);
-                  module.collapsed = true;
-                  */
                   module_dict = {};
                   module_dict["module"] = name;
                   prototype_parameter_attributes[name] = {};
@@ -610,109 +616,29 @@
                   if (mydata[i].category != null) {
                      module_dict["category"] = mydata[i].category
                   }
-                  /*
-                  map_cells_modules[module.id] = name;
-                  var my_cells = [];
-                  my_cells.push(module.id);
-                  map_param_type[name] = {};
-                  */
-                  // Make a sub-node for every parameter
                   var params = mydata[i].params.split(';')
                   for (j = 0; j < params.length; j++) {
                      // parse the parameters
                      var param = params[j]
                      var param = param.substring(0,param.lastIndexOf("("));
                      var vals = params[j].substring(params[j].lastIndexOf("("), params[j].lastIndexOf(")")+1);
-                     //var param = param.replace(vals, "");
                      vals = vals.replace("(", "");
                      vals = vals.replace(")", "");
                      vals = vals.split(',')
                      prototype_parameter_attributes[name][param] = [];
-                     //var input_node = false // is this an input parameter?
-                     //var output_node = false // is this an ouput paramter?
-                     // Figure out if the paramter is an input or output, or neither
-                     /*
-                     for (k = 0; k < vals.length; k++) {
-                        cur = vals[k];
-                        if (cur == "out") {
-                           output_node = true
-                        }
-                        else if (cur == "in") {
-                           input_node = true
-                        }
-                     }
-                     */
                      for (k = 0; k < vals.length; k++) {
                         var cur = vals[k];
                         prototype_parameter_attributes[name][param].push(cur);
                      }
-                     /*
-                     // Make the sub-node for the parameter
-                     var color = "white";
-                     if (output_node) {
-                        color = "red"
-                     }
-                     else if (input_node) {
-                        color = "green"
-                     }
-                     var submod = graph.insertVertex(module, null, param, 0, 0, 120, 30, 'parameter');//"fillColor="+color);
-                     submod.setStyle("fillColor="+color);
-                     //submod.setConnectable(output_node || input_node);
-                     map_cells_modules[submod.id] = name;
-                     map_cells_params[submod.id] = param;
-                     my_cells.push(submod.id);
-                     parameter_ids.push(submod.id);
-
-                     // Remember if this cell is an input or output
-                     if (output_node) {
-                        outputs.push(submod.id);
-                     }
-                     if (input_node) {
-                        inputs.push(submod.id);
-                     }
-                     // More parsing to get the type of the parameter
-                     var index = vals.indexOf("in");
-                     if (index >= 0) {
-                        vals.splice(index, 1);
-                     }
-                     index = vals.indexOf("out");
-                     if (index >= 0) {
-                        vals.splice(index, 1);
-                     }
-                     var type = String(vals);
-                     types[submod.id] = type;
-                     map_param_type[name][param] = type;
-                     */
-                     // Add parameter to module dictionary
                      module_dict[param] = ""
-
-                     
-
-
                   }
-
-                  // Store the module dictionary
-                  /*
-                  modules[name] = module_dict;
-                  map_modules_cells[module.id] = my_cells;
-                  */
 
                   prototypes[name] = module_dict
                   module_counters[name] = 0;
                }
 
                
-               
-               
-               //graph.insertEdge(parent, null, '', v13, v41);
-               //graph.insertEdge(parent, null, '', v42, v21);
-               //graph.insertEdge(parent, null, '', v22, v31);
-               //graph.insertEdge(parent, null, '', v112, v212);
-               //graph.insertEdge(parent, null, '', v112, v22);
-
-               //graph.insertEdge(parent, null, '', v12, v311);
-               //graph.insertEdge(parent, null, '', v12, v312);
-               //graph.insertEdge(parent, null, '', v12, v32);
+ 
             }
             finally
             {
@@ -806,13 +732,77 @@
 
             var load_button = mxUtils.button('Load', function()
             {
-               alert("Load is not implemented yet. Sorry.");
                var filename = prompt("Filename:", '');
                var xhttp = new XMLHttpRequest();
                xhttp.onreadystatechange = function() {
                   if (this.readyState == 4 && this.status == 200) {
                      // Action to be performed when the document is read;
-                     console.log(this.responseText);
+                     var prog = eval(this.responseText);
+                     console.log(prog);
+                     for (var i=0; i < prog.length; i++) {
+                        var read_module = prog[i];
+                        var index = i;
+                        if (index >= columns.length) {
+                           index = columns.length - 1;
+                        }
+                        module_type = read_module['module'];
+                        var made_module = makeModule(module_type, graph, columns[index], prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
+                        // Instantiate module parameters from the json file
+                        for (var key in read_module) {
+                           var value = read_module[key];
+                           made_module[key] = value;
+                        }
+                     }
+                     console.log(modules);
+                     // Figure out which module parameters should link.
+                     var files_map = {};
+                     for (var module_name in modules) {
+                        var module = modules[module_name];
+                        for (var key in module) {
+                           var value = module[key];
+                           console.log(key + '=' + value);
+                           if (value.startsWith('temp/')) {
+                              if (files_map[value] == null) {
+                                 files_map[value] = [];
+                              }
+                              files_map[value].push([module['name'], key]);
+                           }
+                        }
+                     }
+                     var cells = [];
+                     for (var i=0; i < columns.length; i++) {
+                        var module_cells = graph.getChildCells(columns[i]);
+                        for (var j=0; j < module_cells.length; j++) {
+                           var cur = module_cells[j]
+                           cells.push(cur);
+                           var subcells = graph.getChildCells(cur);
+                           for (var k=0; k < subcells.length; k++) {
+                              cells.push(subcells[k]);
+                           }
+                        }
+                     }
+                     for (var file in files_map) {
+                        var pairs = files_map[file];
+                        for (var i=0; i < pairs.length; i++) {
+                           var pair1 = pairs[i];
+                           var cell1 = findCell(pair1[0], pair1[1], cells, map_cells_modules, map_cells_params);
+                           for (var j=i+1; j < pairs.length; j++) {
+                              var pair2 = pairs[j];
+                              var cell2 = findCell(pair2[0], pair2[1], cells, map_cells_modules, map_cells_params);
+                              var source = cell1;
+                              var target = cell2;
+                              if (cell2 in inputs) {
+                                 source = cell2;
+                                 target = cell1;
+                              }
+                              graph.getModel().beginUpdate();
+                              var edge = graph.createEdge(graph.getDefaultParent(), null, null, source, target, 'arrow_edge');
+                              graph.addEdge(edge, graph.getDefaultParent(), source, target);
+                              console.log(edge);
+                              graph.getModel().endUpdate();
+                           }
+                        }
+                     }
                   }
                };
                xhttp.open("POST", "http://localhost:8000?"+'load='+filename, true);
@@ -907,6 +897,7 @@
                tips[submod.id] = tip;
             }
 
+            module_dict['name'] = name;
             modules[name] = module_dict;
             map_modules_cells[module.id] = my_cells;
 
@@ -914,6 +905,7 @@
          
          modules[name] = module_dict;
          graph.getModel().endUpdate();
+         return module_dict;
       }
 
       function createPopupMenu(graph, menu, cell, evt, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips) 

@@ -15,6 +15,8 @@ def runModule(module_json):
 		## Convert the json to a set of parameters to pass into a class of the same name as the module name
 		## Take the module name out
 		del module_json_copy['module']
+		if 'name' in module_json_copy:
+			del module_json_copy['name']
 
 		rest = str(module_json_copy)
 
