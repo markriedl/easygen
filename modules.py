@@ -835,11 +835,15 @@ class LoadModel(Module):
 		split_file_path = os.path.split(self.file)
 		file_name = split_file_path[1]
 		file_directory = split_file_path[0]
+		if len(file_directory) == 0:
+			file_directory = '.'
 
 		split_model_path = os.path.split(self.model)
 		model_file = split_model_path[1]
 		model_directory = split_model_path[0]
 
+		print file_directory
+		print file_name
 		for f in os.listdir(file_directory):
 			match = re.match(file_name, f)
 			if match is not None:
