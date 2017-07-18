@@ -40,7 +40,8 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
         self._set_headers()
         cwd = os.getcwd()
         split_path = os.path.split(self.path)
-        if len(split_path) > 1 and split_path[1] == "mxClient.js":
+        print split_path
+        if len(split_path) > 1 and (split_path[1] == "mxClient.js" or 'images' in split_path[0]):
             file = open(cwd + self.path)
             out = file.read()
             file.close()

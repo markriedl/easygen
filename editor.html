@@ -123,19 +123,60 @@
             style[mxConstants.STYLE_SHAPE] = 'swimlane';
             style[mxConstants.STYLE_STARTSIZE] = 30;
 
+            // Default parameter style
             var param_style = mxUtils.clone(style);
             graph.getStylesheet().putCellStyle('parameter', param_style);
+            // Default input parameter style
             var input_param_style = mxUtils.clone(style);
+            input_param_style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
+            input_param_style[mxConstants.STYLE_IMAGE_BORDER] = 'black';
             input_param_style[mxConstants.STYLE_FILLCOLOR] = '#66cdaa';
+            input_param_style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_LEFT;
             graph.getStylesheet().putCellStyle('input_parameter', input_param_style);
+            // Text input parameter style
+            text_input_param_style = mxUtils.clone(input_param_style);
+            text_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/text.png';
+            graph.getStylesheet().putCellStyle('text_input_parameter', text_input_param_style);
+            // Model input parameter style
+            model_input_param_style = mxUtils.clone(input_param_style);
+            model_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/model.png';
+            graph.getStylesheet().putCellStyle('model_input_parameter', model_input_param_style);
+            // Dictionary input parameter style
+            dictionary_input_param_style = mxUtils.clone(input_param_style);
+            dictionary_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/dictionary.png';
+            graph.getStylesheet().putCellStyle('dictionary_input_parameter', dictionary_input_param_style);
+            // Images input parameter style
+            images_input_param_style = mxUtils.clone(input_param_style);
+            images_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
+            graph.getStylesheet().putCellStyle('images_input_parameter', images_input_param_style);
+            // Default output parameter style
             var output_param_style = mxUtils.clone(style);
+            output_param_style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
+            output_param_style[mxConstants.STYLE_IMAGE_BORDER] = 'black';
             output_param_style[mxConstants.STYLE_FILLCOLOR] = '#cd5c5c';
+            output_param_style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_RIGHT;
             graph.getStylesheet().putCellStyle('output_parameter', output_param_style);
+            // Text output parameter style
+            text_output_param_style = mxUtils.clone(output_param_style);
+            text_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/text.png';
+            graph.getStylesheet().putCellStyle('text_output_parameter', text_output_param_style);
+            // Model output parameter style
+            model_output_param_style = mxUtils.clone(output_param_style);
+            model_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/model.png';
+            graph.getStylesheet().putCellStyle('model_output_parameter', model_output_param_style);
+            // Dictionary output parameter style
+            dictionary_output_param_style = mxUtils.clone(output_param_style);
+            dictionary_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/dictionary.png';
+            graph.getStylesheet().putCellStyle('dictionary_output_parameter', dictionary_output_param_style);
+            // Images output parameter style
+            images_output_param_style = mxUtils.clone(output_param_style);
+            images_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
+            graph.getStylesheet().putCellStyle('images_output_parameter', images_output_param_style);
+            // Module style
             var module_style = mxUtils.clone(style);
             module_style[mxConstants.STYLE_ROUNDED] = true;
             graph.getStylesheet().putCellStyle('module', module_style);
-
-            
+            // Column style
             style = [];
             style[mxConstants.STYLE_SHAPE] = 'swimlane';//mxConstants.SHAPE_RECTANGLE;
             style[mxConstants.STYLE_STROKECOLOR] = 'none';
@@ -147,12 +188,14 @@
             style[mxConstants.STYLE_STARTSIZE] = 22;
             graph.getStylesheet().putCellStyle('column', style);
 
+            // Link edge style
             var edge_style = graph.getStylesheet().getDefaultEdgeStyle();
             var link_edge_style = mxUtils.clone(edge_style);
             link_edge_style['endArrow'] = null;
             link_edge_style['dashed'] = 1;
             graph.getStylesheet().putCellStyle('link_edge', link_edge_style);
 
+            // Aarow edge style
             var arrow_edge_style = mxUtils.clone(edge_style);
             arrow_edge_style['endArrow'] = mxConstants.ARROW_CLASSIC;
             arrow_edge_style['dashed'] = 0;
@@ -829,7 +872,7 @@
          graph.getModel().beginUpdate();
          var counter = module_counters[module_name] + 1;
          module_counters[module_name] = module_counters[module_name] + 1;
-         name = module_name + parseInt(counter);
+         name = module_name + ' (' + parseInt(counter) + ')';
 
          var module = graph.insertVertex(parent, null, name, 0, 0, 140, 30, 'module');
          module.setConnectable(false);
@@ -883,10 +926,34 @@
                if (is_output) {
                   //color = "#cd5c5c"
                   style = 'output_parameter'
+                  if (type == 'text') {
+                     style = 'text_output_parameter';
+                  }
+                  else if (type == "model") {
+                     style = 'model_output_parameter';
+                  }
+                  else if (type == "dictionary") {
+                     style = 'dictionary_output_parameter';
+                  }
+                  else if (type == "images") {
+                     style = 'images_output_parameter'
+                  }
                }
                else if (is_input) {
                   //color = "#66cdaa"
                   style = 'input_parameter'
+                  if (type == 'text') {
+                     style = 'text_input_parameter';
+                  }
+                  else if (type == "model") {
+                     style = 'model_input_parameter';
+                  }
+                  else if (type == "dictionary") {
+                     style = 'dictionary_input_parameter';
+                  }
+                  else if (type == "images") {
+                     style = 'images_input_parameter'
+                  }
                }
 
                var submod = graph.insertVertex(module, null, param_name, 0, 0, 120, 30, style);//"fillColor="+color);
