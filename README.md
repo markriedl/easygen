@@ -77,9 +77,11 @@ That last one sounds like a really strange thing to do. But if you start with so
 
    `pip install -I tflearn==0.2.1`
 
-6. Install Beautiful Soup 4
+6. Install Beautiful Soup 4 and imageio
 
    `pip install beautifulsoup4`
+
+   `pip install imageio`
 
 If you will be pulling data from Wikipedia, you must do the following:
 
@@ -93,6 +95,11 @@ If you will be pulling data from Wikipedia, you must do the following:
 
    Be sure to fill in the exact path and name to the XML file. This will create a directory called "wiki".
 
+If you will be using StyleNet, you must do the following:
+
+10. In the easygen/stylenet directory, run the setup command to download the necessary datasets:
+
+   `./setup.sh`
 
 # Examples
 
