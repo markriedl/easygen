@@ -834,9 +834,9 @@ None.
 | --------- | ---- | ----------- |
 | output  | text data | The text data with words and punctuation with blank spaces between. |
 
-## DCGAN
+## DCGAN_Train
 
-A Generative Adversarial Network (GAN) is a type of neural network that learns to generate images similar to a set of input images.
+A Generative Adversarial Network (GAN) is a type of neural network that learns to generate images similar to a set of input images. This module trains the GAN.
 
  **Inputs:**
 
@@ -853,14 +853,39 @@ A Generative Adversarial Network (GAN) is a type of neural network that learns t
 | input_height | int | Each image must be of the same height. Width must be same as height. | 108 |
 | output_height | int | Each image will be output with this height. Width will be same as height. | 108 |
 | filetype | string | Format of input images (jpg, png). | jpg |
-| crop | true/false | Should input images be center-cropped? | True |
-| num_images | int | Number of images to generate. | 1 |
 
 **Outputs:**
 
 | Component | Type | Description |
 | --------- | ---- | ----------- |
-| output_images  | set of images | The set of generated images. |
+| model  | GAN model | The learned model. |
+| animation | image | An animated gif that shows the training. |
+
+## DCGAN_Run
+
+A Generative Adversarial Network (GAN) is a type of neural network that learns to generate images similar to a set of input images. This module runs a GAN model.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input_images  | set of images | This is a set of images to use as examples. |
+| model         | GAN model     | The learned model. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| input_height | int | Each image must be of the same height. Width must be same as height. | 108 |
+| output_height | int | Each image will be output with this height. Width will be same as height. | 108 |
+| filetype | string | Format of input images (jpg, png). | jpg |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output_image | image | A generated image. |
 
 ## ReadImages
 
@@ -1178,3 +1203,53 @@ This module uses a regular expression to find a sequence of text and then replac
 Using groups: When there are paired parentheses `( ... )` in the regular expression, then if a match occurs, the parentheses further specify that some of those characters should be pulled aside. Groups can then be referenced in the `replace` specification using `\1` for the first group, `\2` for the second group, and so on.
 
 For example: `<a href\=[\"]?([.]+)[\"]?>([.]+)</a>` will match against anchor tags in an html file. The first group grabs the URL and the second group will grab the text of the link. If the replace string is `\2: \1`, it will replace all anchor tags with "the link text: URL".
+
+## StyleNet_Train
+
+StyleNet is a neural net technique that learns the style of an artistic image and attempts to transfer the style to another image. For example, training StyleNet on van Gogh's "The Starry Night" would produce a model that would attempt to make any image look like it was painted by van Gogh in the same style.
+
+Before you can use this module, you must run `./setup.sh` in the `easygen/stylenet` directory. This will download the necessary, very large datasets.
+
+Note: Training a style model can take a very long time.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| style_image  | image | This image has the style that you want to transfer to other images. |
+| test_image  | image | This image is used to test the model after every epoch. This doesn't really do anything but you can see how the neural network learns to apply the style in the output animation. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| epochs | int | The number of times the dataset should be run through the neural net. 2-10 seems good. | 2 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model     | The StyleNet model | This model can be applied to transfer the learned style to any image. |
+| animation | image | This is an animation showing the stages as StyleNet learns to apply the style to the test image. |
+
+## StyleNet_Run
+
+StyleNet is a neural net technique that learns the style of an artistic image and attempts to transfer the style to another image. For example, training StyleNet on van Gogh's "The Starry Night" would produce a model that would attempt to make any image look like it was painted by van Gogh in the same style.
+
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model     | StyleNet model | The model that learned the desired style. |
+| target_image  | image | This is the image that you want to transfer the learned style to. |
+
+
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output_image     | image | The target image but with the learned style transferred to it. |
+

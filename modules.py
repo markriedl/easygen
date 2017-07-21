@@ -11,6 +11,11 @@ from shutil import copyfile
 from shutil import move
 import urllib2
 import time
+import imageio # This needs to be installed first 'pip install imageio'
+
+########################
+
+CHECKPOINT_DIR = 'checkpoints'
 
 ########################
 
@@ -42,6 +47,7 @@ class WriteTextFile(Module):
 	def __init__(self, file, input):
 		self.file = file
 		self.input = input
+		self.ready = checkFiles(input)
 
 	def run(self):
 		copyfile(self.input, self.file)
@@ -572,17 +578,19 @@ class WriteImages(Module):
 
 
 
-class DCGAN(Module):
+class DCGAN_Train(Module):
 
-	def __init__(self, input_images, output_images, epochs, input_height, output_height, filetype, crop, num_images):
+	def __init__(self, input_images, animation, epochs, input_height, output_height, filetype, model):
 		self.input_images = input_images
 		self.epochs = epochs
 		self.input_height = input_height
 		self.output_height = output_height
 		self.filetype = filetype
-		self.crop = crop
-		self.output_images = output_images
-		self.num_images = num_images
+		#self.crop = crop
+		#self.output_images = output_images
+		#self.num_images = num_images
+		self.animation = animation
+		self.model = model
 		if checkFiles(input_images):
 			self.ready = True
 
@@ -593,24 +601,69 @@ class DCGAN(Module):
 			filetype = '*.jpg'
 		else:
 			filetype = '*.' + self.filetype
-		crop = self.crop
-		if isinstance(self.crop, basestring):
-			crop = True
+		#crop = self.crop
+		#if isinstance(self.crop, basestring):
+		#	crop = True
+		# Get data directory
 		f = open(self.input_images, 'r')
 		data_dir = f.readline().strip()
 		f.close()
-		print self.input_images, self.output_images, self.epochs, self.input_height, self.output_height, filetype, crop, data_dir
-		output_dir = self.output_images + '_output'
-		sample_dir = self.output_images + '_samples'
-		checkpoint_dir = 'checkpoints'
-		if not os.path.exists(output_dir):
-			os.makedirs(output_dir)
+		# Create directory for samples and output and checkpoints
+		#output_dir = self.output_images + '_output'
+		sample_dir = self.model + '_samples'
+		checkpoint_dir = CHECKPOINT_DIR
+		#if not os.path.exists(output_dir):
+		#	os.makedirs(output_dir)
 		if not os.path.exists(sample_dir):
 			os.makedirs(sample_dir)
-		gan.run(train = True, epoch = self.epochs, input_height = self.input_height, input_width = self.input_height, output_height = self.output_height, output_width = self.output_height, input_fname_pattern = filetype, crop = crop, dataset = data_dir, sample_dir = sample_dir, checkpoint_dir = checkpoint_dir, output_dir = output_dir, num_images = self.num_images)
+		# Figure out where to save the model
+		model_path_split = os.path.split(self.model)
+		model_dir = model_path_split[0]
+		model_filename = model_path_split[1]
+		if len(model_dir) == 0:
+			model_dir = '.'
+		gan.train(epoch = self.epochs, input_height = self.input_height, input_width = self.input_height, output_height = self.output_height, output_width = self.output_height, input_fname_pattern = filetype, dataset = data_dir, sample_dir = sample_dir, checkpoint_dir = checkpoint_dir, model_dir = model_dir, model_filename = model_filename)
 
-		with open(self.output_images, 'w') as f:
-			print >> f, output_dir
+		#with open(self.output_images, 'w') as f:
+		#	print >> f, output_dir
+
+		# Make the training animation
+		images = []
+		samples = sorted(os.listdir(sample_dir), key=lambda f: os.stat(os.path.join(sample_dir, f)).st_mtime)
+		for sample in samples:
+		    images.append(imageio.imread(os.path.join(sample_dir, sample), 'png'))
+		if  len(images) > 0:
+			imageio.mimsave(self.animation, images, 'gif')
+
+#####################################################
+
+class DCGAN_Run(Module):
+
+	def __init__ (self, input_images, input_height, output_height, filetype, output_image, model):
+		self.input_images = input_images
+		self.output_image = output_image
+		self.input_height = input_height
+		self.output_height = output_height
+		self.filetype = filetype
+		#self.num_images = num_images
+		self.model = model
+		self.ready = checkFiles(model, input_images)
+
+	def run(self):
+		import DCGAN.main as gan
+		filetype = ''
+		if len(self.filetype) == 0:
+			filetype = '*.jpg'
+		else:
+			filetype = '*.' + self.filetype
+		# Get data directory
+		f = open(self.input_images, 'r')
+		data_dir = f.readline().strip()
+		f.close()
+		# Run the model
+		copyfile(self.model, 'temp/checkpoint')
+		gan.run(output_dir = self.output_image, input_height = self.input_height, input_width = self.input_height, output_height = self.output_height, output_width = self.output_height, input_fname_pattern = filetype, dataset = data_dir, checkpoint_dir = 'temp')
+
 
 ####################################################
 
@@ -785,12 +838,13 @@ class SaveModel(Module):
 		target_file = split_file_path[1]
 		target_directory = split_file_path[0]
 
-		for f in os.listdir('temp'):
+		for f in os.listdir(model_directory):
 			match = re.match(model_file, f)
 			if match is not None:
 				f_rest = f[len(model_file):]
 				filename = os.path.join(model_directory, f)
-				copyfile(filename, self.file + f_rest)
+				if not os.path.isdir(filename):
+					copyfile(filename, self.file + f_rest)
 
 		with open(self.file, 'w') as f:
 			print >> f, 'model_checkpoint_path: "'+ target_file + '"'
@@ -1114,5 +1168,91 @@ class Regex_Sub(Module):
 			new_text = re.subn(self.expression, self.replace, text)[0]
 			outfile.write(new_text)
 
+
+###################################################
+
+class ReadImageFile(Module):
+
+	def __init__(self, file, output):
+		self.file = file
+		self.output = output
+		self.ready = checkFiles(file)
+
+	def run(self):
+		copyfile(self.file, self.output)
+
+
+###################################################
+
+class WriteImageFile(Module):
+
+	def __init__(self, input, file):
+		self.input = input
+		self.file = file
+		self.ready = checkFiles(input)
+
+	def run(self):
+		copyfile(self.input, self.file)
+
+
+##################################################
+
+class StyleNet_Train(Module):
+
+	def __init__(self, style_image, test_image, model, epochs, animation):
+		self.style_image = style_image
+		self.test_image = test_image
+		#self.output_image = output_image
+		self.epochs = epochs
+		self.animation = animation
+		self.model = model
+		self.ready = checkFiles(style_image, test_image)
+
+	def run(self):
+		import stylenet.style as sstyle 
+		#import stylenet.evaluate as sevaluate
+		model_path_split = os.path.split(self.model)
+		model_path = model_path_split[0]
+		model_name = model_path_split[1]
+		test_dir = os.path.join(model_path, model_name + "_sample")
+		if not os.path.exists(test_dir):
+			os.makedirs(test_dir)
+		checkpoint_path = os.path.join(CHECKPOINT_DIR, 'style')
+		sstyle.main(self.style_image, self.test_image, epochs = self.epochs, test_dir = test_dir, checkpoint_dir = checkpoint_path)
+		#sevaluate.main(self.target_image, self.output_image)
+
+		# Save the model
+		saver = SaveModel(model=checkpoint_path, file=self.model)
+		saver.run()
+
+		# Make the training animation
+		images = []
+		samples = sorted(os.listdir(test_dir), key=lambda f: os.stat(os.path.join(test_dir, f)).st_mtime)
+		for sample in samples:
+		    images.append(imageio.imread(os.path.join(test_dir, sample), 'png'))
+		if  len(images) > 0:
+			imageio.mimsave(self.animation, images, 'gif')
+
+
+class StyleNet_Run(Module):
+
+	def __init__(self, model, target_image, output_image):
+		self.model = model
+		self.target_image = target_image
+		self.output_image = output_image
+
+	def run(self):
+		import stylenet.evaluate as sevaluate
+		checkpoint_path = os.path.join(CHECKPOINT_DIR, 'style')
+		loader = LoadModel(file=self.model, model=checkpoint_path)
+		loader.run()
+		model_path_split = os.path.split(self.model)
+		model_path = model_path_split[0]
+		model_name = model_path_split[1]
+		with open('temp/checkpoint', 'w') as f:
+			print >> f, 'model_checkpoint_path: "style"'
+			print >> f, 'all_model_checkpoint_paths: "style"'
+
+		sevaluate.main(self.target_image, self.output_image, checkpoint_dir = checkpoint_path)
 
 			

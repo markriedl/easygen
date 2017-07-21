@@ -149,6 +149,10 @@
             images_input_param_style = mxUtils.clone(input_param_style);
             images_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
             graph.getStylesheet().putCellStyle('images_input_parameter', images_input_param_style);
+            // Image input parameter style
+            image_input_param_style = mxUtils.clone(input_param_style);
+            image_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/image.png';
+            graph.getStylesheet().putCellStyle('image_input_parameter', image_input_param_style);
             // Default output parameter style
             var output_param_style = mxUtils.clone(style);
             output_param_style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
@@ -172,6 +176,10 @@
             images_output_param_style = mxUtils.clone(output_param_style);
             images_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
             graph.getStylesheet().putCellStyle('images_output_parameter', images_output_param_style);
+            // Image output parameter style
+            image_output_param_style = mxUtils.clone(output_param_style);
+            image_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/image.png';
+            graph.getStylesheet().putCellStyle('image_output_parameter', image_output_param_style);
             // Module style
             var module_style = mxUtils.clone(style);
             module_style[mxConstants.STYLE_ROUNDED] = true;
@@ -735,7 +743,7 @@
                         if (map_param_type[name][param] == "bool") {
                            m_dict[param] = "False"
                         }
-                        else if (map_param_type[name][param] == "text" || map_param_type[name][param] == "model" || map_param_type[name][param] == "dictionary" || map_param_type[name][param] == "images") {
+                        else if (map_param_type[name][param] == "text" || map_param_type[name][param] == "model" || map_param_type[name][param] == "dictionary" || map_param_type[name][param] == "images" || map_param_type[name][param] == 'image') {
                            m_dict[param] = "temp/" + name + "_" + param + String(file_counter);
                            file_counter = file_counter + 1;
                         }
@@ -936,7 +944,10 @@
                      style = 'dictionary_output_parameter';
                   }
                   else if (type == "images") {
-                     style = 'images_output_parameter'
+                     style = 'images_output_parameter';
+                  }
+                  else if (type == "image") {
+                     style = 'image_output_parameter';
                   }
                }
                else if (is_input) {
@@ -952,7 +963,10 @@
                      style = 'dictionary_input_parameter';
                   }
                   else if (type == "images") {
-                     style = 'images_input_parameter'
+                     style = 'images_input_parameter';
+                  }
+                  else if (type == "image") {
+                     style = 'image_input_parameter';
                   }
                }
 

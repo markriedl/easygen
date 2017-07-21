@@ -19,7 +19,8 @@ data = '[ \
 	{"name" : "RandomSequence", "params" : "input(in,text);length(int=25,tip=Length of random sequence);output(out,text)", "tip" : "Pick a random sequence of a certain length from a text file--good for seeding a character-RNN", "category" : "CharRNN"}, \
 	{"name" : "MakeString", "params" : "string(string,tip=Enter a string);output(out,text)", "tip" : "Write a single string to a text file", "category" : "Input"}, \
 	{"name" : "UserInput", "params" : "prompt(string,tip=Pring this prompt);output(out,text)", "tip" : "Prompt user for a string", "category" : "Input"}, \
-	{"name" : "DCGAN", "params" : "input_images(images,in);output_images(images,out);epochs(int=10);input_height(int=108);output_height(int=108);filetype(string=jpg);crop(bool=true);num_images(int=1,tip=Number of output images to generate)", "tip" : "Train a generateive adversarial network to make images", "category" : "GAN"}, \
+	{"name" : "DCGAN_Train", "params" : "input_images(images,in);epochs(int=10);input_height(int=108);output_height(int=108);filetype(string=jpg);model(out,model);animation(out,image)", "tip" : "Train a generateive adversarial network to make images", "category" : "GAN"}, \
+	{"name" : "DCGAN_Run", "params" : "input_images(images,in);model(in,model);input_height(int=108);output_height(int=108);filetype(string=jpg);output_image(out,image)", "tip" : "Generate an image from a generative adversarial network", "category" : "GAN"}, \
 	{"name" : "ReadImages", "params" : "data_directory(directory);output_images(out,images)", "tip" : "Read in a directory of image files", "category" : "File"}, \
 	{"name" : "WriteImages", "params" : "input_images(in,images);output_directory(directory)", "tip" : "Save a group of images to a directory", "category" : "File"}, \
 	{"name" : "PickFromWikipedia", "params" : "wiki_directory(directory,tip=Directory where wikipedia files are stored);input(in,text);catgories(string=*,tip=What categories if any?);section_name(string,tip=What section to pull text from if any);output(out,text);break_sentences(bool=false,tip=Should text be broken into one sentence per line?)", "tip" : "Pull text from wikipedia for the articles specified (file with one title per line)", "category" : "Wikipedia"}, \
@@ -42,5 +43,9 @@ data = '[ \
 	{"name" : "MakeCountFile", "params" : "num(int=10,tip=Count up to this number);prefix(string,tip=Text before the number);postfix(string,tip=Text after the number);output(out,text)", "tip" : "Make a text file where each line has a number on it, counting up", "category" : "Do not use"}, \
 	{"name" : "SplitHTML" , "params" : "input(in,text);output(out,text)", "tip" : "Break up a file so each line contains a single HTML tag", "category" : "Do not use"}, \
 	{"name" : "Regex_Search", "params" : "input(in,text);expression(string,tip=Regular expression);output(out,text);group_1(out,text);group_2(out,text)", "tip" : "Search for all sequences that match a regular expression", "category" : "Regex"}, \
-	{"name" : "Regex_Sub", "params" : "input(in,text);expression(string,tip=Regular expression);replace(string,tip=Replace match with this);output(out,text)", "category" : "Regex"} \
+	{"name" : "Regex_Sub", "params" : "input(in,text);expression(string,tip=Regular expression);replace(string,tip=Replace match with this);output(out,text)", "category" : "Regex"}, \
+	{"name" : "StyleNet_Train", "params" : "style_image(in,image);test_image(in,image);epochs(int=2,tip=how long to run);model(out,model);animation(out,image)", "tip" : "Draw the target image in the style of the style image", "category" : "StyleNet"}, \
+	{"name" : "StyleNet_Run", "params" : "model(in,model);target_image(in,image,tip=Image to stylize);output_image(out,image)", "tip" : "Apply a style learned by a neural net to an image", "category" : "StyleNet"}, \
+	{"name" : "ReadImageFile", "params" : "file(string,tip=Name of image file to read in);output(out,image)", "tip" : "Read an image file in", "category" : "File"}, \
+	{"name" : "WriteImageFile", "params" : "input(in,image);file(string,tip=Name of image file to write to)", "tip" : "Write an image to file", "category" : "File"} \
 ]';

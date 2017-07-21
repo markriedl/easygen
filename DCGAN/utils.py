@@ -170,8 +170,9 @@ def make_gif(images, fname, duration=2, true_image=False):
   clip = mpy.VideoClip(make_frame, duration=duration)
   clip.write_gif(fname, fps = len(images) / duration)
 
-def visualize(sess, dcgan, option = 1, epoch = 25, learning_rate = 0.0002, beta1 = 0.5, train_size = np.inf, batch_size = 64, input_height = 108, input_width = None, output_height = 64, output_width = None, dataset = 'celebA', input_fname_pattern = '*.jpg', checkpoint_dir = 'checkpoints', sample_dir = 'samples', output_dir = 'output', train = False, crop = False, count = 0):
+def visualize(sess, dcgan, batch_size = 64, input_height = 108, input_width = None, output_dir = 'output'):
   image_frame_dim = int(math.ceil(batch_size**.5))
+  '''
   if option == 0:
     z_sample = np.random.uniform(-0.5, 0.5, size=(batch_size, dcgan.z_dim))
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
@@ -184,14 +185,15 @@ def visualize(sess, dcgan, option = 1, epoch = 25, learning_rate = 0.0002, beta1
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
-      if dataset == "mnist":
-        y = np.random.choice(10, batch_size)
-        y_one_hot = np.zeros((batch_size, 10))
-        y_one_hot[np.arange(batch_size), y] = 1
-
-        samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
-      else:
-        samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      #if dataset == "mnist":
+      #  y = np.random.choice(10, batch_size)
+      #  y_one_hot = np.zeros((batch_size, 10))
+      #  y_one_hot[np.arange(batch_size), y] = 1
+      #
+      #  samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
+      #else:
+      samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      #endelse
 
       save_images(samples, [image_frame_dim, image_frame_dim], os.path.join(output_dir, 'test_arange_%s.png' % (idx)))
   elif option == 2:
@@ -204,14 +206,15 @@ def visualize(sess, dcgan, option = 1, epoch = 25, learning_rate = 0.0002, beta1
       for kdx, z in enumerate(z_sample):
         z[idx] = values[kdx]
 
-      if dataset == "mnist":
-        y = np.random.choice(10, batch_size)
-        y_one_hot = np.zeros((batch_size, 10))
-        y_one_hot[np.arange(batch_size), y] = 1
-
-        samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
-      else:
-        samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      #if dataset == "mnist":
+      #  y = np.random.choice(10, batch_size)
+      #  y_one_hot = np.zeros((batch_size, 10))
+      #  y_one_hot[np.arange(batch_size), y] = 1
+      #
+      #  samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
+      #else:
+      samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      #endelse
 
       try:
         make_gif(samples, os.path.join(output_dir, 'test_gif_%s.gif' % (idx)))
@@ -241,8 +244,15 @@ def visualize(sess, dcgan, option = 1, epoch = 25, learning_rate = 0.0002, beta1
 
     new_image_set = [merge(np.array([images[idx] for images in image_set]), [10, 10]) \
         for idx in range(64) + range(63, -1, -1)]
-    make_gif(new_image_set, os.path.join(output_dir, 'test_gif_merged.gif', duration=8))
-
+    make_gif(new_image_set, os.path.join(output_dir, 'test_gif_merged.gif'), duration=8)
+  '''
+  z_sample = np.random.uniform(-0.5, 0.5, size=(batch_size, dcgan.z_dim))
+  samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+  #samples = samples[0:1]
+  if input_width is None:
+    input_width = input_height
+  #save_images(samples, [input_width, input_height], os.path.join(output_dir, 'test_%s.png' % count))
+  scipy.misc.imsave(output_dir, random.choice(samples), 'png')
 
 def image_manifold_size(num_images):
   manifold_w = int(np.floor(np.sqrt(num_images)))

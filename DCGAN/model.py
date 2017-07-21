@@ -32,6 +32,8 @@ class DCGAN(object):
       dfc_dim: (optional) Dimension of discrim units for fully connected layer. [1024]
       c_dim: (optional) Dimension of image color. For grayscale input, set to 1. [3]
     """
+    self.global_training_steps = 0; # MOR added
+
     self.sess = sess
     self.crop = crop
 
@@ -70,16 +72,17 @@ class DCGAN(object):
     self.input_fname_pattern = input_fname_pattern
     self.checkpoint_dir = checkpoint_dir
 
-    if self.dataset_name == 'mnist':
-      self.data_X, self.data_y = self.load_mnist()
-      self.c_dim = self.data_X[0].shape[-1]
+    #if self.dataset_name == 'mnist':
+    #  self.data_X, self.data_y = self.load_mnist()
+    #  self.c_dim = self.data_X[0].shape[-1]
+    #else:
+    self.data = glob(os.path.join(".", self.dataset_name, self.input_fname_pattern))
+    imreadImg = imread(self.data[0]);
+    if len(imreadImg.shape) >= 3: #check if image is a non-grayscale image by checking channel number
+      self.c_dim = imread(self.data[0]).shape[-1]
     else:
-      self.data = glob(os.path.join(".", self.dataset_name, self.input_fname_pattern))
-      imreadImg = imread(self.data[0]);
-      if len(imreadImg.shape) >= 3: #check if image is a non-grayscale image by checking channel number
-        self.c_dim = imread(self.data[0]).shape[-1]
-      else:
-        self.c_dim = 1
+      self.c_dim = 1
+    #endelse
 
     self.grayscale = (self.c_dim == 1)
 
@@ -168,23 +171,24 @@ class DCGAN(object):
 
     sample_z = np.random.uniform(-1, 1, size=(self.sample_num , self.z_dim))
     
-    if dataset == 'mnist':
-      sample_inputs = self.data_X[0:self.sample_num]
-      sample_labels = self.data_y[0:self.sample_num]
+    #if dataset == 'mnist':
+    #  sample_inputs = self.data_X[0:self.sample_num]
+    #  sample_labels = self.data_y[0:self.sample_num]
+    #else:
+    sample_files = self.data[0:self.sample_num]
+    sample = [
+        get_image(sample_file,
+                  input_height=self.input_height,
+                  input_width=self.input_width,
+                  resize_height=self.output_height,
+                  resize_width=self.output_width,
+                  crop=self.crop,
+                  grayscale=self.grayscale) for sample_file in sample_files]
+    if (self.grayscale):
+      sample_inputs = np.array(sample).astype(np.float32)[:, :, :, None]
     else:
-      sample_files = self.data[0:self.sample_num]
-      sample = [
-          get_image(sample_file,
-                    input_height=self.input_height,
-                    input_width=self.input_width,
-                    resize_height=self.output_height,
-                    resize_width=self.output_width,
-                    crop=self.crop,
-                    grayscale=self.grayscale) for sample_file in sample_files]
-      if (self.grayscale):
-        sample_inputs = np.array(sample).astype(np.float32)[:, :, :, None]
-      else:
-        sample_inputs = np.array(sample).astype(np.float32)
+      sample_inputs = np.array(sample).astype(np.float32)
+    #endelse
   
     counter = 1
     start_time = time.time()
@@ -204,27 +208,29 @@ class DCGAN(object):
         batch_idxs = min(len(self.data), train_size) // batch_size
 
       for idx in xrange(0, batch_idxs):
-        if dataset == 'mnist':
-          batch_images = self.data_X[idx*batch_size:(idx+1)*batch_size]
-          batch_labels = self.data_y[idx*batch_size:(idx+1)*batch_size]
+        #if dataset == 'mnist':
+        #  batch_images = self.data_X[idx*batch_size:(idx+1)*batch_size]
+        #  batch_labels = self.data_y[idx*batch_size:(idx+1)*batch_size]
+        #else:
+        batch_files = self.data[idx*batch_size:(idx+1)*batch_size]
+        batch = [
+            get_image(batch_file,
+                      input_height=self.input_height,
+                      input_width=self.input_width,
+                      resize_height=self.output_height,
+                      resize_width=self.output_width,
+                      crop=self.crop,
+                      grayscale=self.grayscale) for batch_file in batch_files]
+        if self.grayscale:
+          batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
         else:
-          batch_files = self.data[idx*batch_size:(idx+1)*batch_size]
-          batch = [
-              get_image(batch_file,
-                        input_height=self.input_height,
-                        input_width=self.input_width,
-                        resize_height=self.output_height,
-                        resize_width=self.output_width,
-                        crop=self.crop,
-                        grayscale=self.grayscale) for batch_file in batch_files]
-          if self.grayscale:
-            batch_images = np.array(batch).astype(np.float32)[:, :, :, None]
-          else:
-            batch_images = np.array(batch).astype(np.float32)
+          batch_images = np.array(batch).astype(np.float32)
+        #endelse
 
         batch_z = np.random.uniform(-1, 1, [batch_size, self.z_dim]) \
               .astype(np.float32)
 
+        '''
         if dataset == 'mnist':
           # Update D network
           _, summary_str = self.sess.run([d_optim, self.d_sum],
@@ -261,61 +267,69 @@ class DCGAN(object):
               self.y: batch_labels
           })
         else:
-          # Update D network
-          _, summary_str = self.sess.run([d_optim, self.d_sum],
-            feed_dict={ self.inputs: batch_images, self.z: batch_z })
-          self.writer.add_summary(summary_str, counter)
+        '''
+        # Update D network
+        _, summary_str = self.sess.run([d_optim, self.d_sum],
+          feed_dict={ self.inputs: batch_images, self.z: batch_z })
+        self.writer.add_summary(summary_str, counter)
 
-          # Update G network
-          _, summary_str = self.sess.run([g_optim, self.g_sum],
-            feed_dict={ self.z: batch_z })
-          self.writer.add_summary(summary_str, counter)
+        # Update G network
+        _, summary_str = self.sess.run([g_optim, self.g_sum],
+          feed_dict={ self.z: batch_z })
+        self.writer.add_summary(summary_str, counter)
 
-          # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
-          _, summary_str = self.sess.run([g_optim, self.g_sum],
-            feed_dict={ self.z: batch_z })
-          self.writer.add_summary(summary_str, counter)
-          
-          errD_fake = self.d_loss_fake.eval({ self.z: batch_z })
-          errD_real = self.d_loss_real.eval({ self.inputs: batch_images })
-          errG = self.g_loss.eval({self.z: batch_z})
+        # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
+        _, summary_str = self.sess.run([g_optim, self.g_sum],
+          feed_dict={ self.z: batch_z })
+        self.writer.add_summary(summary_str, counter)
+        
+        errD_fake = self.d_loss_fake.eval({ self.z: batch_z })
+        errD_real = self.d_loss_real.eval({ self.inputs: batch_images })
+        errG = self.g_loss.eval({self.z: batch_z})
+        #endelse
 
         counter += 1
         print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
           % (epoch, idx, batch_idxs,
             time.time() - start_time, errD_fake+errD_real, errG))
 
-        if np.mod(counter, 100) == 1:
-          if dataset == 'mnist':
-            samples, d_loss, g_loss = self.sess.run(
-              [self.sampler, self.d_loss, self.g_loss],
-              feed_dict={
-                  self.z: sample_z,
-                  self.inputs: sample_inputs,
-                  self.y:sample_labels,
-              }
-            )
-            save_images(samples, image_manifold_size(samples.shape[0]),
-                  './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
-            print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
-          else:
-            try:
-              samples, d_loss, g_loss = self.sess.run(
-                [self.sampler, self.d_loss, self.g_loss],
-                feed_dict={
-                    self.z: sample_z,
-                    self.inputs: sample_inputs,
-                },
-              )
-              save_images(samples, image_manifold_size(samples.shape[0]),
-                    os.path.join(sample_dir, 'train_' + str(epoch) + '_' + str(idx) + '.png'))
-              print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
-            except:
-              print("one pic error!...")
-
         if np.mod(counter, 500) == 2:
           self.save(checkpoint_dir, counter)
-    self.save('temp', counter+1)
+
+      if np.mod(counter, 100) == 1:
+        '''
+        if dataset == 'mnist':
+          samples, d_loss, g_loss = self.sess.run(
+            [self.sampler, self.d_loss, self.g_loss],
+            feed_dict={
+                self.z: sample_z,
+                self.inputs: sample_inputs,
+                self.y:sample_labels,
+            }
+          )
+          save_images(samples, image_manifold_size(samples.shape[0]),
+                './{}/train_{:02d}_{:04d}.png'.format(sample_dir, epoch, idx))
+          print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
+        else:
+        '''
+        try:
+          samples, d_loss, g_loss = self.sess.run(
+            [self.sampler, self.d_loss, self.g_loss],
+            feed_dict={
+                self.z: sample_z,
+                self.inputs: sample_inputs,
+            },
+          )
+          save_images(samples, image_manifold_size(samples.shape[0]),
+                os.path.join(sample_dir, 'train_' + str(epoch) + '_' + str(idx) + '.png'))
+          print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)) 
+        except:
+          print("one pic error!...")
+        #endelse
+
+        
+    self.save(checkpoint_dir, counter+1)
+    self.global_training_steps = counter + 1
 
   def discriminator(self, image, y=None, reuse=False):
     with tf.variable_scope("discriminator") as scope:
@@ -502,7 +516,7 @@ class DCGAN(object):
         self.dataset_name, self.batch_size,
         self.output_height, self.output_width)
       
-  def save(self, checkpoint_dir, step):
+  def save(self, checkpoint_dir, step, filename = 'dcgan'):
     #model_name = "DCGAN.model"
     #checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
 
@@ -510,7 +524,7 @@ class DCGAN(object):
     #  os.makedirs(checkpoint_dir)
 
     self.saver.save(self.sess,
-            os.path.join(checkpoint_dir, 'dcgan'),#os.path.join(checkpoint_dir, model_name),
+            os.path.join(checkpoint_dir, filename),#os.path.join(checkpoint_dir, model_name),
             global_step=step)
 
   def load(self, checkpoint_dir):
