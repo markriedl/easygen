@@ -102,7 +102,7 @@ def read_data(source_path, target_path, max_size=None):
 					sys.stdout.flush()
 				source_ids = [int(x) for x in source.split()]
 				target_ids = [int(x) for x in target.split()]
-				target_ids.append(cmu_data_utils.EOS_ID)
+				target_ids.append(seq2seq_data_utils.EOS_ID)
 				
 				#for bucket_id, (source_size, target_size) in enumerate(_buckets):
 				#	if len(source_ids) < source_size and len(target_ids) < target_size:
@@ -144,7 +144,7 @@ def train(input_name = 'seq2seq', output_name = 'seq2seq', data_dir = '.', in_vo
 	# Prepare WMT data.
 	tf.reset_default_graph()
 	print("Preparing WMT data in %s" % data_dir)
-	in_train, out_train, in_dev, out_dev, _, _ = cmu_data_utils.prepare_wmt_data(input_name, data_dir, in_vocab_size, out_vocab_size)
+	in_train, out_train, in_dev, out_dev, _, _ = seq2seq_data_utils.prepare_wmt_data(input_name, data_dir, in_vocab_size, out_vocab_size)
 
 
 	with tf.Session() as sess:
@@ -298,15 +298,15 @@ def decode(name = 'seq2seq', data_dir = 'temp', use_fp16 = False, in_vocab_size 
 		#fr_vocab_path = os.path.join(FLAGS.data_dir,"vocab%d.fr" % FLAGS.fr_vocab_size)
 		vocab_path = os.path.join(data_dir, name+'.vocab') #"pig.vocab")
 		print('vocab_path=' + vocab_path)
-		input_vocab, rev_output_vocab = cmu_data_utils.initialize_vocabulary(vocab_path)
-		#_, rev_fr_vocab = cmu_data_utils.initialize_vocabulary(vocab_path)
+		input_vocab, rev_output_vocab = seq2seq_data_utils.initialize_vocabulary(vocab_path)
+		#_, rev_fr_vocab = seq2seq_data_utils.initialize_vocabulary(vocab_path)
 
 		test_dir = os.path.join(data_dir, name) #"pigTrain")
 		print('test_dir=' + test_dir)
 		pos = 0
 		for sentence in open(test_dir):
 			print("sentence=" + sentence)
-			token_ids = cmu_data_utils.sentence_to_token_ids(tf.compat.as_bytes(sentence), input_vocab)
+			token_ids = seq2seq_data_utils.sentence_to_token_ids(tf.compat.as_bytes(sentence), input_vocab)
 			bucket_id = 0#min([b for b in xrange(len(_buckets))	if _buckets[b][0] > len(token_ids)])
 			encoder_inputs, decoder_inputs, target_weights = model.get_batch({bucket_id: [(token_ids, [])]}, bucket_id, pos)
 			pos += 1
@@ -322,7 +322,7 @@ def decode(name = 'seq2seq', data_dir = 'temp', use_fp16 = False, in_vocab_size 
 				result = result[:result.index(stop_symbol)]
 			results.append(result)
 			#if len(stop_symbol) > 0 and stop_symbol in result:
-			#	outputs = outputs[:outputs.index(cmu_data_utils.EOS_ID)]
+			#	outputs = outputs[:outputs.index(seq2seq_data_utils.EOS_ID)]
 			#print(" ".join([tf.compat.as_str(rev_output_vocab[output]) for output in outputs]))
 	return results
 
