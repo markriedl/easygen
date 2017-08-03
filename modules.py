@@ -483,7 +483,7 @@ class Seq2Seq_Run(Module):
 
 		copyfile(self.model, 'temp/checkpoint')
 		copyfile(self.dictionary, self.data+'.vocab')
-		results = seq2seq_translate.decode(name = name, data_dir = 'temp', stop_symbol = self.stop)
+		results = seq2seq_translate.decode(name = name, data_dir = 'temp', stop_symbol = self.stop, num_layers = self.layers, size = self.hidden_nodes)
 
 		with open(self.output, 'w') as outfile:
 			for line in results:
