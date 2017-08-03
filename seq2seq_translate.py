@@ -258,7 +258,7 @@ def train(input_name = 'seq2seq', output_name = 'seq2seq', data_dir = '.', in_vo
 
 		print("saving final model")
 		saver_path = os.path.join(data_dir, output_name)
-		model.saver.save(sess, saver_path, global_step=model.global_step)
+		model.saver.save(sess, saver_path)
 
 
 def decode(name = 'seq2seq', data_dir = 'temp', use_fp16 = False, in_vocab_size = 20000, out_vocab_size = 20000, size = 1024, num_layers = 2, max_gradient_norm = 5.0, batch_size = 64, learning_rate = 0.5, learning_rate_decay_factor = 0.99, stop_symbol = '_EOS'):

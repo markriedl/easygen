@@ -451,6 +451,114 @@ class Seq2Seq_Train(Module):
 		copyfile('temp/checkpoint', self.model)
 		copyfile(self.all_data+'.vocab', self.dictionary)
 
+#####################################
+
+class Seq2Seq_Train_More(Module):
+
+	def __init__(self, all_data, x, y, model_in, dictionary, model_out, layers, hidden_nodes, epochs):
+		self.all_data = all_data
+		self.model_in = model_in
+		self.model_out = model_out
+		self.layers = layers
+		self.hidden_nodes = hidden_nodes
+		self.epochs = epochs
+		self.x = x
+		self.y = y
+		self.dictionary = dictionary
+		if checkFiles(all_data, x, y, model_in, dictionary):
+			self.ready = True
+
+	def run(self):
+		import seq2seq_translate
+		# read data
+		data = []
+		for line in open(self.all_data, 'rU'):
+			data.append(line.strip())
+		x_data = []
+		for line in open(self.x, 'rU'):
+			x_data.append(line.strip())
+		y_data = []
+		for line in open(self.y, 'rU'):
+			y_data.append(line.strip())
+
+		# split into training and validation 
+		data_split = int(len(data) * 0.9)
+		train = data[0:data_split]
+		validation = data[data_split:]
+
+		x_split = int(len(x_data) * 0.9)
+		train_x = x_data[0:x_split]
+		validation_x = x_data[x_split:]
+		
+		y_split = int(len(y_data) * 0.9)
+		train_y = y_data[0:y_split]
+		validation_y = y_data[y_split:]
+
+		name = self.all_data.split('/')[1]
+		out_name = self.model_out.split('/')[1]
+
+		print('writing ' + name + '.train')
+		f = open('temp/' + name + '.train', 'w')
+		for line in train:
+			print >> f, line
+		f.close()
+
+		print('writing ' + name + '.validation')
+		f = open('temp/' + name + '.validation', 'w')
+		for line in validation:
+			print >> f, line
+		f.close()
+
+		print('writing ' + name + '.train.input')
+		f = open('temp/' + name + '.train.input', 'w')
+		for line in train_x:
+			print >> f, line
+		f.close()
+
+		print('writing ' + name + '.train.output')
+		f = open('temp/' + name + '.train.output', 'w')
+		for line in train_y:
+			print >> f, line        
+		f.close()
+
+		print('writing ' + name + '.validation.input')
+		f = open('temp/' + name + '.validation.input', 'w')
+		for line in validation_x:
+			print >> f, line        
+		f.close()
+
+		print('writing ' + name + '.validation.output')
+		f = open('temp/' + name + '.validation.output', 'w')
+		for line in validation_y:
+			print >> f, line        
+		f.close()
+
+		split_model_path = os.path.split(self.model_in)
+		model_name = split_model_path[1]
+		model_directory = split_model_path[0]
+		if len(model_directory) == 0:
+			model_directory = '.'
+
+		#split_model_path = os.path.split(self.model)
+		#model_file = split_model_path[1]
+		#model_directory = split_model_path[0]
+
+		for f in os.listdir(model_directory):
+			match = re.match(model_name, f)
+			if match is not None:
+				f_rest = f[len(model_name):]
+				copyfile(os.path.join(model_directory, f), os.path.join(CHECKPOINT_DIR, f))
+
+		with open(os.path.join(CHECKPOINT_DIR, 'checkpoint'), 'w') as f:
+			print >> f, 'model_checkpoint_path: "'+ model_name + '"'
+			print >> f, 'all_model_checkpoint_paths: "' + model_name + '"'
+
+		copyfile(self.dictionary, self.all_data+'.vocab')
+
+		seq2seq_translate.train(input_name = name, output_name = out_name, data_dir = 'temp', num_layers = self.layers, size = self.hidden_nodes, max_epochs = self.epochs)
+		copyfile('temp/checkpoint', self.model_out)
+		#copyfile(self.all_data+'.vocab', self.dictionary)
+
 #######################################
 
 class Seq2Seq_Run(Module):
@@ -837,6 +945,8 @@ class SaveModel(Module):
 		split_file_path = os.path.split(self.file)
 		target_file = split_file_path[1]
 		target_directory = split_file_path[0]
+		if len(target_directory) == 0:
+			target_directory = '.'
 
 		for f in os.listdir(model_directory):
 			match = re.match(model_file, f)
@@ -844,7 +954,7 @@ class SaveModel(Module):
 				f_rest = f[len(model_file):]
 				filename = os.path.join(model_directory, f)
 				if not os.path.isdir(filename):
-					copyfile(filename, self.file + f_rest)
+					copyfile(filename, os.path.join(target_directory, target_file) + f_rest)
 
 		with open(self.file, 'w') as f:
 			print >> f, 'model_checkpoint_path: "'+ target_file + '"'
