@@ -48,5 +48,8 @@ data = '[ \
 	{"name" : "StyleNet_Train", "params" : "style_image(in,image);test_image(in,image);epochs(int=2,tip=how long to run);model(out,model);animation(out,image)", "tip" : "Draw the target image in the style of the style image", "category" : "StyleNet"}, \
 	{"name" : "StyleNet_Run", "params" : "model(in,model);target_image(in,image,tip=Image to stylize);output_image(out,image)", "tip" : "Apply a style learned by a neural net to an image", "category" : "StyleNet"}, \
 	{"name" : "ReadImageFile", "params" : "file(string,tip=Name of image file to read in);output(out,image)", "tip" : "Read an image file in", "category" : "File"}, \
-	{"name" : "WriteImageFile", "params" : "input(in,image);file(string,tip=Name of image file to write to)", "tip" : "Write an image to file", "category" : "File"} \
+	{"name" : "WriteImageFile", "params" : "input(in,image);file(string,tip=Name of image file to write to)", "tip" : "Write an image to file", "category" : "File"}, \
+	{"name" : "Sort", "params" : "input(in,text);output(out,text)", "tip" : "Sort text lines alphanumerically", "category" : "Text"}, \
+	{"name" : "Reverse", "params" : "input(in,text);output(out,text)", "tip" : "Reverse the order of text lines", "category" : "Text"}, \
+	{"name" : "MakeEmptyText", "params" : "output(out,text)", "tip" : "Create an empty text file", "category" : "File"} \
 ]';

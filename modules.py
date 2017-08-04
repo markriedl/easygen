@@ -1343,6 +1343,7 @@ class StyleNet_Train(Module):
 		if  len(images) > 0:
 			imageio.mimsave(self.animation, images, 'gif')
 
+###################################################
 
 class StyleNet_Run(Module):
 
@@ -1365,4 +1366,60 @@ class StyleNet_Run(Module):
 
 		sevaluate.main(self.target_image, self.output_image, checkpoint_dir = checkpoint_path)
 
-			
+##################################			
+
+class Sort(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+		self.ready = checkFiles(input);
+
+	def run(self):
+		lines = []
+		for line in open(self.input, 'rU'):
+			lines.append(line)
+
+		sorted_lines = sorted(lines)
+
+		with open(self.output, 'w') as outfile:
+			for line in sorted_lines:
+				print >> outfile, line.strip()
+
+#####################################
+
+class Reverse(Module):
+
+	def __init__(self, input, output):
+		self.input = input
+		self.output = output
+		self.ready = checkFiles(input);
+
+	def run(self):
+		lines = []
+		for line in open(self.input, 'rU'):
+			lines.append(line)
+
+		lines.reverse()
+
+		with open(self.output, 'w') as outfile:
+			for line in lines:
+				print >> outfile, line.strip()
+
+
+#####################################
+
+class MakeEmptyText(Module):
+
+	def __init__(self, output):
+		self.output = output
+		self.ready = True
+
+	def run(self):
+		with open(self.output, 'w') as outfile:
+			print >>outfile, ''
+
+
+
+
+
