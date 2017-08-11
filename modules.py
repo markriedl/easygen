@@ -26,6 +26,12 @@ def checkFiles(*filenames):
 	return True
 
 
+#########################
+
+def convertHexToACII(str):
+	return re.sub(r'\%([A-Z0-9][A-Z0-9])', lambda match: "{0}".format(match.group(1).decode("hex")), str)
+
+
 #######################
 
 class ReadTextFile(Module):
@@ -1123,7 +1129,7 @@ class KeepLineWhen(Module):
 	def __init__(self, input, match, output):
 		self.input = input
 		self.output = output
-		self.match = match
+		self.match = convertHexToACII(match)
 		if checkFiles(input):
 			self.ready = True
 
@@ -1142,7 +1148,7 @@ class KeepLineUnless(Module):
 	def __init__(self, input, match, output):
 		self.input = input
 		self.output = output
-		self.match = match
+		self.match = convertHexToACII(match)
 		if checkFiles(input):
 			self.ready = True
 
@@ -1419,6 +1425,18 @@ class MakeEmptyText(Module):
 		with open(self.output, 'w') as outfile:
 			print >>outfile, ''
 
+
+########################################
+
+class PrintText(Module):
+
+	def __init__(self, input):
+		self.input = input
+		self.ready = checkFiles(input)
+
+	def run(self):
+		for line in open(self.input, 'rU'):
+			print line.strip()
 
 
 

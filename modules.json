@@ -51,5 +51,6 @@ data = '[ \
 	{"name" : "WriteImageFile", "params" : "input(in,image);file(string,tip=Name of image file to write to)", "tip" : "Write an image to file", "category" : "File"}, \
 	{"name" : "Sort", "params" : "input(in,text);output(out,text)", "tip" : "Sort text lines alphanumerically", "category" : "Text"}, \
 	{"name" : "Reverse", "params" : "input(in,text);output(out,text)", "tip" : "Reverse the order of text lines", "category" : "Text"}, \
-	{"name" : "MakeEmptyText", "params" : "output(out,text)", "tip" : "Create an empty text file", "category" : "File"} \
+	{"name" : "MakeEmptyText", "params" : "output(out,text)", "tip" : "Create an empty text file", "category" : "File"}, \
+	{"name" : "PrintText", "params" : "input(text,in)", "tip" : "Print text file", "category" : "File"} \
 ]';
