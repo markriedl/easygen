@@ -31,7 +31,7 @@ def runModule(module_json):
 		p2 = re.compile('\'([0-9]*[\.]*[0-9]+)\'')
 		params = p2.sub(r'\1', params)
 		## Put the module name back on as class name
-		evalString = module + '(' + params + ')'
+		evalString = module + '(' + convertHexToACII(params) + ')'
 		print "Module:", evalString
 		## If everything went well, we can now evaluate the string and create a new class.
 		module = eval(evalString)

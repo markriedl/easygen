@@ -1148,7 +1148,7 @@ class KeepLineUnless(Module):
 	def __init__(self, input, match, output):
 		self.input = input
 		self.output = output
-		self.match = convertHexToACII(match)
+		self.match = match
 		if checkFiles(input):
 			self.ready = True
 
