@@ -149,7 +149,7 @@ options = SimpleNamespace(
 
     ##
     # Whether to preserve section titles
-    keepSections = True,
+    keepSections = False,
 
     ##
     # Whether to preserve lists
@@ -525,7 +525,7 @@ class Extractor(object):
     def __init__(self, id, revid, title, lines):
         """
         :param id: id of page.
-        :param title: tutle of page.
+        :param title: title of page.
         :param lines: a list of lines.
         """
         self.id = id
@@ -538,7 +538,7 @@ class Extractor(object):
         self.recursion_exceeded_2_errs = 0  # template recursion within expandTemplate()
         self.recursion_exceeded_3_errs = 0  # parameter recursion
         self.template_title_errs = 0
-
+        self.categories = ''
     def write_output(self, out, text):
         """
         :param out: a memory file
@@ -546,15 +546,6 @@ class Extractor(object):
         """
         # MOR 06.25.2017
         text_str = "\n".join(text)
-        categories = re.findall(r'\&gt\;Category:([\w\ \-\&]+)\&lt\;', text_str)
-        cat_str = ''
-        first = True
-        for cat in categories:
-            if first:
-                cat_str += cat
-                first = False
-            else:
-                cat_str += ' | ' + cat
         url = get_url(self.id)
         if options.write_json:
             json_data = {
@@ -562,7 +553,7 @@ class Extractor(object):
                 'url': url,
                 'title': self.title,
                 'text': text_str,
-                'categories': cat_str
+                'categories': self.categories
             }
             if options.print_revision:
                 json_data['revid'] = self.revid
@@ -575,9 +566,9 @@ class Extractor(object):
             out.write('\n')
         else:
             if options.print_revision:
-                header = '<doc id="%s" revid="%s" url="%s" title="%s">\n' % (self.id, self.revid, url, self.title)
+                header = '<doc id="%s" revid="%s" url="%s" title="%s" categories="%s">\n' % (self.id, self.revid, url, self.title, self.categories)
             else:
-                header = '<doc id="%s" url="%s" title="%s">\n' % (self.id, url, self.title)
+                header = '<doc id="%s" url="%s" title="%s" categories="%s">\n' % (self.id, url, self.title, self.categories)
             footer = "\n</doc>\n"
             if out == sys.stdout:   # option -a or -o -
                 header = header.encode('utf-8')
@@ -599,7 +590,7 @@ class Extractor(object):
         if options.toHTML:
             title_str = '<h1>' + self.title + '</h1>'
         else:
-            title_str = self.title + '\n'
+            title_str = self.title + '.\n'
         # https://www.mediawiki.org/wiki/Help:Magic_words
         colon = self.title.find(':')
         if colon != -1:
@@ -638,6 +629,11 @@ class Extractor(object):
         # $dom = $this->preprocessToDom( $text, $flag );
         # $text = $frame->expand( $dom );
         #
+        
+        #        categories = re.findall(r'\&gt\;Category:([\w\ \-\&]+)\&lt\;', text)
+        categories = re.findall(r'Category:([\w\ \-\&]+)', text)
+        
+        self.categories = ' | '.join(categories)
         text = self.transform(text)
         text = self.wiki2text(text)
         text = compact(self.clean(text))
