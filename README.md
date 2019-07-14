@@ -63,7 +63,7 @@ Now that the network has been trained--that is, we have a really good guess abou
 
 We provide a Jupyter notebook hosted on [Google Colaboratory](https://colab.research.google.com/), which provides access to GPUs.
 
-1. Clone the [EasyGen notebook](https://drive.google.com/open?id=1PpvfuRxrR93GV6z_Asm7QSG3C9wiNX4l) by following the link and selecting File -> Save a copy in Drive.
+1. Clone the [EasyGen notebook](https://drive.google.com/open?id=1XNiOuNtMnItl5CPGvRjEvj9C78nDuvXj) by following the link and selecting File -> Save a copy in Drive.
 
 2. Turn on GPU support under Edit -> Notebook setting.
 
