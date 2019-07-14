@@ -1,0 +1,1046 @@
+<!--
+  Copyright (c) 2006-2013, JGraph Ltd
+  
+  Folding example for mxGraph. This example demonstrates
+  using a layout to implement a nested group structure.
+-->
+<html>
+<head>
+   <title>Editor</title>
+
+   <!-- Sets the basepath for the library if not in same directory -->
+   <script type="text/javascript">
+      mxBasePath = 'mxgraph/javascript/src/';
+   </script>
+
+   <!-- Loads and initializes the library -->
+   <script type="text/javascript" src="http://localhost:8000/mxgraph/javascript/src/js/mxClient.js"></script>
+
+   <!-- Example code -->
+   <script type="text/javascript" src="modules.json"></script>
+   <script type="text/javascript">
+      function openFileDialog()
+      {
+         var fileSelector = document.createElement('input');
+         fileSelector.setAttribute('type', 'file');
+         fileSelector.setAttribute('id', 'aaa');
+         fileSelector.click();
+         alert(fileSelector.value.length);
+      }
+
+      function findCell(module_name, param_name, cells, map_cells_modules, map_cells_params)
+      {
+         for (var c=0; c < cells.length; c++) {
+            var cell = cells[c];
+            if (map_cells_modules[cell.id] == module_name && map_cells_params[cell.id] == param_name) {
+               return cell;
+            }
+         }
+         return null;
+      }
+
+      function order_modules(modules, ordering) 
+      {
+         var ordered = [];
+         modules = modules.slice(0);
+
+         var count = 0;
+
+         while (modules.length > 0 && count < 10) {
+            // Preprocessing... which modules are sources and which are targets?
+            var sources = [];
+            var targets = [];
+            for (i = 0; i < ordering.length; i++) {
+               sources.push(ordering[i][0]);
+               targets.push(ordering[i][1]);
+            }
+            // Find a root
+            var roots = [];
+            for (i = 0; i < modules.length; i++) {
+               if (targets.indexOf(modules[i]) < 0) {
+                  // I am not a target, so I must be a root
+                  roots.push(modules[i]);
+               }
+            }
+            // Pick a root
+            var next = roots[0];
+            ordered.push(next);
+            // Remove next from modules
+            var index = modules.indexOf(next);
+            if (index >= 0) {
+               modules.splice(index, 1);
+            }
+            // Rebuild ordering
+            var new_ordering = [];
+            for (i=0; i < ordering.length; i++) {
+               if (ordering[i][0] != next) {
+                  new_ordering.push(ordering[i]);
+               } 
+            }
+            ordering = new_ordering;
+            count = count + 1
+         }
+         return ordered;
+      }
+
+      // Program starts here. Creates a sample graph in the
+      // DOM node with the specified ID. This function is invoked
+      // from the onLoad event handler of the document (see below).
+      function main(container)
+      {
+         // Checks if the browser is supported
+         if (!mxClient.isBrowserSupported())
+         {
+            // Displays an error message if the browser is not supported.
+            mxUtils.error('Browser is not supported!', 200, false);
+         }
+         else
+         {
+            // Enables crisp rendering of rectangles in SVG
+            mxConstants.ENTITY_SEGMENT = 20;
+            
+            // Creates the graph inside the given container
+            var graph = new mxGraph(container);
+            //graph.setDropEnabled(true);
+            graph.setConnectable(true);
+            graph.setTooltips(true);
+            
+            // Disables global features
+            graph.collapseToPreferredSize = false;
+            graph.constrainChildren = false;
+            graph.cellsSelectable = false;
+            graph.extendParentsOnAdd = false;
+            graph.extendParents = false;
+            graph.border = 10;
+
+            // Sets global styles
+            var style = graph.getStylesheet().getDefaultEdgeStyle();
+            style[mxConstants.STYLE_EDGE] = mxEdgeStyle.EntityRelation;
+            style[mxConstants.STYLE_ROUNDED] = true;
+
+            style = graph.getStylesheet().getDefaultVertexStyle();
+            style[mxConstants.STYLE_FILLCOLOR] = '#ffffff';
+            style[mxConstants.STYLE_SHAPE] = 'swimlane';
+            style[mxConstants.STYLE_STARTSIZE] = 30;
+
+            // Default parameter style
+            var param_style = mxUtils.clone(style);
+            graph.getStylesheet().putCellStyle('parameter', param_style);
+            // Default input parameter style
+            var input_param_style = mxUtils.clone(style);
+            input_param_style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
+            input_param_style[mxConstants.STYLE_IMAGE_BORDER] = 'black';
+            input_param_style[mxConstants.STYLE_FILLCOLOR] = '#66cdaa';
+            input_param_style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_LEFT;
+            graph.getStylesheet().putCellStyle('input_parameter', input_param_style);
+            // Text input parameter style
+            text_input_param_style = mxUtils.clone(input_param_style);
+            text_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/text.png';
+            graph.getStylesheet().putCellStyle('text_input_parameter', text_input_param_style);
+            // Model input parameter style
+            model_input_param_style = mxUtils.clone(input_param_style);
+            model_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/model.png';
+            graph.getStylesheet().putCellStyle('model_input_parameter', model_input_param_style);
+            // Dictionary input parameter style
+            dictionary_input_param_style = mxUtils.clone(input_param_style);
+            dictionary_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/dictionary.png';
+            graph.getStylesheet().putCellStyle('dictionary_input_parameter', dictionary_input_param_style);
+            // Images input parameter style
+            images_input_param_style = mxUtils.clone(input_param_style);
+            images_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
+            graph.getStylesheet().putCellStyle('images_input_parameter', images_input_param_style);
+            // Image input parameter style
+            image_input_param_style = mxUtils.clone(input_param_style);
+            image_input_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/image.png';
+            graph.getStylesheet().putCellStyle('image_input_parameter', image_input_param_style);
+            // Default output parameter style
+            var output_param_style = mxUtils.clone(style);
+            output_param_style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_LABEL;
+            output_param_style[mxConstants.STYLE_IMAGE_BORDER] = 'black';
+            output_param_style[mxConstants.STYLE_FILLCOLOR] = '#cd5c5c';
+            output_param_style[mxConstants.STYLE_IMAGE_ALIGN] = mxConstants.ALIGN_RIGHT;
+            graph.getStylesheet().putCellStyle('output_parameter', output_param_style);
+            // Text output parameter style
+            text_output_param_style = mxUtils.clone(output_param_style);
+            text_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/text.png';
+            graph.getStylesheet().putCellStyle('text_output_parameter', text_output_param_style);
+            // Model output parameter style
+            model_output_param_style = mxUtils.clone(output_param_style);
+            model_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/model.png';
+            graph.getStylesheet().putCellStyle('model_output_parameter', model_output_param_style);
+            // Dictionary output parameter style
+            dictionary_output_param_style = mxUtils.clone(output_param_style);
+            dictionary_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/dictionary.png';
+            graph.getStylesheet().putCellStyle('dictionary_output_parameter', dictionary_output_param_style);
+            // Images output parameter style
+            images_output_param_style = mxUtils.clone(output_param_style);
+            images_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/images.png';
+            graph.getStylesheet().putCellStyle('images_output_parameter', images_output_param_style);
+            // Image output parameter style
+            image_output_param_style = mxUtils.clone(output_param_style);
+            image_output_param_style[mxConstants.STYLE_IMAGE] = 'http://localhost:8000/images/image.png';
+            graph.getStylesheet().putCellStyle('image_output_parameter', image_output_param_style);
+            // Module style
+            var module_style = mxUtils.clone(style);
+            module_style[mxConstants.STYLE_ROUNDED] = true;
+            graph.getStylesheet().putCellStyle('module', module_style);
+            // Column style
+            style = [];
+            style[mxConstants.STYLE_SHAPE] = 'swimlane';//mxConstants.SHAPE_RECTANGLE;
+            style[mxConstants.STYLE_STROKECOLOR] = 'none';
+            style[mxConstants.STYLE_FILLCOLOR] = 'none';
+            style[mxConstants.STYLE_FOLDABLE] = false;
+            style[mxConstants.STYLE_RESIZABLE] = false;
+            style[mxConstants.STYLE_AUTOSIZE] = false;
+            style[mxConstants.RESIZE_HEIGHT] = 1000;
+            style[mxConstants.STYLE_STARTSIZE] = 22;
+            graph.getStylesheet().putCellStyle('column', style);
+
+            // Link edge style
+            var edge_style = graph.getStylesheet().getDefaultEdgeStyle();
+            var link_edge_style = mxUtils.clone(edge_style);
+            link_edge_style['endArrow'] = null;
+            link_edge_style['dashed'] = 1;
+            graph.getStylesheet().putCellStyle('link_edge', link_edge_style);
+
+            // Aarow edge style
+            var arrow_edge_style = mxUtils.clone(edge_style);
+            arrow_edge_style['endArrow'] = mxConstants.ARROW_CLASSIC;
+            arrow_edge_style['dashed'] = 0;
+            graph.getStylesheet().putCellStyle('arrow_edge', arrow_edge_style);
+
+            // Installs auto layout for all levels
+            var layout = new mxStackLayout(graph, true);
+            layout.border = graph.border;
+            var layoutMgr = new mxLayoutManager(graph);
+            layoutMgr.getLayout = function(cell)
+            {
+               if (!cell.collapsed)
+               {
+                  if (cell.parent != graph.model.root)
+                  {
+                     layout.resizeParent = true;
+                     layout.horizontal = false;
+                     layout.spacing = 10;
+                  }
+                  else
+                  {
+                     layout.resizeParent = true;
+                     layout.horizontal = true;
+                     layout.spacing = 40;
+                  }
+                  
+                  return layout;
+               }
+               
+               return null;
+            };
+
+
+            // Ports are not used as terminals for edges, they are
+            // only used to compute the graphical connection point
+            graph.isPort = function(cell)
+            {
+               var geo = this.getCellGeometry(cell);
+
+               return (geo != null) ? geo.relative : false;
+            };
+
+            graph.isValidDropTarget = function(target, cells, evt)
+            {
+               var cell = cells[0];
+               var target_style = this.getModel().getStyle(target);
+               var cell_style = this.getModel().getStyle(cell);
+               if (target_style == "module") {
+                  for (i = 0 ; i < map_modules_cells[target.id].length; i++) {
+                     if (cell.id == map_modules_cells[target.id][i]) {
+                        return true;
+                     }
+                  }
+               } 
+               else if (cell_style != 'module') {
+                  return false;
+               }     
+                        
+               return (target_style == 'column');
+            };
+
+               
+            graph.setDropEnabled(true);
+            graph.setSplitEnabled(false);
+
+            var mydata = JSON.parse(data);
+            var inputs = []; // Which cell.ids are inputs?
+            var outputs = []; // Which cell.ids are outputs?
+            var types = {}; // The type of input for each parameter of each module. Indexed on the cell.id for the parameter
+            var modules = {}; // all modules, as dictionaries
+            //var used_modules = []; // which modules actually in use (names?)
+            var map_cells_modules = {}; // Map cells to modules
+            var map_modules_cells = {}; // Map of modules (ids) to cells (ids)
+            var map_cells_params = {}; // What is the name of the parameter in the cell?
+            var file_counter = 0; // Unique id for the next file
+            var file_map = {}; // Dictionary of dictionaries
+            var map_param_type = {}; // Dictionary of dictionaries, for module, then params.
+            var ordering = []; // module preceeds module
+            var linked_params = {}; //list of [cell.id, cell.id]
+            //var next_edge_id = 10000; //make edge ids 
+            //var edges = {}; // edges. key = id. value = [source.id, target.id]
+            var selected_cell = null; // which cell or edge is being moused over 
+            //var parameter_ids = []; // these ids are params.
+
+            var prototypes = {}; 
+            var module_counters = {};
+            var prototype_parameter_attributes = {};
+            var parameter_defaults = {}; //dictionary of dictionaries
+            var tips = {}; //cell.ids to tool tips
+            var columns = []; // pointers to all of the columns.
+
+            // Disables built-in context menu
+            mxEvent.disableContextMenu(container);
+
+            // Installs a custom tooltip for cells
+            graph.getTooltipForCell = function(cell)
+            {
+               if (cell.style == 'column') {
+                  return "right-click to add a module."
+               }
+               else if (cell.style == 'module') {
+                  var name = map_cells_modules[cell.id];
+                  return modules[name]['tip'];
+               }
+               else if (parseInt(cell.id) in types) {
+                  if (tips[cell.id].length > 0) {
+                     return tips[cell.id];
+                  }
+                  else {
+                     return types[parseInt(cell.id)];
+                  }
+               }
+               return "";
+            }
+
+            // Key handler
+            var keyHandler = new mxKeyHandler(graph);
+            keyHandler.getFunction = function(evt)
+            {
+               if (evt != null) {
+                  //return (mxEvent.isControlDown(evt) || (mxClient.IS_MAC && evt.metaKey)) ? this.controlKeys[evt.keyCode] : this.normalKeys[evt.keyCode];
+                  
+                  // Delete button pressed
+                  if (evt.key == "Delete" || evt.key == "Backspace") {
+                     if (selected_cell != null) {
+                        // Something selected
+                        if (selected_cell.edge) {
+                           // We know about this edge
+                           source_id = selected_cell.source.id; //edges[selected_cell][0];
+                           target_id = selected_cell.target.id; //edges[selected_cell][1];
+                           source_module_name = map_cells_modules[source_id];
+                           target_module_name = map_cells_modules[target_id];
+                           source_param_name = map_cells_params[source_id];
+                           target_param_name = map_cells_params[target_id];
+                           if (outputs.indexOf(parseInt(source_id)) >= 0 || inputs.indexOf(parseInt(target_id)) >= 0) {
+                              //undo filenames
+                              file_map[source_module_name][source_param_name] = "";
+                              modules[source_module_name][source_param_name] = "";
+                              modules[target_module_name][target_param_name] = ""; 
+                              //Remove ordering
+                              var to_remove = null;  
+                              for (var i=0; i < ordering.length; i++) {
+                                 if (ordering[i][0] == source_module_name && ordering[i][1] == target_module_name) {
+                                    to_remove = i;
+                                    break;
+                                 }
+                              }
+                              if (to_remove != null) {
+                                 ordering.splice(to_remove, 1);
+                              }
+                              //Update UI
+                              graph.getModel().beginUpdate();
+                              var cell = selected_cell; //graph.getModel().getCell(selected_cell);
+                              cell.setVisible(false);
+                              cell.setStyle("strokecolor=white");
+                              cell.source = null;
+                              cell.target = null;
+                              graph.view.refresh();
+                              graph.getModel().endUpdate();
+                           }
+                           else {
+                              // undo linked params
+                              var to_delete = [];
+                              links = linked_params[source_id];
+                              delete_index = -1;
+                              for (i = 0; i < links.length; i++) {
+                                 if (links[i] == target_id) {
+                                    delete_index = i;
+                                 }
+                              }
+                              if (delete_index >= 0) {
+                                 links.splice(delete_index, 1);
+                              }
+                              links = linked_params[target_id];
+                              delete_index = -1;
+                              for (i = 0; i < links.length; i++) {
+                                 if (links[i] == source_id) {
+                                    delete_index = i;
+                                 }
+                              }
+                              if (delete_index >= 0) {
+                                 links.splice(delete_index, 1);
+                              }
+                              graph.getModel().beginUpdate();
+                              var cell = selected_cell; //graph.getModel().getCell(selected_cell);
+                              cell.setVisible(false);
+                              cell.setStyle("strokecolor=white");
+                              cell.source = null;
+                              cell.target = null;
+                              graph.view.refresh();
+                              graph.getModel().endUpdate();
+                           }
+                        }
+                        else if (selected_cell.style == "module") {
+                           // Delete a module
+                           console.log(selected_cell);
+                           module_name = map_cells_modules[selected_cell.id];
+                           console.log(module_name);
+                           delete modules[module_name];
+                           var new_ordering = [];
+                           for (var i=0; i < ordering.length; i++) {
+                              if (ordering[i][0] != module_name && ordering[i][1] != module_name) {
+                                 new_ordering.push(ordering[i]);
+                              }
+                           }
+                           ordering = new_ordering;
+                           graph.getModel().beginUpdate();
+                           var cell = selected_cell; //graph.getModel().getCell(selected_cell);
+                           //cell.setStyle("strokecolor=white");
+                           cell.setCollapsed(true);
+                           //for (var i=0; i < cell.children.length; i++) {
+                           //   cell.children[i].setVisible(false);
+                           //}
+                           cell.setVisible(false);
+                           child_edges = [];
+                           for (var i=0; i < selected_cell.children.length; i++) {
+                              var kid = selected_cell.children[i];
+                              edges = graph.getConnections(kid);
+                              for (var j = 0; j < edges.length; j++) {
+                                 child_edges.push(edges[j]);
+                              }
+                           }
+                           console.log(child_edges);
+                           for (var i=0; i < child_edges.length; i++) {
+                              kid = child_edges[i]
+                              kid.setVisible(false);
+                              kid.setStyle("strokecolor=white");
+                              kid.source = null;
+                              kid.target = null;
+                           }
+                           graph.view.refresh();
+                           graph.getModel().endUpdate();
+                        }
+                     }
+                  }
+               }
+
+               return null;
+            };
+
+            graph.addMouseListener(
+            {
+                mouseDown: function(sender, me) { },
+                mouseMove: function(sender, me) { 
+                  if (me.getCell() != null) {
+                     selected_cell = me.getCell();
+                  }
+                  else {
+                     selected_cell = null;
+                  }
+                },
+                mouseUp: function(sender, me) { 
+                  if (me.getCell() != null) {
+                     var id = me.getCell().id;
+                     console.log("clicked on " + id);
+                     if ((id in types) && (inputs.indexOf(id) < 0) && (outputs.indexOf(id) < 0)) {
+                        
+                        var module_name = map_cells_modules[id];
+                        var param_name = map_cells_params[id];  
+                        var value = modules[module_name][param_name];
+                        if (value != null) {
+                           if (types[id] == "directory") { 
+                              value = prompt("Directory where files are stored?", value);
+                           }
+                           else if (types[id] == "bool") {
+                              var b = confirm("Do you want to set this to True?");
+                              if (b) {
+                                 value = "True";
+                              }
+                              else {
+                                 value = "False";
+                              }
+                           }
+                           else if (types[id] == "string") {
+                              value = prompt("Enter a string", value);
+                           }
+                           else if (types[id] == "int") {
+                              if (value.length == 0) {
+                                 value = "0"
+                              }
+                              value = prompt("Enter an integer", value);
+                           }
+                           else if (types[id] == "float") {
+                              if (value.length == 0) {
+                                 value = "0.0";
+                              }
+                              value = prompt("Enter a floating point number", value);
+                           }
+                           if (value != null) {
+                              modules[module_name][param_name] = value;
+
+                              // Check linked values
+                              if (linked_params[id] != null) {
+                                 var queue = linked_params[id].slice();
+                                 var visited = [];
+                                 while (queue.length > 0) {
+                                    var cur = queue.pop();
+                                    visited.push(cur);
+                                    var successors = linked_params[cur];
+                                    if (successors != null) {
+                                       for (i = 0; i < successors.length; i++) {
+                                          var found = false;
+                                          for (j = 0; j < visited.length; j++) {
+                                             if (visited[j] == successors[i]) {
+                                                found = true
+                                             }
+                                          }
+                                          if (found == false) {
+                                             queue.push(successors[i]);
+                                          }
+                                       }
+                                    }
+                                    for (i = 0; i < visited.length; i++) {
+                                       var cur = visited[i];
+                                       var cur_module = map_cells_modules[cur];
+                                       var cur_param = map_cells_params[cur];
+                                       modules[cur_module][cur_param] = value;
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                        else {
+                           alert("null value");
+                        }
+                     }
+                  }
+                },
+                dragEnter: function(evt, state) { },
+                dragLeave: function(evt, state) { }
+             });
+
+            mxConnectionHandlerRemoveEdge = mxConnectionHandler.prototype.removeEdge;
+            mxConnectionHandler.prototype.removeEdge = function(parent, id, value, source, target, style) {
+               alert("foo");
+            };
+
+            // Event handler for when an edge is inserted
+            mxConnectionHandlerInsertEdge = mxConnectionHandler.prototype.insertEdge;
+            mxConnectionHandler.prototype.insertEdge = function(parent, id, value, source, target, style) {
+               // Type must match
+               if (source != null && target != null && types[source.id] == types[target.id]) {
+                  //value = types[target.id];
+
+                  // Inputs must go to outputs
+                  if (inputs.indexOf(parseInt(target.id)) >= 0 && outputs.indexOf(parseInt(source.id)) >= 0) {
+                     // it worked
+                     // record the use of the modules
+                     var source_module_name = map_cells_modules[source.id];
+                     var target_module_name = map_cells_modules[target.id];
+                     //if (used_modules.indexOf(source_module_name) < 0) {
+                     //   used_modules.push(source_module_name);
+                     //}
+                     //if (used_modules.indexOf(target_module_name) < 0) {
+                     //   used_modules.push(target_module_name);
+                     //}
+                     // Make a filename
+                     if (!(source_module_name in file_map)) {
+                        file_map[source_module_name] = {};
+                     }
+                     var source_param = map_cells_params[source.id];
+                     var target_param = map_cells_params[target.id];
+                     var new_filename = "";
+                     if ((source_module_name in file_map) && (source_param in file_map[source_module_name])) {
+                        new_filename = file_map[source_module_name][source_param]
+                     } 
+                     else {
+                        new_filename = "cache/" + types[source.id] + String(file_counter);
+                        file_counter = file_counter + 1;
+                     }
+                     file_map[source_module_name][source_param] = new_filename;
+                     modules[source_module_name][source_param] = new_filename;
+                     modules[target_module_name][target_param] = new_filename;
+                     
+                     // Label the edge with filename
+                     //value = new_filename;
+
+                     // remember ordering
+                     ordering.push([source_module_name, target_module_name]);
+
+                     // store the edge
+                     //id = next_edge_id;
+                     //next_edge_id = next_edge_id + 1;
+                     //edges[id] = [parseInt(source.id), parseInt(target.id)];
+
+                     //var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
+                     //newstyle['endArrow'] = mxConstants.ARROW_CLASSIC;
+                     //newstyle['dashed'] = 0;
+                     style = 'arrow_edge';
+
+                     return mxConnectionHandlerInsertEdge.apply(this, arguments);
+                  }  
+                  else if (inputs.indexOf(target.id) < 0 && outputs.indexOf(target.id) < 0 && inputs.indexOf(source.id) < 0 && outputs.indexOf(source.id) < 0) {
+                     var source_module_name = map_cells_modules[source.id];
+                     var target_module_name = map_cells_modules[target.id];
+                     //if (used_modules.indexOf(source_module_name) < 0) {
+                     //   used_modules.push(source_module_name);
+                     //}
+                     //if (used_modules.indexOf(target_module_name) < 0) {
+                     //   used_modules.push(target_module_name);
+                     //}
+                     var source_param = map_cells_params[source.id];
+                     var target_param = map_cells_params[target.id];
+                     var source_id = parseInt(source.id);
+                     var target_id = parseInt(target.id);
+                     //linked_params.push([parseInt(source.id), parseInt(target.id)]);
+                     if (linked_params[source_id] == null) {
+                        linked_params[source_id] = [];
+                     }
+                     if (linked_params[target_id] == null) {
+                        linked_params[target_id] = [];
+                     }
+                     linked_params[source_id].push(target_id);
+                     linked_params[target_id].push(source_id);
+                     if (modules[source_module_name][source_param] != "") {
+                        modules[target_module_name][target_param] = modules[source_module_name][source_param];
+                     }
+                     else if (modules[target_module_name][target_param] != "") {
+                        modules[source_module_name][source_param] = modules[target_module_name][target_param];
+                     }
+
+                     // store the edge
+                     //id = next_edge_id;
+                     //next_edge_id = next_edge_id + 1;
+
+                     //edges[id] = [source.id, target.id];
+                     
+                     //var newstyle = graph.getStylesheet().getDefaultEdgeStyle();
+                     //delete newstyle['endArrow'];
+                     //newstyle['dashed'] = 1;
+                     style = 'link_edge';
+                     return mxConnectionHandlerInsertEdge.apply(this, arguments);
+                  }              
+               }
+               return null;
+
+            };
+
+            // Resizes the container
+            graph.setResizeContainer(true);
+
+            
+            // Gets the default parent for inserting new cells. This
+            // is normally the first child of the root (ie. layer 0).
+            var parent = graph.getDefaultParent();
+                        
+            // Adds cells to the model in a single step
+            graph.getModel().beginUpdate();
+
+ 
+            try
+            {
+               // Make columns
+               for (var i = 0; i < 20; i++) {
+                  var col = graph.insertVertex(parent, null, parseInt(i+1), (i+1)*160, 0, 160, 250, 'column');
+                  columns.push(col);
+               }
+
+               // Make prototypes
+               for (i = 0; i < mydata.length; i++) { 
+                  var name = mydata[i].name
+                  module_dict = {};
+                  module_dict["module"] = name;
+                  prototype_parameter_attributes[name] = {};
+                  if (mydata[i].tip != null) {
+                     module_dict["tip"] = mydata[i].tip;
+                  }
+                  if (mydata[i].category != null) {
+                     module_dict["category"] = mydata[i].category
+                  }
+                  var params = mydata[i].params.split(';')
+                  for (j = 0; j < params.length; j++) {
+                     // parse the parameters
+                     var param = params[j]
+                     var param = param.substring(0,param.lastIndexOf("("));
+                     var vals = params[j].substring(params[j].lastIndexOf("("), params[j].lastIndexOf(")")+1);
+                     vals = vals.replace("(", "");
+                     vals = vals.replace(")", "");
+                     vals = vals.split(',')
+                     prototype_parameter_attributes[name][param] = [];
+                     for (k = 0; k < vals.length; k++) {
+                        var cur = vals[k];
+                        prototype_parameter_attributes[name][param].push(cur);
+                     }
+                     module_dict[param] = ""
+                  }
+
+                  prototypes[name] = module_dict
+                  module_counters[name] = 0;
+               }
+
+               
+ 
+            }
+            finally
+            {
+               // Updates the display
+               graph.getModel().endUpdate();
+            }
+
+            // Installs a popupmenu handler using local function (see below).
+            graph.popupMenuHandler.factoryMethod = function(menu, cell, evt)
+            {
+               return createPopupMenu(graph, menu, cell, evt, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
+            };
+
+            // Save button pressed
+            var save_button = mxUtils.button('Save', function()
+            {
+               //var encoder = new mxCodec();
+               //var node = encoder.encode(graph.getModel());
+               var s = "";
+               var first = true;
+
+               var used_modules = [];
+               for (var key in modules) {
+                  used_modules.push(key);
+               }
+
+               if (used_modules.length == 0) {
+                  alert("Nothing to save.")
+                  return;
+               }
+
+               var ordered_modules = order_modules(used_modules, ordering);
+               console.log(ordered_modules);
+
+               for (i = 0; i < ordered_modules.length; i++) {
+                  var name = ordered_modules[i];
+                  var m_dict = modules[name]
+                  for (var param in m_dict) {
+                     // Empty parameters need defaults
+                     if (m_dict[param] == null) {
+                        alert(name + "." + param);
+                     }
+                     if (m_dict[param].length == 0) {
+                        if (map_param_type[name][param] == "bool") {
+                           m_dict[param] = "False"
+                        }
+                        else if (map_param_type[name][param] == "text" || map_param_type[name][param] == "model" || map_param_type[name][param] == "dictionary" || map_param_type[name][param] == "images" || map_param_type[name][param] == 'image') {
+                           m_dict[param] = "cache/" + name + "_" + param + String(file_counter);
+                           file_counter = file_counter + 1;
+                        }
+                        else if (map_param_type[name][param] == "int") {
+                           m_dict[param] = parseInt(0);
+                        }
+                        else if (map_param_type[name][param] == "float") {
+                           m_dict[param] = parseFloat(0.0);
+                        }
+                     }
+                  }
+                  var clone_dict = {};
+                  for (var key in m_dict) {
+                     if (key != "tip" && key != "category") {
+                        clone_dict[key] = m_dict[key];
+                     }
+                  }
+
+                  if (first) {
+                     s = JSON.stringify(clone_dict);
+                     first = false;
+                  }
+                  else {
+                     s = s + "," + JSON.stringify(clone_dict);
+
+                  }
+               }
+               //for (var key in modules) {
+               //   var val = modules[key]
+               //   s = s + JSON.stringify(val);
+               //}
+               s = "[" + s + "]";
+               //alert(s);
+               var filename = prompt("Filename:", 'programs/myprogram');
+               var xhttp = new XMLHttpRequest();
+               xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                     // Action to be performed when the document is read;
+                  }
+               };
+               xhttp.open("POST", "http://localhost:8000?"+'save='+filename+'&program='+s, true);
+               xhttp.send();
+            });
+
+            var load_button = mxUtils.button('Load', function()
+            {
+               var filename = prompt("Filename:", '');
+               var xhttp = new XMLHttpRequest();
+               xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                     // Action to be performed when the document is read;
+                     var prog = eval(this.responseText);
+                     console.log(prog);
+                     for (var i=0; i < prog.length; i++) {
+                        var read_module = prog[i];
+                        var index = i;
+                        if (index >= columns.length) {
+                           index = columns.length - 1;
+                        }
+                        module_type = read_module['module'];
+                        var made_module = makeModule(module_type, graph, columns[index], prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
+                        // Instantiate module parameters from the json file
+                        for (var key in read_module) {
+                           var value = read_module[key];
+                           made_module[key] = value;
+                        }
+                     }
+                     console.log(modules);
+                     // Figure out which module parameters should link.
+                     var files_map = {};
+                     for (var module_name in modules) {
+                        var module = modules[module_name];
+                        for (var key in module) {
+                           var value = module[key];
+                           console.log(key + '=' + value);
+                           if (value.startsWith('cache/')) {
+                              if (files_map[value] == null) {
+                                 files_map[value] = [];
+                              }
+                              files_map[value].push([module['name'], key]);
+                           }
+                        }
+                     }
+                     var cells = [];
+                     for (var i=0; i < columns.length; i++) {
+                        var module_cells = graph.getChildCells(columns[i]);
+                        for (var j=0; j < module_cells.length; j++) {
+                           var cur = module_cells[j]
+                           cells.push(cur);
+                           var subcells = graph.getChildCells(cur);
+                           for (var k=0; k < subcells.length; k++) {
+                              cells.push(subcells[k]);
+                           }
+                        }
+                     }
+                     for (var file in files_map) {
+                        var pairs = files_map[file];
+                        for (var i=0; i < pairs.length; i++) {
+                           var pair1 = pairs[i];
+                           var cell1 = findCell(pair1[0], pair1[1], cells, map_cells_modules, map_cells_params);
+                           for (var j=i+1; j < pairs.length; j++) {
+                              var pair2 = pairs[j];
+                              var cell2 = findCell(pair2[0], pair2[1], cells, map_cells_modules, map_cells_params);
+                              var source = cell1;
+                              var target = cell2;
+                              if (cell2 in inputs) {
+                                 source = cell2;
+                                 target = cell1;
+                              }
+                              graph.getModel().beginUpdate();
+                              var edge = graph.createEdge(graph.getDefaultParent(), null, null, source, target, 'arrow_edge');
+                              graph.addEdge(edge, graph.getDefaultParent(), source, target);
+                              console.log(edge);
+                              graph.getModel().endUpdate();
+                           }
+                        }
+                     }
+                  }
+               };
+               xhttp.open("POST", "http://localhost:8000?"+'load='+filename, true);
+               xhttp.send();
+            });
+            
+            document.body.insertBefore(load_button, container.nextSibling);
+            document.body.insertBefore(save_button, container.nextSibling);
+
+         }
+
+
+      };
+
+      function makeModule(module_name, graph, parent, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips)
+      {
+         graph.getModel().beginUpdate();
+         var counter = module_counters[module_name] + 1;
+         module_counters[module_name] = module_counters[module_name] + 1;
+         name = module_name + ' (' + parseInt(counter) + ')';
+
+         var module = graph.insertVertex(parent, null, name, 0, 0, 140, 30, 'module');
+         module.setConnectable(false);
+         module.collapsed = true;
+
+         map_cells_modules[module.id] = name;
+         var my_cells = [];
+         my_cells.push(module.id);
+         map_param_type[name] = {};
+
+         parameter_defaults[name] = {};
+
+         var module_dict = {};
+         for (var param_name in prototypes[module_name]) {
+            module_dict[param_name] = prototypes[module_name][param_name];
+            var attributes = prototype_parameter_attributes[module_name][param_name];
+            var is_output = false;
+            var is_input = false;
+            var type = "";
+            var tip = ""
+            parameter_defaults[name][param_name] = "";
+            if (attributes != null) {
+               for (i = 0; i < attributes.length; i++) {
+                  var x = attributes[i].split("=");
+                  var attribute = x[0];
+                  var default_value = null;
+                  if (x.length > 1) {
+                     var default_value = x[1];
+                  }
+                  if (attribute == "in") {
+                     is_input = true;
+                  }
+                  else if (attribute == "out") {
+                     is_output = true;
+                  }
+                  else if (attribute == 'tip') {
+                     tip = default_value;
+                  }
+                  else {
+                     map_param_type[name][param_name] = attribute;
+                     type = attribute;
+                     if (default_value != null) { 
+                        parameter_defaults[name][param_name] = default_value;
+                        modules[name][param_name] = default_value;
+                     }
+                  }
+               }
+
+               var style = 'parameter'
+               //var color = "white";
+               if (is_output) {
+                  //color = "#cd5c5c"
+                  style = 'output_parameter'
+                  if (type == 'text') {
+                     style = 'text_output_parameter';
+                  }
+                  else if (type == "model") {
+                     style = 'model_output_parameter';
+                  }
+                  else if (type == "dictionary") {
+                     style = 'dictionary_output_parameter';
+                  }
+                  else if (type == "images") {
+                     style = 'images_output_parameter';
+                  }
+                  else if (type == "image") {
+                     style = 'image_output_parameter';
+                  }
+               }
+               else if (is_input) {
+                  //color = "#66cdaa"
+                  style = 'input_parameter'
+                  if (type == 'text') {
+                     style = 'text_input_parameter';
+                  }
+                  else if (type == "model") {
+                     style = 'model_input_parameter';
+                  }
+                  else if (type == "dictionary") {
+                     style = 'dictionary_input_parameter';
+                  }
+                  else if (type == "images") {
+                     style = 'images_input_parameter';
+                  }
+                  else if (type == "image") {
+                     style = 'image_input_parameter';
+                  }
+               }
+
+               var submod = graph.insertVertex(module, null, param_name, 0, 0, 120, 30, style);//"fillColor="+color);
+               //submod.setStyle("fillColor="+color);
+
+               map_cells_modules[submod.id] = name;
+               map_cells_params[submod.id] = param_name;
+               my_cells.push(submod.id);
+
+               if (is_output) {
+                  outputs.push(parseInt(submod.id));
+               }
+               if (is_input) {
+                  inputs.push(parseInt(submod.id));
+               }
+
+               types[submod.id] = type;
+               tips[submod.id] = tip;
+            }
+
+            module_dict['name'] = name;
+            modules[name] = module_dict;
+            map_modules_cells[module.id] = my_cells;
+
+         }
+         
+         modules[name] = module_dict;
+         graph.getModel().endUpdate();
+         return module_dict;
+      }
+
+      function createPopupMenu(graph, menu, cell, evt, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips) 
+      {
+         if (cell != null) {
+            if (cell.style == 'column') {
+               var map_cat_menu = {};
+               for (var key in prototypes) {
+                  var proto = prototypes[key];
+                  if (proto.category != null) {
+                     var cat = proto.category;
+                     if (map_cat_menu[cat] == null) {
+                        var submenu = menu.addItem(cat);
+                        map_cat_menu[cat] = submenu;
+                     }
+                  }
+               }
+               for (var key in prototypes){
+                  var proto = prototypes[key];
+                  var parent_menu = null;
+                  if (proto.category != null) {
+                     parent_menu = map_cat_menu[proto.category];
+                  }
+                  menu.addItem(key, '', function(e)
+                  {
+                     //alert(e);
+                     makeModule(e.target.textContent, graph, cell, prototypes, prototype_parameter_attributes, parameter_defaults, module_counters, modules, map_modules_cells, map_cells_modules, map_cells_params, map_param_type, types, inputs, outputs, tips);
+                  }, parent_menu);
+               }
+               return true;
+            }
+         }
+         return false;
+      }
+   </script>
+</head>
+
+<!-- Page passes the container for the graph to the program -->
+<body onload="main(document.getElementById('graphContainer'))">
+
+   <!-- Creates a container for the graph with a grid wallpaper -->
+   <div id="graphContainer"
+      style="position:relative;overflow:hidden;width:321px;height:241px;cursor:default;">
+   </div>
+</body>
+</html>
+
