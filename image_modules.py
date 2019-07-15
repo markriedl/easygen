@@ -448,6 +448,7 @@ class Degridify(Module):
     def run(self):
         columns = self.columns
         rows = self.rows
+        prep_output_dir(self.output)
         # iterate through images in the directory
         for file in os.listdir(self.input):
             # Load image
