@@ -461,7 +461,7 @@ class Degridify(Module):
             for i in range(columns):
                 for j in range(rows):
                     img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
-                    img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.jpg'), "JPEG")
+                    img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.gif'), "GIF")
 
 class Gridify(Module):
 
