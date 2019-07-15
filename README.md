@@ -1,5 +1,7 @@
 # Easygen
 
+[EasyGen runs on Google Colaboratory](https://drive.google.com/open?id=1XNiOuNtMnItl5CPGvRjEvj9C78nDuvXj).
+
 EasyGen is a visual user interface to help set up simple neural network generation tasks.
 
 There are a number of neural network frameworks (Tensorflow, TFLearn, Keras, PyTorch, etc.) that implement standard algorithms for generating text (e.g., recurrent neural networks, sequence2sequence) and images (e.g., generative adversarial networks). They require some familairity with coding. Beyond that, just running a simple experiment may require a complex set of steps to clean and prepare the data.
@@ -67,13 +69,15 @@ We provide a Jupyter notebook hosted on [Google Colaboratory](https://colab.rese
 
 2. Turn on GPU support under Edit -> Notebook setting.
 
-3. Run the cells in Sections 1.
+3. Run the cells in Sections 1. Some are optional if you know you aren't going to be using particular features.
 
-4. Run the cell in Section 2. This creates a blank area below the cell in which you can use the buttons to create your visual program. Selecting "Make New Module". This new module appears graphically above and can be dragged around. The inputs and outputs of different modules can be connected together by clicking on an output (red) and dragging to an input (green). Gray boxes are parameters that can be edited. Clicking on a gray box causes a text input field to appear at the bottom of the editing area.
+4. Run the cell in Section 2. If you know there are any models or datasets that you won't be using you can skip them.
 
-5. Save your program by entering a program name and pressing the "save" button.
+5. Run the cell in Section 3. This creates a blank area below the cell in which you can use the buttons to create your visual program. An example program is loaded automatically. You can clear it with the "clear" button below it. Afterwards you can create your own programs. Selecting "Make New Module" will cause the new module appears graphically above and can be dragged around. The inputs and outputs of different modules can be connected together by clicking on an output (red) and dragging to an input (green). Gray boxes are parameters that can be edited. Clicking on a gray box causes a text input field to appear at the bottom of the editing area, just above the "Make New Module" controls.
 
-6. Run your program by editing the program name in the cell in Section 3 and then running the cell.
+6. Save your program by entering a program name and pressing the "save" button.
+
+7. Run your program by editing the program name in the cell in Section 4 and then running the cell.
 
 # Tutorial
 
