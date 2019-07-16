@@ -79,9 +79,22 @@ We provide a Jupyter notebook hosted on [Google Colaboratory](https://colab.rese
 
 7. Run your program by editing the program name in the cell in Section 4 and then running the cell.
 
+# Example Programs
+
+Example programs are in the easygen/examples directory.
+
+| Program Name | Description |
+| ------------ | ----------- | 
+| make_new_colors | Given a json of paint names, train a recurrent neural network to generate new color names. This program demonstrates some of the text file pre-processing and post-processing modules that are necessary to prepare data for a neural network and to handle the results of a neural network. |
+| make_superheroes | Crawls Wikipedia looking for superhero and supervillain names. Trains a neural network to generate new superhero and supervillain names. |
+| make_new_curses | Crawl a webpage of English vulgarities and train a neural network. |
+| star_trek_novels | Crawl lists of Star Trek books and Romance books, merge the data, and generate new Star Trek novel titles. This shows how to produce more interesting outputs by blending datasets. |
+| make_cat_movie | Use a pretrained StyleGAN model trained on cat images to generate an animated video of cats morphing into each other. Demonstrates a simple use of StyleGAN. |
+| 10xcats | Fine-tune a pretrained StyleGAN model trained on cats to create scary looking cats. Demonstrates StyleGAN fine-tuning and also how cutting training short can create blended art. |
+
 # Tutorial
 
-Let's walk through the above example of creating superhero origin stories. Start by executing steps 1-4 above. Be sure to run the optional step of downloading Wikipedia. By now you should have a blank canvas just below the last cell you ran. This is where you will build your visual program.
+Let's walk through an example of creating superhero origin stories. Start by executing steps 1-4 above. Be sure to run the optional step of downloading Wikipedia. Run the cell in section 3 to start the GUI. Clear out the pre-loaded example. You should have a blank canvas.
 
 
 1. Make a new *ReadWikipedia* module. To do this find the place where it says "Make New Module". Select *ReadWikipedia* and press "Add Module". You will see the module appear in the upper left. The *ReadWikipedia* module scans through Wikipedia articles looking for articles (and sections of articles) that match certain criteria, to be specified next.
@@ -1155,3 +1168,285 @@ None
 | output  | text data | The raw HTML of every page encountered. |
 
 The module prefers to use the *link_id* and will only try to use *link_text* if *link_id* is not specified. 
+
+
+## ScrapePinterest
+
+Downloads images from Pinterest boards. This module requires that you have a Pinterest account and that you enter your username and password in plaintext. I don't see this information but we advised that this data is going through Google and, if you save the program, you will be saving your password in plaintext.
+
+**Inputs:**
+
+None.
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| url | string | A URL a Pinterest.com. | None |
+| username | string | A Pinterest.com username (email address). | None |
+| password | string | Password for the Pinterest.com account. | None |
+| target | int | The number of images to try to retrieve. It may not be possible to retrieve that many. | 100 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of image files scraped from Pinterest. |
+
+## LoadImages
+
+Load a directory of images (or a single image).
+
+**Inputs:**
+
+None.
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| directory | string | A path to a directory containing image files. Can also be the path to a single image file. | None |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| images  | images | A set of image files. |
+
+## SaveImages
+
+Save a set of images to a given directory.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| images  | images | The set of images. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| directory | string | A path to a directory to save the image files. | None |
+
+**Outputs:**
+
+None.
+
+## ResizeImages
+
+Resize each of the images passed in to a square with a given height/width dimension. This is useful when using StyleGAN because it assumes square images (each model is trained with a specific target image dimension).
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | The images to resize. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| size | int | The height/width of the images. | 256 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | The resized images. |
+
+## RemoveGrayscale
+
+Remove grayscale images from a set of images.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | The images to filter. |
+
+**Parameters:**
+
+None.
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | The non-grayscale images. |
+| rejects | images | Grayscale images that were filtered out. |
+
+## CropFaces
+
+Close-crop faces in the set of images. This module also resizes images to squares with the given height/width.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | The images to crop. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| size | int | The height/width of the images. | 256 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | The images with faces. |
+| rejects | images | The images in which no faces were found. |
+
+## StyleGAN_FineTune
+
+Take a pretrained StyleGAN model and continue training it on a new dataset. StyleGAN models only work on square images of a certain, specified size. Make sure you have resized your images first.
+
+**I have only tested this module on the StyleGAN pre-trained model trained on 256x256 cat images.** 
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model_in  | neural network model | The pretrained model to fine-tune. |
+| images | images| The new set of images to fine-tune the model on. | 
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| start_kimg | int | The starting iteration in terms of the number of images that have been trained upon (x1000). StyleGAN uses the iteration number to determine the level of granularity to train at and moves up and down the granularity in a prescribed schedule. The closer to 0, the more that will be retrained but also the more data and more time required. | 7000 |
+| max_kimg | int | The ending iteration. The larger the number, the more the neural network will overfit to the data. A number closer to ```start_kimg``` will result in blended models. | 25000 |
+| seed | int | An arbitrary value. Use the same seed value to reproduce results. |
+| schedule | int or string | Determines how many iterations to run at different resolutions. The string should be formatted as follows: "{4: 160, 8:140, 16:120, 32:100, 64:80, 128:60, 256:40, 512:30, 1024:20}". The number before the colon is a resolution. The number after the colon is the number of iteration (x1000). You must have values for 4, 8, 16, 32, 64, 128, 256, 512, and 1024. Alternatively, you can provide a single integer which will be the number of iterations (x1000) for each resolution size. |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model_out  | neural network model | The fine-tuned network. |
+| animation | images | The images produced at intermediate stages. You can use these to create a movie showing how the training progressed. |
+
+Notes:
+1. Intermediate results are stored in the "results" directory. You can look at the images to to see how the training is progressing.
+2. You can interrupt the training at any time (press the stop cell button once) and the rest of the program will continue. This is handy if you see that the training is done before it reaches the final tick.
+3. You may need to experiment with the ```start_kimg```. A smaller number will give the neural network more freedom with regard to color and shape, but it will have to re-learn more and may need a bigger images dataset. A larger number will use a lot more of what the pretrained model has pre-learned but manipulate the finer details.
+4. The default schedule is ```{4: 160, 8:140, 16:120, 32:100, 64:80, 128:60, 256:40, 512:30, 1024:20}```. I find that this is too many iteration for most small fine-tuning datasets. For < 500 images a schedule of ```{4: 2, 8:2, 16:2, 32:2, 64:2, 128:2, 256:2, 512:2, 1024:2}``` seems to work well.
+
+## StyleGAN_Run
+
+Run a StyleGAN model to produce images.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The pretrained or fine-tuned model. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| num | int | The number of images to create. | 1 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| images  | images | The generated images. |
+
+## StyleGAN_Movie
+
+Create an animation that interpolates between generated images. This creates the appearance of output images that morph into each other.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| model  | neural network model | The pretrained or fine-tuned model. |
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| length | int | The number of generated images. | 10 |
+| interp | int | The number of interpolated images in between each generated image. | 10 |
+| duration | int | The duration of each frame of the movie. | 10 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| movie  | images | A single animated gif. |
+
+## MakeMovie
+
+Take a bunch of images and stitch them into an animated GIF.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| images  | images | A set of images. Assume that they will be assembled into a movie according to filename sort order. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| length | int | The number of generated images. | 10 |
+| interp | int | The number of interpolated images in between each generated image. | 10 |
+| duration | int | The duration of each frame of the movie. | 10 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| movie  | images | A single animated gif. |
+
+## Gridify
+
+Take a set of images and arrange them into a single ```m x n``` grid image. The number of columns must be given but the number of rows will be automatically determined by the number of images fed into this module. Images will be resized into squares of equal height and width.
+
+ **Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | A set of images. Assumed to all be square and all be the be same size. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| size | int | The height and width of each image. | 256 |
+| columns | int | The number of columns in the final grid. | 4 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A single image that contains a grid of input images. |
+
+## Degridify
+
+Take a set of images, all of which are grids made up of smaller images, and break them into individual images. The number of columns and rows of each input image must be the same and known in advance.
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | A set of images. Assumed to all be grids of the same size and with the same number of rows and columns. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| rows | int | The number of rows in the grid images. | 4 |
+| columns | int | The number of columns in the grid images. | 4 |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of individual images. |
