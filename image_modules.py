@@ -540,7 +540,7 @@ class StyleTransfer(Module):
         for content_file in os.listdir(self.content_image):
             for style_file in os.listdir(self.style_image):
                 count = count + 1
-                print("Running with content=" + self.content_file + " style=" + self.style_file)
+                print("Running with content=" + content_file + " style=" + style_file)
                 style_transfer.run(content_file, style_file, os.path.join(self.output, str(count) + '.jpg'),
                                    image_size = self.size, 
                                    num_steps = self.steps,
