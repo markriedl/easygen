@@ -296,7 +296,18 @@ var module_dicts = [{"name" : "ReadWikipedia",
                              {"name" : "columns", "type" : "int", "default" : "4"},
                              {"name" : "rows", "type" : "int", "default" : "4"},
                              {"name" : "output", "type" : "images", "out" : true}],
-                 "category" : "Images"}    
+                 "category" : "Images"},
+                {"name" : "StyleTransfer",
+                 "params" : [{"name" : "content_image", "type" : "images", "in" : true},
+                             {"name" : "style_image", "type" : "images", "in" : true},
+                             {"name" : "steps", "type" : "int", "default" : "1000"},
+                             {"name" : "size", "type" : "int", "default" : "512"},
+                             {"name" : "style_weight", "type" : "int", "default" : "1000000"},
+                             {"name" : "content_weight", "type" : "int", "default" : "1"},
+                             {"name" : "content_layers", "type" : "string", "default" : "4"},
+                             {"name" : "style_layers", "type" : "string", "default" : "1, 2, 3, 4, 5"},
+                             {"name" : "output", "type" : "images", "out" : true}],
+                 "category" : "Images"}
                ];
 /*
 

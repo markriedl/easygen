@@ -516,4 +516,35 @@ class Gridify(Module):
 
 ###########################
 
+class StyleTransfer(Module):
 
+    def __init__(self, content_image, style_image, steps, size, style_weight, content_weight, 
+                 content_layers, style_layers, output):
+        self.content_image = content_image                      # path to content image directory
+        self.style_image = style_image                          # path to style image directory
+        self.steps = steps                                      # (int) number of steps to run (Default=1000)
+        self.size = size                                        # (int) image size (default=512)
+        self.style_weight = style_weight                        # (int) style weight
+        self.content_weight = content_weight                    # (int) content weight
+        self.content_layers = content_layers                    # (str) consisting of numbers [1-5] (default="4")
+        self.style_layers = style_layers                        # (str) consisting of numbers [1-5] (default="1, 2, 3, 4, 5")
+        self.output = output                                    # path to output directory
+        self.ready = checkFiles(content_image, style_image)
+        self.output_files = [output]
+
+    def run(self):
+        import style_transfer
+        prep_output_dir(self.output)
+        count = 0
+        # If there are multiple input content and style images, run all combinations
+        for content_file in os.listdir(self.content_image):
+            for style_file in os.listdir(self.style_image):
+                count = count + 1
+                print("Running with content=" + self.content_file + " style=" + self.style_file)
+                style_transfer.run(content_file, style_file, os.path.join(self.output, str(count) + '.jpg'),
+                                   image_size = self.size, 
+                                   num_steps = self.steps,
+                                   style_weight = self.style_weight,
+                                   content_weight = self.content_weight,
+                                   content_layer_spec = self.content_layers,
+                                   style_layer_spec = self.style_layers)
