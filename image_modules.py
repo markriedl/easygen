@@ -541,10 +541,30 @@ class StyleTransfer(Module):
             for style_file in os.listdir(self.style_image):
                 count = count + 1
                 print("Running with content=" + content_file + " style=" + style_file)
-                style_transfer.run(content_file, style_file, os.path.join(self.output, str(count) + '.jpg'),
+                style_transfer.run(os.path.join(self.content_image, content_file), 
+                                   os.path.join(self.style_image, style_file), 
+                                   os.path.join(self.output, str(count) + '.jpg'),
                                    image_size = self.size, 
                                    num_steps = self.steps,
                                    style_weight = self.style_weight,
                                    content_weight = self.content_weight,
                                    content_layers_spec = self.content_layers,
                                    style_layers_spec = self.style_layers)
+
+#################################
+
+class JoinImageDirectories(Module):
+
+    def __init__(self, dir1, dir2, output):
+        self.dir1 = dir1
+        self.dir2 = dir2
+        self.output = output
+        self.ready = checkFiles(dir1, dir2)
+        self.output_files = [output]
+
+    def run(self):
+        prep_output_dir(self.output)
+        for file in os.listdir(self.dir1):
+            shutil.copy(os.path.join(self.dir1, file), self.output)
+        for file in os.listdir(self.dir2):
+            shutil.copy(os.path.join(self.dir2, file), self.output)

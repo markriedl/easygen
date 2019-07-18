@@ -307,7 +307,12 @@ var module_dicts = [{"name" : "ReadWikipedia",
                              {"name" : "content_layers", "type" : "string", "default" : "4"},
                              {"name" : "style_layers", "type" : "string", "default" : "1, 2, 3, 4, 5"},
                              {"name" : "output", "type" : "images", "out" : true}],
-                 "category" : "Images"}
+                 "category" : "Images"},
+                {"name" : "JoinFileDirectories",
+                 "params" : [{"name" : "dir1", "type" : "images", "in" : true},
+                             {"name" : "dir2", "type" : "images", "in" : true},
+                             {"name" : "output", "type" : "images", "out" : true}],
+                 "category" : "Images"} 
                ];
 /*
 
