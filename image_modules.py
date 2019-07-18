@@ -546,5 +546,5 @@ class StyleTransfer(Module):
                                    num_steps = self.steps,
                                    style_weight = self.style_weight,
                                    content_weight = self.content_weight,
-                                   content_layer_spec = self.content_layers,
-                                   style_layer_spec = self.style_layers)
+                                   content_layers_spec = self.content_layers,
+                                   style_layers_spec = self.style_layers)
