@@ -10,3 +10,4 @@ toposort==1.5
 pyspellchecker
 selenium
 autocrop
+pillow>5
