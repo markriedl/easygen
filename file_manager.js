@@ -46,9 +46,9 @@ function get_files(path, list_id) {
     var i;
     for (i = 0; i < sorted_files.length; i++) {
       var file = sorted_files[i];
-      var path = dict[file];
+      var val_path = dict[file];
       var opt = document.createElement('option');
-      opt.value = path;
+      opt.value = val_path;
       opt.innerHTML = file;
       file_list.appendChild(opt);
     }
@@ -69,8 +69,8 @@ function removeOptions(selectbox) {
 // Set up the select boxes with double_click callbacks
 var file_list1 = document.getElementById("file_list1");  
 file_list1.ondblclick = function(){
-  filename = this.options[this.selectedIndex].innerHTML;
-  path = this.options[this.selectedIndex].value;
+  var filename = this.options[this.selectedIndex].innerHTML;
+  var path = this.options[this.selectedIndex].value;
   if (filename[filename.length-1] === "/") {
     // this is a directory
     path1 = path;
@@ -79,15 +79,15 @@ file_list1.ondblclick = function(){
   }
 };
 file_list1.onclick = function() {
-  filename = this.options[this.selectedIndex].innerHTML;
-  path = this.options[this.selectedIndex].value;
+  var filename = this.options[this.selectedIndex].innerHTML;
+  var path = this.options[this.selectedIndex].value;
   selected1 = path;
 };
   
 var file_list2 = document.getElementById("file_list2");
 file_list2.ondblclick = function(){
-  filename = this.options[this.selectedIndex].innerHTML;
-  path = this.options[this.selectedIndex].value;
+  var filename = this.options[this.selectedIndex].innerHTML;
+  var path = this.options[this.selectedIndex].value;
   if (filename[filename.length-1] === "/") {
     // this is a directory
     path1 = path;
@@ -96,8 +96,8 @@ file_list2.ondblclick = function(){
   }
 };
 file_list2.onclick = function() {
-  filename = this.options[this.selectedIndex].innerHTML;
-  path = this.options[this.selectedIndex].value;
+  var filename = this.options[this.selectedIndex].innerHTML;
+  var path = this.options[this.selectedIndex].value;
   selected2 = path;
 };
 
