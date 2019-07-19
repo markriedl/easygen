@@ -90,7 +90,7 @@ file_list2.ondblclick = function(){
   var path = this.options[this.selectedIndex].value;
   if (filename[filename.length-1] === "/") {
     // this is a directory
-    path1 = path;
+    path2 = path;
     selected2 = path;
     update_gui(path, "path2", "file_list2");
   }
