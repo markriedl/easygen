@@ -97,7 +97,7 @@ def python_load_hook_aux(filename):
 def python_mkdir_hook_aux(path, dir_name):
   status = False
   try:
-    os.mkdir(path, dir_name)
+    os.mkdir(os.path.join(path, dir_name))
     status = True
   except:
     print("Could not create directory " + dir_name + " in " + path)
