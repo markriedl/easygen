@@ -161,7 +161,7 @@ function do_mkdir_mouse_up() {
   dir_name = input_box.value;
   (async function() {
     const result = await google.colab.kernel.invokeFunction(
-      'notebook.python_open_image_hook', // The callback name.
+      'notebook.python_mkdir_hook', // The callback name.
       [selected1, dir_name], // The arguments.
       {}); // kwargs
     const res = result.data['application/json'];
