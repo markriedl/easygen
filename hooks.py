@@ -4,6 +4,7 @@ from pathlib import Path
 from PIL import Image
 from IPython.display import display
 
+TRASH_PATH = '/content/.trash'
 
 def python_cwd_hook_aux(dir):
   result = {}
@@ -101,4 +102,16 @@ def python_mkdir_hook_aux(path, dir_name):
     status = True
   except:
     print("Could not create directory " + dir_name + " in " + path)
+  return status
+
+def python_trash_hook_aux(path):
+  status = False
+  try:
+    if not os.path.exists(TRASH_PATH):
+      os.mkdir(TRASH_PATH)
+    if os.path.exists(path):
+      shutil.move(path, TRASH_PATH)
+    status = True
+  except:
+    print("Could not move " + path + " to " + TRASH_PATH)
   return status

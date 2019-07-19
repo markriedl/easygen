@@ -169,6 +169,18 @@ function do_mkdir_mouse_up() {
   update_gui(path1, "path1", "file_list1")
   update_gui(path2, "path2", "file_list2")
 }
+
+function do_trash_mouse_up() {
+  (async function() {
+    const result = await google.colab.kernel.invokeFunction(
+      'notebook.python_trash_hook', // The callback name.
+      [selected1], // The arguments.
+      {}); // kwargs
+    const res = result.data['application/json'];
+  })();
+  update_gui(path1, "path1", "file_list1")
+  update_gui(path2, "path2", "file_list2")
+}
   
 // GO
 update_gui(path1, "path1", "file_list1")
