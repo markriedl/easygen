@@ -155,6 +155,20 @@ function do_open_image_mouse_up() {
     const res = result.data['application/json'];
   })();
 }
+
+function do_mkdir_mouse_up() {
+  var input_box = document.getElementById('mkdir_input');
+  dir_name = input_box.value;
+  (async function() {
+    const result = await google.colab.kernel.invokeFunction(
+      'notebook.python_open_image_hook', // The callback name.
+      [selected1, dir_name], // The arguments.
+      {}); // kwargs
+    const res = result.data['application/json'];
+  })();
+  update_gui(path1, "path1", "file_list1")
+  update_gui(path2, "path2", "file_list2")
+}
   
 // GO
 update_gui(path1, "path1", "file_list1")
