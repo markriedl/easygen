@@ -272,7 +272,7 @@ class StyleGAN_FineTune(Module):
                   'dataset_temp' : os.path.join(cwd, 'stylegan_dataset'),
                   'start_kimg' : self.start_kimg,
                   'max_kimg' : self.max_kimg,
-                  'schedule' : self.schedule,
+                  'schedule' : self.schedule if len(self.schedule) > 0 else ' ',
                   'seed' : self.seed
                  }
         command = 'python stylegan/stylegan_runner.py --train'
