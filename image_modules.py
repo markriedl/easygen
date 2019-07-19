@@ -267,12 +267,13 @@ class StyleGAN_FineTune(Module):
         print("Keyboard interrupt will stop training but program will try to continue.")
         # Run the stylegan program in a separate sub-process
         cwd = os.getcwd()
+        schedule = str(self.schedule)
         params = {'model': os.path.join(cwd, self.model_in),
                   'images_in' : os.path.join(cwd, self.images),
                   'dataset_temp' : os.path.join(cwd, 'stylegan_dataset'),
                   'start_kimg' : self.start_kimg,
                   'max_kimg' : self.max_kimg,
-                  'schedule' : self.schedule if len(self.schedule) > 0 else ' ',
+                  'schedule' : schedule if len(schedule) > 0 else ' ',
                   'seed' : self.seed
                  }
         command = 'python stylegan/stylegan_runner.py --train'
