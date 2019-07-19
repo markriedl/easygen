@@ -568,3 +568,29 @@ class JoinImageDirectories(Module):
             shutil.copy(os.path.join(self.dir1, file), self.output)
         for file in os.listdir(self.dir2):
             shutil.copy(os.path.join(self.dir2, file), self.output)
+
+#################################
+
+class SquareCrop(Module):
+
+    def __init__(self, input, output):
+        self.input = input
+        self.output = output 
+        self.ready = checkFiles(input)
+        self.output_files = [output]
+
+    def run(self):
+        prep_output_dir(self.output)
+        for file in os.listdir(self.input):
+            img = Image.open(os.path.join(self.input, file))
+            square_img = img
+            width, height = img.size
+            if width > height:
+                diff = width - height
+                box = (diff//2, 0, width - diff//2, height)
+                square_img = img.crop(box)
+            elif height > width:
+                diff = height - width
+                box = (0, diff//2, width, height - diff//2)
+                square_img = img.crop(box)
+            square_img.save(os.path.join(self.output, file), "JPEG")
