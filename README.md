@@ -1433,6 +1433,8 @@ Take a set of images and arrange them into a single ```m x n``` grid image. The 
 
 Take a set of images, all of which are grids made up of smaller images, and break them into individual images. The number of columns and rows of each input image must be the same and known in advance.
 
+**Inputs:**
+
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | input  | images | A set of images. Assumed to all be grids of the same size and with the same number of rows and columns. |
@@ -1450,3 +1452,67 @@ Take a set of images, all of which are grids made up of smaller images, and brea
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | images | A set of individual images. |
+
+## StyleTransfer
+
+Neural style transfer takes the texture from one image (the style image) and attempts to redraw a content image to maintain the original content but also satisfy the style.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| content_image  | images | An image (or set of images) to be used as content.  |
+| style_image | images | An image (or set of images) to be used for style. |
+
+
+**Parameters:**
+
+| Component | Type | Description | Default |
+| --------- | ---- | ----------- | ------- |
+| steps | int | Number of training steps. | 1000 |
+| size | int | The height and width of each image. Images will be resized automatically. | 512 |
+| content_weight | int | How much weight to place on the content image. | 1000000 |
+| style_weight | int | How much weight to place on the style image. | 1 |
+| content_layers | string | Which layers to collect content information from. A string containing a list of numbers from 1 to 5. If the string is "-1" then all five layers will be used. | 4 |
+| style_layers | string | Which layers to collect style information from. A string containing a list of numbers from 1 to 5. If the string is "-1" then all five layers will be used. | "1, 2, 3, 4, 5" | 
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of images with style applied to content. |
+
+This module can accept a single content image and single style image, in which case the style is applied to the content image. One can also specify a directory containing multiple content images and a directory containing multiple style images. When directories are given, all style images are applied to all content images in a pairwise fashion producing ```m x n``` wherem ```m``` is the number of content files and ```n``` is the number of style files.
+
+## JoinImageDirectories
+
+Take the image files from two separate directories and merge them into a new directory. This is useful when one wants to load multiple single images and input them all into another module that takes a set of images.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| dir1  | images | An image (or directory of images).  |
+| dir2 | images | An image (or directory of images). |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of images. |
+
+## SquareCrop
+
+Most of the neural network modules in EasyGen expect square images and will resize accordingly, causing distortion. This module will crop the middle out of rectangle images so that the resulting image is a square.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| input  | images | An image (or set of images).  |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of images that are square. |
