@@ -459,10 +459,50 @@ class Degridify(Module):
             image_width = grid_width // columns
             image_height = grid_height // rows
             # Start cropping
+            if grid.n_frames > 1:
+                self.cropAnim(grid, columns, rows, image_width, image_height)
+            else:
+                self.cropImage(grid, columns, rows)
+
+    def cropImage(grid, columns, rows, image_width, image_height):
             for i in range(columns):
                 for j in range(rows):
                     img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
                     img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.gif'), "GIF")
+
+    def cropAnim(anim, columns, rows, image_width, image_height):
+        cwd = os.getcwd()
+        temp_dir = os.path.join(cwd, '.degridify_temp')
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)
+        os.mkdir(temp_dir)
+        frame_paths = []
+        anim_dict = {}
+        for n in range(anim.n_frames):
+            anim.seek(n)
+            file = str(n)+'.gif'
+            path = os.path.join(temp_dir, file)
+            anim.save(path, "GIF")
+            frame_paths.append(path)
+        for file in frame_paths:
+            frame = Image.open(file)
+            for i in range(columns):
+                for j in range(rows):
+                    cropped = frame.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
+                    if (i, j) not in anim_dict:
+                        anim_dict[(i, j)] = []
+                    anim_dict[(i, j)].append(cropped)
+        for key in anim_dict:
+            i, j = key
+            filename = str(i) + '_' + str(j) + '.gif'
+            frames = anim_dict[key]
+            frames[0].save(os.path.join(self.output, filename), "GIF", 
+                           save_all=True, 
+                           append_images=frames[1:],
+                           duration=100,
+                           loop=0)
+        shutil.rmtree(temp_dir)
+
 
 class Gridify(Module):
 
