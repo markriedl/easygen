@@ -465,10 +465,10 @@ class Degridify(Module):
                 self.cropImage(grid, columns, rows)
 
     def cropImage(grid, columns, rows, image_width, image_height):
-            for i in range(columns):
-                for j in range(rows):
-                    img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
-                    img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.gif'), "GIF")
+        for i in range(columns):
+            for j in range(rows):
+                img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
+                img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.gif'), "GIF")
 
     def cropAnim(anim, columns, rows, image_width, image_height):
         cwd = os.getcwd()
