@@ -468,7 +468,7 @@ class Degridify(Module):
         for i in range(columns):
             for j in range(rows):
                 img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
-                img.save(os.path.join(self.output, str(i)+'-'+str(j)+'.gif'), "GIF")
+                img.save(os.path.join(self.output, str(i).zfill(5) + '-' + str(j).zfill(5) + '.gif'), "GIF")
 
     def cropAnim(anim, columns, rows, image_width, image_height):
         cwd = os.getcwd()
@@ -480,7 +480,7 @@ class Degridify(Module):
         anim_dict = {}
         for n in range(anim.n_frames):
             anim.seek(n)
-            file = str(n)+'.gif'
+            file = str(n).zfill(5) + '.gif'
             path = os.path.join(temp_dir, file)
             anim.save(path, "GIF")
             frame_paths.append(path)
@@ -494,7 +494,7 @@ class Degridify(Module):
                     anim_dict[(i, j)].append(cropped)
         for key in anim_dict:
             i, j = key
-            filename = str(i) + '_' + str(j) + '.gif'
+            filename = str(i).zfill(5) + '-' + str(j).zfill(5) + '.gif'
             frames = anim_dict[key]
             frames[0].save(os.path.join(self.output, filename), "GIF", 
                            save_all=True, 
@@ -584,7 +584,7 @@ class StyleTransfer(Module):
                 print("Running with content=" + content_file + " style=" + style_file)
                 style_transfer.run(os.path.join(self.content_image, content_file), 
                                    os.path.join(self.style_image, style_file), 
-                                   os.path.join(self.output, str(count) + '.jpg'),
+                                   os.path.join(self.output, str(count).zfill(5) + '.jpg'),
                                    image_size = self.size, 
                                    num_steps = self.steps,
                                    style_weight = self.style_weight,
@@ -635,3 +635,22 @@ class SquareCrop(Module):
                 box = (0, diff//2, width, height - diff//2)
                 square_img = img.crop(box)
             square_img.save(os.path.join(self.output, file), "JPEG")
+
+####################################
+
+class UnmakeMovie(Module):
+
+    def __init__(self, movie, output):
+        self.movie = movie              # path to directory containing movies
+        self.output = output            # path to directory to save images
+        self.ready = checkFiles(movie)
+        self.output_files = [output]
+
+    def run(self):
+        for file in os.listdir(self.movie):
+            anim = Image.open(os.path.join(self.movie, file))
+            for n in range(anim.n_frames):
+                anim.seek(n)
+                new_filename = file + '-' + str(n).zfill(5) +'.gif'
+                anim.save(os.path.join(self.output, new_filename), "GIF")
+
