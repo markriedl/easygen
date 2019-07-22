@@ -54,7 +54,7 @@ def easygen_train(model_path, images_path, dataset_path, start_kimg=7000, max_ki
   # Dataset
   desc                            += '-custom'
   dataset                         = EasyDict(tfrecord_dir=dataset_path)
-  train.mirror_augment            = True
+  train.mirror_augment            = False
   # Number of GPUs.
   desc                            += '-1gpu'
   submit_config.num_gpus          = 1
