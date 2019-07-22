@@ -316,6 +316,10 @@ var module_dicts = [{"name" : "ReadWikipedia",
                 {"name" : "SquareCrop",
                  "params" : [{"name" : "input", "type" : "images", "in" : true},
                              {"name" : "output", "type" : "images", "out" : true}],
+                 "category" : "Images"},
+                {"name" : "UnmakeMovie",
+                 "params" : [{"name" : "movie", "type" : "images", "in" : true},
+                             {"name" : "output", "type" : "images", "out" : true}],
                  "category" : "Images"} 
                ];
 /*
