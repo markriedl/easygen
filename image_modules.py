@@ -464,13 +464,13 @@ class Degridify(Module):
             else:
                 self.cropImage(grid, columns, rows)
 
-    def cropImage(grid, columns, rows, image_width, image_height):
+    def cropImage(self, grid, columns, rows, image_width, image_height):
         for i in range(columns):
             for j in range(rows):
                 img = grid.crop((i*image_width, j*image_height, (i+1)*image_width, (j+1)*image_height))
                 img.save(os.path.join(self.output, str(i).zfill(5) + '-' + str(j).zfill(5) + '.gif'), "GIF")
 
-    def cropAnim(anim, columns, rows, image_width, image_height):
+    def cropAnim(self, anim, columns, rows, image_width, image_height):
         cwd = os.getcwd()
         temp_dir = os.path.join(cwd, '.degridify_temp')
         if os.path.exists(temp_dir):
