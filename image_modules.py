@@ -647,10 +647,11 @@ class UnmakeMovie(Module):
         self.output_files = [output]
 
     def run(self):
+        prep_output_dir(self.output)
         for file in os.listdir(self.movie):
             anim = Image.open(os.path.join(self.movie, file))
             for n in range(anim.n_frames):
                 anim.seek(n)
-                new_filename = file + '-' + str(n).zfill(5) +'.gif'
+                new_filename = os.path.splitext(file)[0] + '-' + str(n).zfill(5) +'.gif'
                 anim.save(os.path.join(self.output, new_filename), "GIF")
 
