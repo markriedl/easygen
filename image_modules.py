@@ -577,9 +577,20 @@ class StyleTransfer(Module):
         import style_transfer
         prep_output_dir(self.output)
         count = 0
-        # If there are multiple input content and style images, run all combinations
+        # sort the content and style images
+        content_images = []
+        style_images = []
+        sorted_content_images = []
+        sorted_style_images = []
         for content_file in os.listdir(self.content_image):
-            for style_file in os.listdir(self.style_image):
+            content_images.append(content_file)    
+        for style_file in os.listdir(self.style_image):
+            style_images.append(style_file)
+        sorted_content_images = sorted(content_images)
+        sorted_style_images = sorted(style_images)
+        # If there are multiple input content and style images, run all combinations
+        for style_file in sorted_style_images:
+            for content_file in sorted_content_images:
                 count = count + 1
                 print("Running with content=" + content_file + " style=" + style_file)
                 style_transfer.run(os.path.join(self.content_image, content_file), 
