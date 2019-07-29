@@ -65,8 +65,10 @@ def runModule(module_json, history = {}):
             value = history[key] # string descriptor of the process that generated the file
             # Is the descriptor the same and does the file exist?
             if str(value) == str(module_json) and os.path.exists(key):
-                # It is!
-                done_files.append(key)
+                # and if it's a directory is it non-empty?
+                if os.path.isfile(key) or (os.path.isdir(key) and len(os.listdir(key)) > 0):
+                    # It is!
+                    done_files.append(key)
         output_files = module.output_files # These are the files we would expect to see
         # Check if all the output files are already done
         if len(set(output_files).difference(set(done_files))) == 0:
