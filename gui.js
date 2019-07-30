@@ -776,7 +776,9 @@ function load_program(loadfile="") {
       // Move the module to the saved location
       mod.x = module_json.x;
       mod.y = module_json.y;
-      mod.collapsed = module_json.collapsed;
+      if ("collapsed" in module_json) {
+        mod.collapsed = module_json.collapsed;
+      }
       // Update default parameters
       // Iterate through each of the specs from the file
       var module_keys = Object.keys(module_json);
