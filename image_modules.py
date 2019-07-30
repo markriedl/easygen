@@ -87,13 +87,18 @@ class ScrapePinterest(Module):
             if len(results) == url_count:
                 # If so, increment miss count
                 miss_count = miss_count + 1
+            else:
+                miss_count = 0
             # Remember how many image urls we had last time around
             url_count = len(results)
             # sleep
             time.sleep(5 + random.randint(1, 5))
             # Send page down signal
             dummy = wd.find_element_by_tag_name('a')
-            dummy.send_keys(Keys.PAGE_DOWN)
+            try:
+                dummy.send_keys(Keys.PAGE_DOWN)
+            except:
+                miss_count = miss_count + 1
         # convert results to list
         results = list(results)
         # Prep download directory
