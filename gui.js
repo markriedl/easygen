@@ -692,6 +692,8 @@ function module_to_json(module) {
   json["x"] = module.x;
   json["y"] = module.y;
   json["id"] = module.id;
+  json["collapsed"] = module.collapsed;
+  // Parameters
   var i=0;
   for (i=0; i < module.params.length; i++) {
     param = module.params[i];
@@ -774,6 +776,7 @@ function load_program(loadfile="") {
       // Move the module to the saved location
       mod.x = module_json.x;
       mod.y = module_json.y;
+      mod.collapsed = module_json.collapsed;
       // Update default parameters
       // Iterate through each of the specs from the file
       var module_keys = Object.keys(module_json);

@@ -33,6 +33,8 @@ def runModule(module_json, history = {}):
             del module_json_copy['x']
         if 'y' in module_json_copy:
             del module_json_copy['y']
+        if 'collapsed' in module_json_copy:
+            del module_json_copy['collapsed']
         ## Take out the module name and id
         if 'name' in module_json_copy:
             del module_json_copy['name']
