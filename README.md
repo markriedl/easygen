@@ -1516,3 +1516,19 @@ Most of the neural network modules in EasyGen expect square images and will resi
 | Component | Type | Description |
 | --------- | ---- | ----------- |
 | output  | images | A set of images that are square. |
+
+## UnmakeMovie
+
+Takes an animated gif and pulls out each frame into individual images.
+
+**Inputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| movie  | images | A directory containing movies (animated gifs).  |
+
+**Outputs:**
+
+| Component | Type | Description |
+| --------- | ---- | ----------- |
+| output  | images | A set of images. |
