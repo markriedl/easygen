@@ -58,7 +58,7 @@ class ScrapePinterest(Module):
         emailElem = wd.find_element_by_name('id')
         emailElem.send_keys(self.username)
         passwordElem = wd.find_element_by_name('password')
-        passwordElem.send_keys()
+        passwordElem.send_keys(self.password)
         passwordElem.send_keys(Keys.RETURN)
         time.sleep(5 + random.randint(1, 5))
         # Get the first page
