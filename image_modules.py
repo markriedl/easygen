@@ -136,6 +136,9 @@ class ResizeImages(Module):
             for file in os.listdir(self.input):
                 try:
                     img = Image.open(os.path.join(self.input, file))
+                    # Convert images to RGB 
+                    if img.mode != 'RGB':
+                    	img = img.convert('RGB')
                     img2 = p(img)
                     img2.save(os.path.join(self.output, file), 'JPEG')
                 except:
